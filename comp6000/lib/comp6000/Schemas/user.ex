@@ -17,6 +17,7 @@ defmodule Comp6000.Schemas.User do
   def changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
+    |> validate_required([:username, :email])
     |> unique_constraint(:username)
   end
 end

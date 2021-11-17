@@ -2,7 +2,7 @@ defmodule Comp6000.Repo.Migrations.InitialUser do
   use Ecto.Migration
 
   def change do
-    create table(:users) do
+    create table(:user) do
       add(:username, :string)
       add(:firstname, :string)
       add(:lastname, :string)
@@ -12,6 +12,6 @@ defmodule Comp6000.Repo.Migrations.InitialUser do
       timestamps()
     end
 
-    create(unique_index(:users, [:username]))
+    create(unique_index(:user, [:username]))
   end
 end

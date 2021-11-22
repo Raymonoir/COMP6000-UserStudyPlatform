@@ -24,6 +24,8 @@ defmodule Comp6000Web.Router do
     pipe_through(:api)
 
     post("/users/login", UsersController, :login)
+    get("/*path", PageController, :error)
+    post("/*path", PageController, :error)
   end
 
   # Enables LiveDashboard only for development

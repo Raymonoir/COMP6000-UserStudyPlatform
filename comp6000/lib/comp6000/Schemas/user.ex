@@ -22,15 +22,17 @@ defmodule Comp6000.Schemas.User do
     |> set_password_hash()
   end
 
+  # Different changeset for updating because we do not *require* anything to be changed
   def update_changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
     |> validate_changeset()
+    |> set_password_hash()
   end
 
   defp validate_changeset(changeset) do
     changeset
-    |> validate_length(:username, min: 1, max: 100)
+    |> validate_length(:username, min: 4, max: 100)
     |> unique_constraint(:username)
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
@@ -40,8 +42,9 @@ defmodule Comp6000.Schemas.User do
   defp set_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(password))
-        put_change(changeset, :password, nil)
+        changeset
+        |> put_change(:password_hash, Bcrypt.hash_pwd_salt(password))
+        |> put_change(:password, nil)
 
       _else ->
         changeset

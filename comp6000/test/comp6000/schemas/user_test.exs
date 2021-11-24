@@ -16,15 +16,15 @@ defmodule Comp6000.Schemas.UserTest do
     }
 
     @invalid_params %{
-      username: nil,
+      username: "123",
+      email: "wrong_format.com",
+      password: "too short",
       firstname: "invalid_firstname",
-      lastname: "invalid_lastname",
-      password: "invalid_password"
+      lastname: "invalid_lastname"
     }
 
     test "changeset/2 with valid params creates user" do
       changeset = User.changeset(%User{}, @valid_params)
-      IO.inspect(changeset)
       assert changeset.valid?
       assert changeset.changes.username == "Ray123"
       assert changeset.changes.email == "Ray123@email.com"
@@ -46,7 +46,12 @@ defmodule Comp6000.Schemas.UserTest do
     test "changeset/2 with invalid params returns invalid changeset" do
       changeset = User.changeset(%User{}, @invalid_params)
       refute changeset.valid?
-      assert %{email: ["can't be blank"], username: ["can't be blank"]} == errors_on(changeset)
+
+      assert errors_on(changeset) == %{
+               email: ["has invalid format"],
+               username: ["should be at least 4 character(s)"],
+               password: ["should be at least 10 character(s)"]
+             }
     end
   end
 end

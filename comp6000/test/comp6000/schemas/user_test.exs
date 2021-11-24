@@ -4,11 +4,11 @@ defmodule Comp6000.Schemas.UserTest do
 
   describe "users" do
     @valid_params %{
-      username: "username",
-      firstname: "firstname",
-      lastname: "lastname",
-      email: "email",
-      password: "password"
+      username: "Ray123",
+      email: "Ray123@email.com",
+      password: "RaysPassword",
+      firstname: "Ray",
+      lastname: "Ward"
     }
     @update_params %{
       username: "new_username",
@@ -24,16 +24,16 @@ defmodule Comp6000.Schemas.UserTest do
 
     test "changeset/2 with valid params creates user" do
       changeset = User.changeset(%User{}, @valid_params)
+      IO.inspect(changeset)
       assert changeset.valid?
-      assert changeset.changes.username == "username"
-      assert changeset.changes.firstname == "firstname"
-      assert changeset.changes.lastname == "lastname"
-      assert changeset.changes.email == "email"
-      assert changeset.changes.password == "password"
+      assert changeset.changes.username == "Ray123"
+      assert changeset.changes.email == "Ray123@email.com"
+      assert changeset.changes.firstname == "Ray"
+      assert changeset.changes.lastname == "Ward"
     end
 
     test "changeset/2 with valid params updates user" do
-      user = %User{username: "Ray123", email: "Ray123@email.com"}
+      user = struct(User, @valid_params)
       changeset = User.changeset(user, @update_params)
 
       refute changeset.changes.username == "Ray123"

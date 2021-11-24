@@ -14,10 +14,10 @@ defmodule Comp6000Web.Authentication do
   defp check_pass(user, password) do
     case Bcrypt.check_pass(user, password) do
       {:ok, _user} ->
-        true
+        {true, user}
 
       _ ->
-        false
+        {false, user}
     end
   end
 end

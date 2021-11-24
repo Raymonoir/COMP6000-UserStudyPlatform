@@ -12,6 +12,8 @@ defmodule Comp6000Web.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(:fetch_session)
+    plug(Comp6000Web.SessionPlug)
   end
 
   scope "/", Comp6000Web do
@@ -23,8 +25,10 @@ defmodule Comp6000Web.Router do
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
+    get("/users/logout", UsersController, :logout)
     post("/users/create", UsersController, :create)
     post("/users/login", UsersController, :login)
+    get("/users/loggedin", UsersController, :logged_in)
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)
   end

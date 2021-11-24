@@ -1,5 +1,5 @@
 // This is inserted into all JS files by esbuild
-import * as React from 'react'
+import React from 'react';
 import {
     BrowserRouter,
     Switch,
@@ -7,4 +7,5 @@ import {
     Link
 } from "react-router-dom";
 import ReactDOM from 'react-dom';
-export { React, BrowserRouter, Switch, Route, Link, ReactDOM }
+import backend from "./helpers/backend.js";
+export { React, BrowserRouter, Switch, Route, Link, ReactDOM, backend }

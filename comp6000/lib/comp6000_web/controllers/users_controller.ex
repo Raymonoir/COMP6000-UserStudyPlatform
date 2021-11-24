@@ -6,8 +6,6 @@ defmodule Comp6000Web.UsersController do
   def login(conn, %{"username" => username, "password" => password} = _params) do
     case Comp6000Web.Authentication.login(username, password) do
       {true, user} ->
-        IO.inspect(conn)
-
         conn =
           conn
           |> put_session(:user_id, user.id)

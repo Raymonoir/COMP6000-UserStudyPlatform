@@ -23,6 +23,7 @@ defmodule Comp6000Web.Router do
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
+    post("/users/create", UsersController, :create)
     post("/users/login", UsersController, :login)
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

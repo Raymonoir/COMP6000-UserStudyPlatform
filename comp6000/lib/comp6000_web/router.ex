@@ -25,7 +25,7 @@ defmodule Comp6000Web.Router do
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
-    get("/users/logout", UsersController, :logout)
+    post("/users/logout", UsersController, :logout)
     post("/users/create", UsersController, :create)
     post("/users/login", UsersController, :login)
     get("/users/loggedin", UsersController, :logged_in)

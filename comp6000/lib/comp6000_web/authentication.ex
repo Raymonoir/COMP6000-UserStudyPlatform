@@ -7,7 +7,7 @@ defmodule Comp6000Web.Authentication do
     if user != nil do
       check_pass(user, password)
     else
-      false
+      {false, nil}
     end
   end
 

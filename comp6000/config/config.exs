@@ -33,9 +33,9 @@ config :swoosh, :api_client, false
 config :esbuild,
   version: "0.12.18",
   default: [
+    # ~w(js/app.js --bundle --target=es2016 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     args:
-      #~w(js/app.js --bundle --target=es2016 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-      ~w(src/index.js --bundle --target=es2016 --outdir=../priv/static/assets --external:/fonts/* --external:/images/* --loader:.svg=text --loader:.js=jsx --inject:src/react-shim.js),
+      ~w(src/index.js src/index.css --bundle --target=es2016 --outdir=../priv/static/assets --external:/fonts/* --external:/images/* --loader:.svg=text --loader:.js=jsx --inject:src/react-shim.js),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

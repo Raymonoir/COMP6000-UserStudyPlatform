@@ -13,13 +13,13 @@ defmodule Comp6000Web.Router do
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:fetch_session)
-    plug(Comp6000Web.SessionPlug)
+    plug(Comp6000Web.Plugs.Session)
   end
 
-  scope "/", Comp6000Web do
+  scope "/app", Comp6000Web do
     pipe_through(:browser)
 
-    get("/app/*path", PageController, :index)
+    get("/*path", PageController, :index)
   end
 
   scope "/api", Comp6000Web do

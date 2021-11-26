@@ -20,15 +20,15 @@ defmodule Comp6000Web.AuthenticationTest do
     end
 
     test "valid username and invalid password returns false" do
-      assert {false, _user} = Authentication.login("Ray123", "WrongPassword")
+      assert {false, nil} = Authentication.login("Ray123", "WrongPassword")
     end
 
     test "invalid username and valid password returns false" do
-      assert {false, _user} = Authentication.login("WrongUsername", "RaysPassword")
+      assert {false, nil} = Authentication.login("WrongUsername", "RaysPassword")
     end
 
     test "invalid username and invalid password returns false" do
-      assert {false, _user} = Authentication.login("WrongUsername", "WrongPassword")
+      assert {false, nil} = Authentication.login("WrongUsername", "WrongPassword")
     end
   end
 end

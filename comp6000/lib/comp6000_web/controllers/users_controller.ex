@@ -6,12 +6,7 @@ defmodule Comp6000Web.UsersController do
   def login(conn, %{"username" => username, "password" => password} = _params) do
     case Comp6000Web.Authentication.login(username, password) do
       {true, user} ->
-        conn =
-          conn
-          |> put_session(:user_id, user.id)
-          |> configure_session(renew: true)
-
-        json(conn, %{login: true})
+        json(log_in_user(conn, user), %{login: true})
 
       {false, _user} ->
         json(conn, %{login: false})
@@ -19,7 +14,7 @@ defmodule Comp6000Web.UsersController do
   end
 
   def login(conn, _params) do
-    json(conn, %{login: nil})
+    json(conn, %{login: false})
   end
 
   def create(conn, params) do
@@ -36,6 +31,12 @@ defmodule Comp6000Web.UsersController do
 
   def logout(conn, _params) do
     json(configure_session(conn, drop: true), %{login: false})
+  end
+
+  defp log_in_user(conn, user) do
+    conn
+    |> put_session(:username, user.username)
+    |> configure_session(renew: true)
   end
 
   defp get_changeset_errors(changeset) do

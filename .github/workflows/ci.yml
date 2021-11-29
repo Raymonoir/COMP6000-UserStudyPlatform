@@ -1,15 +1,12 @@
 name: CI
-
 on: 
   push:
     branches: 
     - master
-
   pull_request:
     types:
     - opened
     - synchronize
-
 jobs:
   run-elixir-tests:
     name: run-elixir-tests
@@ -20,7 +17,6 @@ jobs:
         with:
           otp-version: '23.3.4.5'
           elixir-version: '1.12.3'
-      working-directory: ./comp6000
+          experimental-otp: true
       - run: mix deps.get
       - run: mix test
-  

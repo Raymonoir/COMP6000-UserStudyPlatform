@@ -22,5 +22,5 @@ jobs:
         elixir-version: '1.12.3'
     - name: run-tests
       working-directory: ./comp6000
-      run: mix deps.get
-      run: mix test
+    - run: mix deps.get
+    - run: mix test

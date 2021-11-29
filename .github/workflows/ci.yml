@@ -11,7 +11,7 @@ on:
     - synchronize
 
 jobs:
-run-elixir-tests:
+  run-elixir-tests:
     name: run-elixir-tests
     runs-on: ubuntu-latest
     steps:

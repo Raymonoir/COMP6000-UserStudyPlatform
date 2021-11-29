@@ -17,5 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: mileschou/elixir-action@master
-    run: mix test
-    run: mix format --check-formatted
+    run: mix test && mix format --check-formatted

@@ -28,3 +28,9 @@ config :logger, level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+if System.get_env("GITHUB_ACTIONS") do
+  config :comp6000, Comp6000.Repo,
+    username: "postgres",
+    password: "postgresGHA"
+end

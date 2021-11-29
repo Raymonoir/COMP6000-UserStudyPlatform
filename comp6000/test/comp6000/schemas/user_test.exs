@@ -4,11 +4,11 @@ defmodule Comp6000.Schemas.UserTest do
 
   describe "users" do
     @valid_params %{
-      username: "username",
-      firstname: "firstname",
-      lastname: "lastname",
-      email: "email",
-      password: "password"
+      username: "Ray123",
+      email: "Ray123@email.com",
+      password: "RaysPassword",
+      firstname: "Ray",
+      lastname: "Ward"
     }
     @update_params %{
       username: "new_username",
@@ -16,24 +16,24 @@ defmodule Comp6000.Schemas.UserTest do
     }
 
     @invalid_params %{
-      username: nil,
+      username: "123",
+      email: "wrong_format.com",
+      password: "too short",
       firstname: "invalid_firstname",
-      lastname: "invalid_lastname",
-      password: "invalid_password"
+      lastname: "invalid_lastname"
     }
 
     test "changeset/2 with valid params creates user" do
       changeset = User.changeset(%User{}, @valid_params)
       assert changeset.valid?
-      assert changeset.changes.username == "username"
-      assert changeset.changes.firstname == "firstname"
-      assert changeset.changes.lastname == "lastname"
-      assert changeset.changes.email == "email"
-      assert changeset.changes.password == "password"
+      assert changeset.changes.username == "Ray123"
+      assert changeset.changes.email == "Ray123@email.com"
+      assert changeset.changes.firstname == "Ray"
+      assert changeset.changes.lastname == "Ward"
     end
 
     test "changeset/2 with valid params updates user" do
-      user = %User{username: "Ray123", email: "Ray123@email.com"}
+      user = struct(User, @valid_params)
       changeset = User.changeset(user, @update_params)
 
       refute changeset.changes.username == "Ray123"
@@ -46,7 +46,12 @@ defmodule Comp6000.Schemas.UserTest do
     test "changeset/2 with invalid params returns invalid changeset" do
       changeset = User.changeset(%User{}, @invalid_params)
       refute changeset.valid?
-      assert %{email: ["can't be blank"], username: ["can't be blank"]} == errors_on(changeset)
+
+      assert errors_on(changeset) == %{
+               email: ["has invalid format"],
+               username: ["should be at least 4 character(s)"],
+               password: ["should be at least 10 character(s)"]
+             }
     end
   end
 end

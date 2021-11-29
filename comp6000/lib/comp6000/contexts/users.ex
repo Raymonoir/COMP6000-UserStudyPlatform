@@ -16,8 +16,8 @@ defmodule Comp6000.Contexts.Users do
     |> Repo.insert()
   end
 
-  def change_user(%User{} = user, params) do
-    User.changeset(user, params)
+  def update_user(%User{} = user, params) do
+    User.update_changeset(user, params)
     |> Repo.update()
   end
 

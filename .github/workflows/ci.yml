@@ -20,8 +20,7 @@ jobs:
         with:
           otp-version: '23.3.4.5'
           elixir-version: '1.12.3'
-          experimental-otp: 'true'
-        working-directory: ./comp6000
+      working-directory: ./comp6000
       - run: mix deps.get
       - run: mix test
   

@@ -1,0 +1,37 @@
+name: CI
+on: 
+  push:
+    branches: 
+    - master
+  pull_request:
+    types:
+    - opened
+    - synchronize
+jobs:
+  run-elixir-tests:
+    name: run-elixir-tests
+    runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: ./comp6000 
+    services:
+      db:
+        image: postgres:13
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: '23.3.4.5'
+          elixir-version: '1.12.3'
+          experimental-otp: true
+      - run: mix deps.get
+      - run: mix test
+      - run: mix format --check-formatted

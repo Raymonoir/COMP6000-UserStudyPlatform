@@ -19,4 +19,5 @@ jobs:
           elixir-version: '1.12.3'
           experimental-otp: true
       - run: ls
+        working-directory: ./comp6000
       - run: mix test

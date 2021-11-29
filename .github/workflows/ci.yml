@@ -18,5 +18,5 @@ jobs:
           otp-version: '23.3.4.5'
           elixir-version: '1.12.3'
           experimental-otp: true
-      - run: mix deps.get
+      - run: ls
       - run: mix test

@@ -11,10 +11,11 @@ on:
     - synchronize
 
 jobs:
-  run-elixir-tests:
+run-elixir-tests:
     name: run-elixir-tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: mileschou/elixir-action@master
-    run: mix test && mix format --check-formatted
+      - uses: actions/checkout@v2
+      - uses: mileschou/elixir-action@master
+        with:
+          args: mix test && mix format --check-formatted

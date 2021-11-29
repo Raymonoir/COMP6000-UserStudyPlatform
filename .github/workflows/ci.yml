@@ -14,11 +14,13 @@ jobs:
   run-elixir-tests:
     name: run-elixir-tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./comp6000
     steps:
       - uses: actions/checkout@v2
       - uses: mileschou/elixir-action@master
-        with:
-          args: mix test
+      name: run-tests
+      working-directory: ./comp6000
+      run: mix test
+
+      name: check formatting
+      working-directory: ./comp6000
+      run: mix format --check-formatting

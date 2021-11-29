@@ -16,7 +16,7 @@ jobs:
         working-directory: ./comp6000 
     services:
       db:
-        image: postgres:11
+        image: postgres:13
         ports: ['5432:5432']
         env:
           POSTGRES_PASSWORD: postgres
@@ -34,5 +34,5 @@ jobs:
           experimental-otp: true
       - run: mix deps.get
       - run: mix test
-      - run: mix format --check-formatting
+      - run: mix format --check-formatted
 

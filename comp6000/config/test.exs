@@ -30,7 +30,7 @@ config :logger, level: :warn
 config :phoenix, :plug_init_mode, :runtime
 
 if System.get_env("GITHUB_ACTIONS") do
-  config :app, App.Repo,
+  config :comp6000, Comp6000.Repo,
     username: "postgres",
     password: "postgres"
 end

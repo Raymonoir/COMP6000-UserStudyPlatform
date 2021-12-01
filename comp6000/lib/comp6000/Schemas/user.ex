@@ -1,7 +1,7 @@
 defmodule Comp6000.Schemas.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Comp6000.Schemas.User
+  alias Comp6000.Schemas.{User, Study}
 
   schema "user" do
     field(:username, :string)
@@ -10,6 +10,7 @@ defmodule Comp6000.Schemas.User do
     field(:email, :string)
     field(:password, :string, virtual: true)
     field(:password_hash, :string)
+    has_many(:studies, Study, references: :username, foreign_key: :username)
 
     timestamps()
   end

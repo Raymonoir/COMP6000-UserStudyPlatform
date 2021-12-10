@@ -11,7 +11,7 @@ defmodule Comp6000.Repo.Migrations.InitialStudy do
       timestamps()
     end
 
-    create(unique_index(:study, [:id]))
+    create(unique_index(:study, [:username, :id]))
 
     # Task 1
     # What is 2 * 2?

@@ -12,4 +12,11 @@ defmodule Comp6000.Schemas.Study do
 
     timestamps()
   end
+
+  def changeset(study, params \\ %{}) do
+    study
+    |> cast(params, [:title, :username])
+    |> cast_required([:title])
+    |> foreign_key_constraint(:user, name: :study_username_fkey)
+  end
 end

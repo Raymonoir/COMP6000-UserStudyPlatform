@@ -4,7 +4,7 @@ defmodule Comp6000.Schemas.User do
   alias Comp6000.Schemas.{User, Study}
 
   schema "user" do
-    field(:username, :string)
+    field(:username, :string, primary_key: true)
     field(:firstname, :string)
     field(:lastname, :string)
     field(:email, :string)

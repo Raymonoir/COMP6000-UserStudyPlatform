@@ -3,7 +3,8 @@ defmodule Comp6000.Schemas.Task do
   import Ecto.Changeset
   alias Comp6000.Schemas.{Study, Result, Answer}
 
-  schema "question" do
+  #Content = the actual question the researcher is asking
+  schema "task" do
     belongs_to(:study, Study)
     has_many(:result, Result)
     has_one(:answer, Answer)
@@ -12,5 +13,13 @@ defmodule Comp6000.Schemas.Task do
     field(:optional_info, :string)
 
     timestamps()
+  end
+
+
+  def changeset(%Task{} = task, params) do
+    task
+    |> cast(params, [:study_id, :result_id, :answer, :task_number, :content, :optional_info])
+    |> validate_required([:content, :task_number])
+    |> assoc_constraint(:study)
   end
 end

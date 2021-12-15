@@ -15,7 +15,7 @@ defmodule Comp6000.Schemas.User do
     timestamps()
   end
 
-  def changeset(%User{} = user, params) do
+  def creation_changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
     |> validate_required([:username, :email, :password])
@@ -23,10 +23,11 @@ defmodule Comp6000.Schemas.User do
     |> set_password_hash()
   end
 
-  # Different changeset for updating because we do not *require* anything to be changed
+  # Different changeset for updating because we set password to nil and it is virtual
   def update_changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
+    |> validate_required([:username, :email])
     |> validate_changeset()
     |> set_password_hash()
   end

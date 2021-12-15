@@ -2,7 +2,7 @@ defmodule COmp6000Web.EndToEnd.UsersTest do
   use Comp6000Web.ConnCase
   alias Comp6000.Contexts.Users
 
-  describe "Main functionality for the users routes" do
+  describe "/users/create route" do
     test "Creating a user and retrieving the created user from the database", %{conn: conn} do
       conn =
         post(conn, Routes.users_path(conn, :create), %{

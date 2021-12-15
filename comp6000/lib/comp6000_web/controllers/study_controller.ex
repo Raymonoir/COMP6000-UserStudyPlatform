@@ -3,7 +3,7 @@ defmodule Comp6000Web.StudyController do
   import Plug.Conn
 
   def create(conn, params) do
-    case Comp6000.Contexts.Study.create_study(params) do
+    case Comp6000.Contexts.Studies.create_study(params) do
       {:ok, study} ->
         json(conn, %{created_study: study.id})
 

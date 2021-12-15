@@ -29,6 +29,9 @@ defmodule Comp6000Web.Router do
     post("/users/create", UsersController, :create)
     post("/users/login", UsersController, :login)
     get("/users/loggedin", UsersController, :logged_in)
+
+    post("/study/create", StudyController, :create)
+
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)
   end

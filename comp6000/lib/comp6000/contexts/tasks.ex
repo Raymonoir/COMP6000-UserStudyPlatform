@@ -13,7 +13,7 @@ defmodule Comp6000.Contexts.Tasks do
   end
 
   def update_task(%Task{} = task, params) do
-    Task.update_changeset(task, params)
+    Task.changeset(task, params)
     |> Repo.update()
   end
 

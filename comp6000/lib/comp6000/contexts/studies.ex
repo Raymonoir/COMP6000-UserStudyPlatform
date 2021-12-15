@@ -18,7 +18,7 @@ defmodule Comp6000.Contexts.Studies do
 
   def update_study(%Study{} = study, params) do
     study
-    |> Study.update_changeset(params)
+    |> Study.changeset(params)
     |> Repo.update()
   end
 

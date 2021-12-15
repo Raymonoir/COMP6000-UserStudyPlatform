@@ -21,13 +21,6 @@ defmodule Comp6000.Schemas.Study do
     |> validate_changeset()
   end
 
-  def update_changeset(%Study{} = study, params) do
-    study
-    |> cast(params, [:title, :username, :task_count])
-    |> cast_assoc(:tasks)
-    |> validate_changeset()
-  end
-
   defp validate_changeset(changeset) do
     changeset
     |> validate_length(:title, min: 4, max: 200)

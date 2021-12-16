@@ -31,7 +31,6 @@ defmodule Comp6000.Schemas.StudyTest do
       study = struct(Study, @valid_params)
       changeset = Study.changeset(study, @update_params)
 
-      refute changeset.changes.title == "My First Study"
       assert changeset.changes.title == "My Second Study"
       assert changeset.changes.task_count == 2
 

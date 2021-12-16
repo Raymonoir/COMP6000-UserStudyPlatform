@@ -14,7 +14,7 @@ defmodule Comp6000.Schemas.Result do
   def changeset(%Result{} = result, params) do
     result
     |> cast(params, [:content, :unique_participant_id, :task_id])
-    |> validate_required([:content, :task_id])
+    |> validate_required([:content, :task_id, :unique_participant_id])
     |> foreign_key_constraint(:task, name: :answer_task_id_fkey)
   end
 end

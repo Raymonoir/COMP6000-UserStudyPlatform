@@ -28,7 +28,11 @@ defmodule Comp6000.Schemas.Task do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{study_id: study_id, task_number: task_number}} ->
         study = Comp6000.Contexts.Studies.get_study_by(id: study_id)
-        Comp6000.Contexts.Studies.update_study(study, %{task_count: task_number})
+
+        if study != nil do
+          Comp6000.Contexts.Studies.update_study(study, %{task_count: task_number})
+        end
+
         changeset
 
       _else ->

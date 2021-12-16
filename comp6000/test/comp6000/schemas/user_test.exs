@@ -48,8 +48,6 @@ defmodule Comp6000.Schemas.UserTest do
       user = struct(User, @valid_params)
       changeset = User.update_changeset(user, @update_params)
 
-      refute changeset.changes.username == "Ray123"
-
       assert changeset.changes.username == "new_username"
       assert changeset.changes.lastname == "new_lastname"
 

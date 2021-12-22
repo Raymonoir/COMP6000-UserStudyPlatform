@@ -74,11 +74,9 @@ defmodule Comp6000.Contexts.AnswersTest do
 
     {:ok, answer} = Answers.create_answer(valid_answer_params1)
 
-    assert answer ==
-             Answers.get_answer_by(content: valid_answer_params1[:content])
+    assert answer == Answers.get_answer_by(content: valid_answer_params1[:content])
 
-    assert answer ==
-             Answers.get_answer_by(task_id: valid_answer_params1[:task_id])
+    assert answer == Answers.get_answer_by(task_id: valid_answer_params1[:task_id])
   end
 
   test "delete_answer/1 deletes an answer from the database", %{

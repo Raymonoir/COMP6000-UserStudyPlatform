@@ -15,7 +15,6 @@ defmodule Comp6000Web.Plugs.Session do
   - In the UsersController (comp6000/lib/comp6000_web/controllers/users_controller.ex), which is downstream
     from this plug, we place the user's username in the session which will then be picked up by this plug
     in the next request.
-
   '''
 
   def init(opts), do: opts

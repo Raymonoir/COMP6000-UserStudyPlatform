@@ -24,6 +24,7 @@ defmodule Comp6000Web do
       import Plug.Conn
       import Comp6000Web.Gettext
       alias Comp6000Web.Router.Helpers, as: Routes
+      alias Comp6000Web.Controllers.ControllerHelpers, as: Helpers
     end
   end
 

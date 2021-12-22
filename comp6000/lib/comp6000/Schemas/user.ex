@@ -1,20 +1,21 @@
 defmodule Comp6000.Schemas.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Comp6000.Schemas.User
+  alias Comp6000.Schemas.{User, Study}
 
   schema "user" do
-    field(:username, :string)
+    field(:username, :string, primary_key: true)
     field(:firstname, :string)
     field(:lastname, :string)
     field(:email, :string)
     field(:password, :string, virtual: true)
     field(:password_hash, :string)
+    has_many(:studies, Study, references: :username, foreign_key: :username)
 
     timestamps()
   end
 
-  def changeset(%User{} = user, params) do
+  def creation_changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
     |> validate_required([:username, :email, :password])
@@ -22,10 +23,11 @@ defmodule Comp6000.Schemas.User do
     |> set_password_hash()
   end
 
-  # Different changeset for updating because we do not *require* anything to be changed
+  # Different changeset for updating because we set password to nil and it is virtual
   def update_changeset(%User{} = user, params) do
     user
     |> cast(params, [:username, :firstname, :lastname, :email, :password])
+    |> validate_required([:username, :email])
     |> validate_changeset()
     |> set_password_hash()
   end

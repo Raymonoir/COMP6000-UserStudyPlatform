@@ -12,7 +12,7 @@ defmodule Comp6000.Contexts.Users do
 
   def create_user(params \\ %{}) do
     %User{}
-    |> User.changeset(params)
+    |> User.creation_changeset(params)
     |> Repo.insert()
   end
 

@@ -1,5 +1,5 @@
 defmodule Comp6000.Plugs.SessionTest do
-  use Comp6000Web.ConnCase
+  use Comp6000Web.ConnCase, async: true
 
   setup %{conn: conn} do
     {:ok, user} =

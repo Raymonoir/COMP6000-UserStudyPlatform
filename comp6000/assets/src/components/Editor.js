@@ -14,15 +14,11 @@ class Editor extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.replay = this.replay.bind(this);
         this.aceOnLoad = this.aceOnLoad.bind(this);
-        this.selectionHandler = this.selectionHandler.bind(this);
     }
 
     render() {
         return (
-            <div ref="ace"
-                onMouseDown={this.selectionHandler}
-                onMouseUp={this.selectionHandler}
-                onMouseMove={this.selectionHandler}>
+            <div ref="ace">
                 <AceEditor
                     mode="javascript"
                     value={this.state.value}
@@ -30,28 +26,12 @@ class Editor extends React.Component {
                     onLoad={this.aceOnLoad}
                 />
                 <button onClick={this.replay}>replay</button>
-            </div>
+            </div >
         );
     }
 
     aceOnLoad(instance) {
         this.setState({ editor: instance });
-        console.log(instance);
-    }
-
-    selectionHandler(event) {
-        //console.log(event);
-        switch (event.type) {
-            case 'mousedown':
-                console.log('mouse down');
-                break;
-            case 'mouseup':
-                console.log('mouse up');
-                break;
-            case 'mousemove':
-                console.log('mouse move');
-                break
-        }
     }
 
     onChange(value, delta) {
@@ -63,7 +43,6 @@ class Editor extends React.Component {
             history: updatedHistory,
             lastUpdateTime: currTime
         });
-        console.log(this.state.history);
     }
 
     replay() {
@@ -74,12 +53,6 @@ class Editor extends React.Component {
 
         const doNextStep = (step, lastStep) => {
             setTimeout(() => {
-                // If we selected something before we must unselect it
-                if (lastStep && lastStep[1].action == 'select' && step[1].action != 'select') {
-                    const r = new ace.Range(lastStep[1].start.row, lastStep[1].start.column, lastStep[1].end.row, lastStep[1].end.column);
-                    this.state.editor.removeSelectionMarker(r);
-                }
-
                 if (step[1].action == 'insert') {
                     this.state.editor.moveCursorToPosition(step[1].start);
                     // Ace editor encodes a new line like this for some reason
@@ -98,11 +71,6 @@ class Editor extends React.Component {
                     this.state.editor.moveCursorToPosition(step[1].start);
                     const r = new ace.Range(step[1].start.row, step[1].start.column, step[1].end.row, step[1].end.column);
                     this.state.editor.session.doc.remove(r);
-                } else if (step[1].action == 'select') {
-                    const r = new ace.Range(step[1].start.row, step[1].start.column, step[1].end.row, step[1].end.column);
-                    this.state.editor.addSelectionMarker(r);
-                } else if (step[1].action == 'click') {
-                    this.state.editor.moveCursorToPosition(step[1].start);
                 } else {
                     console.warn('Unknown action', step[1].action);
                 }

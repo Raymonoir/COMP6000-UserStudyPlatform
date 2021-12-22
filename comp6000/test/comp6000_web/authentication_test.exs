@@ -1,5 +1,5 @@
 defmodule Comp6000Web.AuthenticationTest do
-  use Comp6000.DataCase
+  use Comp6000.DataCase, async: true
   alias Comp6000Web.Authentication
 
   setup do

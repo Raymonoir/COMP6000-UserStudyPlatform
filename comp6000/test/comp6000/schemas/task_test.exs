@@ -1,5 +1,5 @@
 defmodule Comp6000.Schemas.TaskTest do
-  use Comp6000.DataCase
+  use Comp6000.DataCase, async: true
   alias Comp6000.Schemas.Task
 
   @valid_params %{

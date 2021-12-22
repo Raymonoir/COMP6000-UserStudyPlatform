@@ -1,5 +1,5 @@
 defmodule Comp6000.Schemas.StudyTest do
-  use Comp6000.DataCase
+  use Comp6000.DataCase, async: true
   alias Comp6000.Schemas.Study
 
   @valid_params %{

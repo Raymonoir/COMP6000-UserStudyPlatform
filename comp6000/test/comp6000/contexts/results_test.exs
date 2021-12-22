@@ -1,6 +1,6 @@
 defmodule Comp6000.Contexts.ResultsTest do
   use Comp6000.DataCase, async: true
-  alias Comp6000.Contexts.{Studies, Users, Tasks, Answers, Results}
+  alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
   alias Comp6000.Schemas.Result
 
   setup do

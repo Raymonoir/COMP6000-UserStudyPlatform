@@ -1,5 +1,5 @@
 defmodule Comp6000.Schemas.ResultTest do
-  use Comp6000.DataCase
+  use Comp6000.DataCase, async: true
   alias Comp6000.Schemas.Result
 
   @valid_params %{

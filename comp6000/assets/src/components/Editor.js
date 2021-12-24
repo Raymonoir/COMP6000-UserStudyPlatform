@@ -64,9 +64,11 @@ class Editor extends React.Component {
                         this.state.editor.insert('\n');
                     } else {
                         if (step[1].lines.length > 1) {
+                            let builtLine = '';
                             step[1].lines.forEach(line => {
-                                this.state.editor.insert(line + '\n');
+                                builtLine += line + '\n';
                             });
+                            this.state.editor.insert(builtLine);
                         } else {
                             this.state.editor.insert(step[1].lines.shift());
                         }

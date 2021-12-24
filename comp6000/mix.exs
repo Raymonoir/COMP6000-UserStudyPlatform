@@ -64,9 +64,9 @@ defmodule Comp6000.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "ecto.clean": ["ecto.drop", "ecto.create", "ecto.migrate"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"],
-      seeds: ["ecto.reset", "run priv/repo/seeds.exs"]
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

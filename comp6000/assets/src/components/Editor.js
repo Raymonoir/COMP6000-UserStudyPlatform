@@ -1,4 +1,6 @@
-import AceEditor from "react-ace-builds";
+import AceEditor from 'react-ace-builds';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-tomorrow_night';
 
 class Editor extends React.Component {
     constructor(props) {
@@ -21,6 +23,8 @@ class Editor extends React.Component {
             <div ref="ace">
                 <AceEditor
                     mode="javascript"
+                    theme="tomorrow_night"
+                    setOptions={{ useWorker: false }}
                     value={this.state.value}
                     onChange={this.onChange}
                     onLoad={this.aceOnLoad}

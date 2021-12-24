@@ -16,6 +16,23 @@ class Editor extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.replay = this.replay.bind(this);
         this.aceOnLoad = this.aceOnLoad.bind(this);
+        this.getHistory = this.getHistory.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.props.uploadFrequency && this.props.uploadChunk) {
+            this.setState({
+                uploadInterval: setInterval(() => {
+                    this.props.uploadChunk(this.getHistory());
+                }, this.props.uploadFrequency)
+            });
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.state.uploadInterval) {
+            clearInterval(this.state.uploadInterval);
+        }
     }
 
     render() {
@@ -30,6 +47,7 @@ class Editor extends React.Component {
                     onLoad={this.aceOnLoad}
                 />
                 <button onClick={this.replay}>replay</button>
+                <button onClick={this.getHistory}>get history</button>
             </div >
         );
     }
@@ -47,6 +65,24 @@ class Editor extends React.Component {
             history: updatedHistory,
             lastUpdateTime: currTime
         });
+    }
+
+    getHistory(clear = true) {
+        const output = {
+            start: this.state.startTime,
+            end: this.state.lastUpdateTime,
+            events: this.state.history
+        };
+
+        if (clear) {
+            this.setState({
+                startTime: +new Date(),
+                lastUpdateTime: +new Date(),
+                history: []
+            });
+        }
+
+        return output;
     }
 
     replay() {

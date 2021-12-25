@@ -8,7 +8,8 @@
 import Config
 
 config :comp6000,
-  ecto_repos: [Comp6000.Repo]
+  ecto_repos: [Comp6000.Repo],
+  storage_directory_path: "local-storage"
 
 # Configures the endpoint
 config :comp6000, Comp6000Web.Endpoint,

@@ -3,23 +3,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
-    --primary-text: #FFFFFF;
-    --secondary-text: #B9BBBE;
-    --tertiary-text: #72767D;
-
-    --primary-background: #36393F;
-    --secondary-background: #2F3136;
-    --tertiary-background: #202225;
-
     --primary-button: #5865F2;
     --primary-button-hover: #4752C4;
-    --secondary-button: #FFFFFF;
-    --tertiary-button: #23272A;
-    --tertiary-button-hover: #36433F;
 
     --link-colour: #00AFF4;
 
     --nearly-black: #23272A;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-text: #FFFFFF;
+        --secondary-text: #B9BBBE;
+        --tertiary-text: #72767D;
+
+        --primary-background: #36393F;
+        --secondary-background: #2F3136;
+        --tertiary-background: #202225;
+
+        --secondary-button: #FFFFFF;
+        --secondary-button-hover: #FFFFFF;
+        --secondary-button-text: var(--nearly-black);
+
+        --tertiary-button: #23272A;
+        --tertiary-button-hover: #36433F;
+        --tertiary-button-text: #FFFFFF;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --primary-text: var(--nearly-black);
+        --secondary-text: #6A7480;
+        --tertiary-text: #747F8D;
+
+        --primary-background: #FFFFFF;
+        --secondary-background: #F2F3F5;
+        --tertiary-background: #E3E5E8;
+
+        --secondary-button: #747F8D;
+        --secondary-button-hover: #5E6772;
+        --secondary-button-text: #FFFFFF;
+
+        --tertiary-button: #23272A;
+        --tertiary-button-hover: #36433F;
+        --tertiary-button-text: #FFFFFF;
+    }
 }
 
 * {

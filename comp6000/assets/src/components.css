@@ -13,7 +13,7 @@
 
 .button.primary {
     background-color: var(--primary-button);
-    color: var(--primary-text);
+    color: #FFFFFF;
 }
 
 .button.primary:hover {
@@ -22,16 +22,22 @@
 
 .button.secondary {
     background-color: var(--secondary-button);
-    color: var(--nearly-black);
+    color: var(--secondary-button-text);
 }
 
 .button.secondary:hover {
-    color: var(--primary-button);
+    background-color: var(--secondary-button-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+    .button.secondary:hover {
+        color: var(--primary-button);
+    }
 }
 
 .button.tertiary {
     background-color: var(--tertiary-button);
-    color: var(--primary-text);
+    color: var(--tertiary-button-text);
 }
 
 .button.tertiary:hover {
@@ -57,19 +63,30 @@ input, textarea, select {
 
 h1 {
     font-size: 48px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 h2 {
     font-size: 24px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 h3 {
     font-size: 16px;
     color: var(--secondary-text);
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 a {
     color: var(--link-colour);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 p {

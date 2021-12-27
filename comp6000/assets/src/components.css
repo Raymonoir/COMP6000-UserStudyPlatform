@@ -1,0 +1,78 @@
+.button {
+    padding: 10px;
+    border-radius: 10px;
+    border-style: none;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.button.primary {
+    background-color: var(--primary-button);
+    color: var(--primary-text);
+}
+
+.button.primary:hover {
+    background-color: var(--primary-button-hover);
+}
+
+.button.secondary {
+    background-color: var(--secondary-button);
+    color: var(--nearly-black);
+}
+
+.button.secondary:hover {
+    color: var(--primary-button);
+}
+
+.button.tertiary {
+    background-color: var(--tertiary-button);
+    color: var(--primary-text);
+}
+
+.button.tertiary:hover {
+    background-color: var(--tertiary-button-hover);
+}
+
+input::placeholder, textarea::placeholder, select::placeholder {
+    color: var(--tertiary-text);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+
+input, textarea, select {
+    background-color: var(--secondary-background);
+    border-radius: 3px;
+    border-width: 2px;
+    border-color: var(--nearly-black);
+    font-size: 16px;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 48px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 16px;
+    color: var(--secondary-text);
+}
+
+a {
+    color: var(--link-colour);
+}
+
+p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

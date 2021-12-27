@@ -27,15 +27,17 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div className="container-centered">
+            <div className="container secondary centered">
                 <h1>Login</h1>
                 {this.state.incorrect && <p>Incorrect username or password</p>}
                 <form onSubmit={this.login}>
                     <label>
-                        <p>Username/email</p>
+                        <p>Username</p>
                         <input
+                            className="full-width"
                             type="text"
                             name="username"
+                            placeholder="username"
                             value={this.state.username}
                             disabled={this.state.loading ? true : false}
                             onChange={this.handleChange} />
@@ -43,14 +45,16 @@ class Login extends React.Component {
                     <label>
                         <p>Password</p>
                         <input
+                            className="full-width"
                             type="password"
                             name="password"
+                            placeholder="password"
                             value={this.state.password}
                             disabled={this.state.loading ? true : false}
                             onChange={this.handleChange} />
                     </label>
                     <div>
-                        <button type="submit" disabled={this.state.loading ? true : false}>
+                        <button className="button primary block centered full-width" type="submit" disabled={this.state.loading ? true : false}>
                             Login
                         </button>
                     </div>

@@ -51,9 +51,14 @@
     }
 }
 
-* {
-    font-family: 'Roboto', sans-serif;
+* * {
+    font-family: "Roboto", sans-serif !important;
     color: var(--primary-text);
+}
+
+#ace-editor * {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
+        'source-code-pro', monospace !important;
 }
 
 body {
@@ -67,3 +72,6 @@ html {
 *, *:before, *:after {
     box-sizing: inherit;
 }
+
+
+@import 'aceStyle.css';

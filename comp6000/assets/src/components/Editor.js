@@ -1,7 +1,5 @@
 import AceEditor from 'react-ace-builds';
 import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow_night';
-import 'ace-builds/src-noconflict/theme-tomorrow';
 
 class Editor extends React.Component {
     constructor(props) {
@@ -41,7 +39,7 @@ class Editor extends React.Component {
             <div ref="ace">
                 <AceEditor
                     mode="javascript"
-                    theme={window.matchMedia("(prefers-color-scheme: dark)").matches ? "tomorrow_night" : "tomorrow"}
+                    className={window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow"}
                     setOptions={{ useWorker: false }}
                     value={this.state.value}
                     onChange={this.onChange}

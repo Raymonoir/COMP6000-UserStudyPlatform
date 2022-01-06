@@ -4,6 +4,13 @@ class Question extends React.Component {
         this.state = {
             value: props.value ? props.value : props.question.type == 'checkbox' ? [] : ''
         }
+        // Submit default values if nothing is changed
+        if (props.question.type == "dropdown") {
+            props.onAnswerChange(props.questionNum, props.question.options[0]);
+            this.state.value = props.question.options[0];
+        } else {
+            props.onAnswerChange(props.questionNum, this.state.value);
+        }
         this.handleChange = this.handleChange.bind(this);
     }
 

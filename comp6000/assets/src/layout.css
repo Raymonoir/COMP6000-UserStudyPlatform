@@ -1,0 +1,42 @@
+.container {
+    padding: 20px;
+    width: fit-content;
+    border-radius: 3px;
+}
+
+.container.primary {
+    background-color: var(--primary-background);
+}
+
+.container.secondary {
+    background-color: var(--secondary-background);
+}
+
+.container.tertiary {
+    background-color: var(--tertiary-background);
+}
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.block {
+    display: block;
+}
+
+.inline {
+    display: inline;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.flex {
+    display: flex;
+}

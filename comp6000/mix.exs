@@ -49,7 +49,8 @@ defmodule Comp6000.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:bcrypt_elixir, "~> 2.3"}
+      {:bcrypt_elixir, "~> 2.3"},
+      {:uuid, "~> 1.1"}
     ]
   end
 

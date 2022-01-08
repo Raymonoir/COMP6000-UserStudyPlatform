@@ -1,4 +1,4 @@
-defmodule COmp6000Web.EndToEnd.UsersTest do
+defmodule Comp6000Web.EndToEnd.UsersTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.Users
 

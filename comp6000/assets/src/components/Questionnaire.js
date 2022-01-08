@@ -24,6 +24,7 @@ class Questionnaire extends React.Component {
     render() {
         return (
             <div className="container primary centered">
+                <h1 className="centered-text">Questionnaire</h1>
                 {
                     this.props.questions.map((q, i) => {
                         return (

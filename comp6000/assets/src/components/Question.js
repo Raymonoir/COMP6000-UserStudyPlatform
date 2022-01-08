@@ -33,7 +33,7 @@ class Question extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="container">
                 <p>
                     <b>{this.props.questionNum}) </b>
                     {this.props.question.question}
@@ -50,12 +50,12 @@ class Question extends React.Component {
                     </select>}
 
                 {this.props.question.type == 'checkbox' &&
-                    <div>
+                    <div className="container secondary input-style">
                         {this.props.question.options.map((o, i) => {
                             return (
-                                <label key={i}>
-                                    {o}
+                                <label key={i} className="block">
                                     <input type="checkbox" value={o} onChange={this.handleChange} />
+                                    {o}
                                 </label>
                             )
                         })}

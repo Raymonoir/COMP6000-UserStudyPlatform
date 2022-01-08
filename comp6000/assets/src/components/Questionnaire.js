@@ -8,6 +8,7 @@ class Questionnaire extends React.Component {
         }
 
         this.onAnswerChange = this.onAnswerChange.bind(this);
+        this.submit = this.submit.bind(this);
     }
 
     onAnswerChange(i, v) {
@@ -16,21 +17,26 @@ class Questionnaire extends React.Component {
         this.setState({ answers: updatedAnswers });
     }
 
+    submit() {
+        console.log(this.state.answers);
+    }
+
     render() {
         return (
-            <div>
+            <div className="container primary centered">
                 {
                     this.props.questions.map((q, i) => {
                         return (
                             <Question
                                 key={i}
                                 question={q}
-                                questionNum={i}
+                                questionNum={i+1}
                                 onAnswerChange={this.onAnswerChange}
                             />
                         )
                     })
                 }
+                <button onClick={this.submit} className="button primary right" >Submit</button>
             </div>
         );
     }

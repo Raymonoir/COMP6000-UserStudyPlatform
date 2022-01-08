@@ -2,6 +2,7 @@
     padding: 20px;
     width: fit-content;
     border-radius: 3px;
+    overflow: hidden;
 }
 
 .container.primary {
@@ -19,6 +20,10 @@
 .centered {
     margin-left: auto;
     margin-right: auto;
+}
+
+.right {
+    float: right;
 }
 
 .full-width {

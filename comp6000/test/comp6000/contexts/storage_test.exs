@@ -31,7 +31,7 @@ defmodule Comp6000.Contexts.StorageTest do
   # An exceedingly nasty function to delete all files and directories within local-storage once tests are complete
   defp clear_local_storage() do
     Enum.map(File.ls!("#{@storage_path}"), fn study_dir ->
-      if File.dir?(study_dir) do
+      if File.dir?("#{@storage_path}/#{study_dir}") do
         Enum.map(File.ls!("#{@storage_path}/#{study_dir}"), fn task_dir ->
           Enum.map(File.ls!("#{@storage_path}/#{study_dir}/#{task_dir}"), fn file ->
             File.rm("#{@storage_path}/#{study_dir}/#{task_dir}/#{file}")

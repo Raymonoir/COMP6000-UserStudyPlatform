@@ -8,7 +8,11 @@
 import Config
 
 config :comp6000,
-  ecto_repos: [Comp6000.Repo]
+  ecto_repos: [Comp6000.Repo],
+  storage_directory_path: "local-storage",
+  storage_file_extension: "json",
+  completed_file_extension: "gzip",
+  chunk_delimiter: ","
 
 # Configures the endpoint
 config :comp6000, Comp6000Web.Endpoint,

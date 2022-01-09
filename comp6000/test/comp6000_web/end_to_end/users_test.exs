@@ -2,6 +2,8 @@ defmodule Comp6000Web.EndToEnd.UsersTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.Users
 
+  # Change these tests, as currently they are very similar to users_controller
+  # Maybe do practise runs ie logged out user, then logs in, then checks logged in etc
   describe "/users/create route" do
     test "Creating a user and retrieving the created user from the database", %{conn: conn} do
       conn =

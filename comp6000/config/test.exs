@@ -1,5 +1,7 @@
 import Config
 
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -28,3 +30,9 @@ config :logger, level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+if System.get_env("GITHUB_ACTIONS") do
+  config :comp6000, Comp6000.Repo,
+    username: "postgres",
+    password: "postgresGHA"
+end

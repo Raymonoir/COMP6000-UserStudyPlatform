@@ -1,29 +1,29 @@
 import App from './components/App';
 import A from './components/A';
 import B from './components/B';
+import Login from './components/Login';
+import RequiresLogin from './components/RequiresLogin';
 import reportWebVitals from './reportWebVitals';
 
-
-/* ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-); */
 ReactDOM.render(
     <BrowserRouter basename="/app">
         <Route path="/">
             <Route exact path="/">
                 <App />
             </Route>
+            <Route path="/login">
+                <Login />
+            </Route>
             <Route path="/a">
-                <A />
+                <RequiresLogin>
+                    <A />
+                </RequiresLogin>
             </Route>
             <Route path="/b">
                 <B />
             </Route>
         </Route>
-    </BrowserRouter>,
+    </BrowserRouter >,
     document.getElementById('root')
 );
 

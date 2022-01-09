@@ -12,18 +12,29 @@ defmodule Comp6000Web.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(:fetch_session)
+    plug(Comp6000Web.Plugs.Session)
   end
 
-  scope "/", Comp6000Web do
+  scope "/app", Comp6000Web do
     pipe_through(:browser)
 
-    get("/app/*path", PageController, :index)
+    get("/*path", PageController, :index)
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Comp6000Web do
-  #   pipe_through :api
-  # end
+  scope "/api", Comp6000Web do
+    pipe_through(:api)
+
+    post("/users/logout", UsersController, :logout)
+    post("/users/create", UsersController, :create)
+    post("/users/login", UsersController, :login)
+    get("/users/loggedin", UsersController, :logged_in)
+
+    post("/study/create", StudyController, :create)
+
+    get("/*path", PageController, :error)
+    post("/*path", PageController, :error)
+  end
 
   # Enables LiveDashboard only for development
   #

@@ -35,6 +35,7 @@ defmodule Comp6000Web.UsersController do
   defp log_in_user(conn, user) do
     conn
     |> put_session(:username, user.username)
+    |> put_session(:current_participant, nil)
     |> configure_session(renew: true)
   end
 end

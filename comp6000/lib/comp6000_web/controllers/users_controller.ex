@@ -38,4 +38,11 @@ defmodule Comp6000Web.UsersController do
     |> put_session(:current_participant, nil)
     |> configure_session(renew: true)
   end
+
+  def get_studies(conn, params) do
+    # current_user = get_session(conn, :current_user)
+
+    # Comp6000.Contexts.studies.get
+    conn
+  end
 end

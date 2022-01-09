@@ -29,8 +29,12 @@ defmodule Comp6000Web.Router do
     post("/users/create", UsersController, :create)
     post("/users/login", UsersController, :login)
     get("/users/loggedin", UsersController, :logged_in)
+    get("/users/get-studies", UsersController, :get_studies)
 
     post("/study/create", StudyController, :create)
+    post("/study/:study_id/background/:uuid/submit", StudyController, :background_submit)
+    post("/study/:study_id/task/:task_id/:uuid/submit", StudyController, :task_submit)
+    get("/study/:study_id/get_tasks", StudyController, :get_tasks)
 
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

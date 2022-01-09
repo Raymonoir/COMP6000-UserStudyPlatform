@@ -13,4 +13,11 @@ defmodule Comp6000Web.StudyController do
         json(conn, %{error: Helpers.get_changeset_errors(changeset)})
     end
   end
+
+  def background_submit(conn, %{"id" => id, "uuid" => uuid, "body" => body} = _params) do
+    # Create and save answers related to tasks that will be the background check answers
+  end
+
+  def get_tasks(conn, %{"study_id" => study_id} = _params) do
+  end
 end

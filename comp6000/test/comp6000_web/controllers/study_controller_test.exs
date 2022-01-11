@@ -1,7 +1,6 @@
 defmodule Comp6000Web.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Studies, Users}
-  alias Comp6000.TestHelpers
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
 
@@ -13,8 +12,6 @@ defmodule Comp6000Web.StudyControllerTest do
       firstname: "Raymond",
       lastname: "Ward"
     })
-
-    on_exit(&TestHelpers.clear_local_storage/0)
 
     :ok
   end

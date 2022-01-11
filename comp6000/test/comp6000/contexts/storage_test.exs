@@ -1,7 +1,6 @@
 defmodule Comp6000.Contexts.StorageTest do
   use Comp6000.DataCase, async: true
   alias Comp6000.Contexts.{Storage, Studies, Users, Tasks, Results}
-  alias Comp6000.TestHelpers
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
   @file_extension Application.get_env(:comp6000, :storage_file_extension)
@@ -23,8 +22,6 @@ defmodule Comp6000.Contexts.StorageTest do
         unique_participant_id: "567f56d67s67as76d7s8",
         content: "3"
       })
-
-    on_exit(&TestHelpers.clear_local_storage/0)
 
     %{study: study, task: task, result: result}
   end

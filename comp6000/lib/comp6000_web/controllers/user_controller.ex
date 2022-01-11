@@ -1,4 +1,4 @@
-defmodule Comp6000Web.UsersController do
+defmodule Comp6000Web.Users.UserController do
   use Comp6000Web, :controller
   import Plug.Conn
 
@@ -39,10 +39,13 @@ defmodule Comp6000Web.UsersController do
     |> configure_session(renew: true)
   end
 
-  def get_studies(conn, params) do
-    # current_user = get_session(conn, :current_user)
+  def get_studies(conn, _params) do
+    current_user = get_session(conn, :current_user)
 
-    # Comp6000.Contexts.studies.get
-    conn
+    if current_user == nil do
+      json(conn, %{user: "no one logged in"})
+    else
+      json(conn, user_studies: Comp6000.Contexts.Studies.get_studies_for_user(current_user))
+    end
   end
 end

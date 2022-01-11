@@ -1,6 +1,7 @@
 defmodule Comp6000.Contexts.Studies do
+  import Ecto.Query
   alias Comp6000.Repo
-  alias Comp6000.Schemas.Study
+  alias Comp6000.Schemas.{Study, User}
 
   def get_all_studies() do
     Repo.all(Study)
@@ -24,5 +25,11 @@ defmodule Comp6000.Contexts.Studies do
 
   def delete_study(%Study{} = study) do
     Repo.delete(study)
+  end
+
+  def get_studies_for_user(%User{} = user) do
+    query = from(s in Study, where: s.username == ^user.username)
+
+    Repo.all(query)
   end
 end

@@ -1,6 +1,7 @@
 defmodule Comp6000.Contexts.StorageTest do
   use Comp6000.DataCase, async: true
   alias Comp6000.Contexts.{Storage, Studies, Users, Tasks, Results}
+  alias Comp6000.TestHelpers
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
   @file_extension Application.get_env(:comp6000, :storage_file_extension)
@@ -23,26 +24,9 @@ defmodule Comp6000.Contexts.StorageTest do
         content: "3"
       })
 
-    on_exit(&clear_local_storage/0)
+    on_exit(&TestHelpers.clear_local_storage/0)
 
     %{study: study, task: task, result: result}
-  end
-
-  # An exceedingly nasty function to delete all files and directories within local-storage once tests are complete
-  defp clear_local_storage() do
-    Enum.map(File.ls!("#{@storage_path}"), fn study_dir ->
-      if File.dir?("#{@storage_path}/#{study_dir}") do
-        Enum.map(File.ls!("#{@storage_path}/#{study_dir}"), fn task_dir ->
-          Enum.map(File.ls!("#{@storage_path}/#{study_dir}/#{task_dir}"), fn file ->
-            File.rm("#{@storage_path}/#{study_dir}/#{task_dir}/#{file}")
-          end)
-
-          File.rmdir!("#{@storage_path}/#{study_dir}/#{task_dir}")
-        end)
-
-        File.rmdir!("#{@storage_path}/#{study_dir}")
-      end
-    end)
   end
 
   describe "create_study_directory/1" do

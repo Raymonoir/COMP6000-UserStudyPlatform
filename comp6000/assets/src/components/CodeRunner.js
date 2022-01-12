@@ -16,7 +16,7 @@ class CodeRunner extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ code: this.props.code, run: this.props.run })
+            body: JSON.stringify({ code: this.props.code, run: this.props.run, args: this.props.args })
         })
             .then(res => res.json())
             .then(data => {

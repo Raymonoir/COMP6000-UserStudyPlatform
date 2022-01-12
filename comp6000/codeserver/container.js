@@ -36,7 +36,7 @@ process.on('message', msg => {
     try {
         userCode = msg.code + '\nmodule.exports = ' + msg.run;
         const container = vm.run(userCode);
-        output = container('5');
+        output = container(...msg.args);
     } catch (e) {
         console.error(e.stack);
         error = e.message;

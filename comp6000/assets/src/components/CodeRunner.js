@@ -39,24 +39,32 @@ class CodeRunner extends React.Component {
 
     render() {
         if (!this.state.ran) {
-            return <div>Loading...</div>
+            return <div className="container primary">Loading...</div>
         }
 
         return (
-            <div>
+            <div className="container primary">
                 <div>
+                    <h3>Console output</h3>
                     {
                         this.state.result.logs.map((line, i) => {
-                            return <p key={i}>{line.data}</p>
+                            return (
+                                <div key={i} className="console-line">
+                                    <span className={"console-line type " + line.type}>{line.type}: </span>
+                                    <span className={"console-line data"}>{line.data}</span>
+                                </div>
+                            )
                         })
                     }
                 </div>
+                <hr />
                 <div>
+                    <h3>Result</h3>
                     {!this.state.result.error &&
-                        <p>output: {this.state.result.output}</p>}
+                        <p className="code-output">output: {this.state.result.output}</p>}
 
                     {this.state.result.error &&
-                        <p>error: {this.state.result.error}</p>}
+                        <p className="code-output error">error: {this.state.result.error}</p>}
                 </div>
             </div>
         );

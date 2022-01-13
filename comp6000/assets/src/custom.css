@@ -1,0 +1,34 @@
+/* START CodeRunner component styling */
+.console-line, .code-output {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-family:
+        "Monaco",
+        "Menlo",
+        "Ubuntu Mono",
+        "Consolas",
+        "source-code-pro",
+        monospace !important;
+}
+
+.code-output {
+    padding: 2px;
+}
+
+.code-output.error {
+    background-color: #FFF0F0;
+}
+
+.console-line>.type.log {
+    color: blue;
+}
+
+.console-line>.type.warn {
+    color: orange;
+}
+
+.console-line>.type.error {
+    color: red;
+}
+
+/* END CodeRunner component styling */

@@ -4,7 +4,7 @@ const vm = new NodeVM({
     console: 'redirect',
 });
 
-vm.on('console.log', data => {
+vm.on('console.log', (...data) => {
     console.log('vm log data: ', data);
     logs.push({
         type: 'log',
@@ -12,7 +12,7 @@ vm.on('console.log', data => {
     });
 });
 
-vm.on('console.warn', data => {
+vm.on('console.warn', (...data) => {
     console.log('vm warn data: ', data);
     logs.push({
         type: 'warn',
@@ -20,7 +20,7 @@ vm.on('console.warn', data => {
     });
 });
 
-vm.on('console.error', data => {
+vm.on('console.error', (...data) => {
     console.log('vm error data: ', data);
     logs.push({
         type: 'error',

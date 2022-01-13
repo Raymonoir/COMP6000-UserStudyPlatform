@@ -2,69 +2,30 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const cors = require('cors');
-const { NodeVM } = require('vm2');
+const { fork } = require('child_process');
 const port = 3000;
 const app = express();
+
+const maxExecutionTime = 2000;
 
 app.use(cors());
 
 app.post('/run', jsonParser, (req, res) => {
-    console.log('------');
-    console.log(req.body);
+    const vm = fork('container.js');
 
-    const vm = new NodeVM({
-        console: 'redirect',
+    const timer = setTimeout(() => {
+        vm.kill();
+        console.log("killed the vm");
+        res.send({error: 'timeout'});
+    }, maxExecutionTime);
+
+    vm.on('message', msg => {
+        clearTimeout(timer);
+        console.log(msg);
+        res.send(msg);
     });
 
-    let logs = [];
-
-    vm.on('console.log', data => {
-        console.log('vm log data: ', data);
-        logs.push({
-            type: 'log',
-            data: data
-        });
-    });
-
-    vm.on('console.warn', data => {
-        console.log('vm warn data: ', data);
-        logs.push({
-            type: 'warn',
-            data: data
-        });
-    });
-
-    vm.on('console.error', data => {
-        console.log('vm error data: ', data);
-        logs.push({
-            type: 'error',
-            data: data
-        });
-    });
-
-    let output;
-    let error;
-    try {
-        let userCode = req.body.code;
-        userCode += '\nmodule.exports = ' + req.body.run;
-        let test = vm.run(userCode);
-        output = test('5');
-        console.log(output);
-    } catch (e) {
-        console.error(e.stack);
-        error = e.message;
-    }
-
-    console.log('------');
-
-    let result = {
-        logs: logs,
-        output: output
-    };
-    if (error) {
-        result.error = error;
-    }
-    res.send(result);
+    vm.send(req.body);
 });
 
 app.listen(port, () => {

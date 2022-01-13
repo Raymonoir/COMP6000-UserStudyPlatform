@@ -16,7 +16,7 @@ class CodeRunner extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ code: this.props.code, run: this.props.run })
+            body: JSON.stringify({ code: this.props.code, run: this.props.run, args: this.props.args })
         })
             .then(res => res.json())
             .then(data => {
@@ -49,10 +49,12 @@ class CodeRunner extends React.Component {
                     {
                         this.state.result.logs.map((line, i) => {
                             return (
-                                <div key={i} className="console-line">
+                                <p key={i} className="console-line">
                                     <span className={"console-line type " + line.type}>{line.type}: </span>
-                                    <span className={"console-line data"}>{line.data}</span>
-                                </div>
+                                    {line.data.map((part, j) => {
+                                        return <span key={j} className="console-line data">{part + " "}</span>
+                                    })}
+                                </p>
                             )
                         })
                     }

@@ -46,12 +46,12 @@ class CodeRunner extends React.Component {
             <div>
                 <div>
                     {
-                        this.state.result.logs.map((line) => {
+                        this.state.result.logs.map((line,i) => {
                             console.log(line.data);
                             return(
-                                <p>
-                                {line.data.map((dat) => {
-                                    return <span>{dat + " "}</span>
+                                <p key={i}>
+                                {line.data.map((dat,j) => {
+                                    return <span key={j}>{dat + " "}</span>
                                     
                                     console.log(dat);
                                 })}

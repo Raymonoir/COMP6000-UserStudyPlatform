@@ -74,7 +74,7 @@ defmodule Comp6000.Contexts.Storage do
     path = "#{@storage_path}/#{study_id}/#{task_id}"
 
     if File.exists?(path) do
-      case File.write("#{path}/#{result.unique_participant_id}.#{@file_extension}", "") do
+      case File.write("#{path}/#{result.unique_participant_id}.#{@file_extension}", "[") do
         :ok ->
           :ok
 
@@ -112,7 +112,7 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?("#{path_no_ext}.#{@file_extension}") do
       {:ok, content} = File.read("#{path_no_ext}.#{@file_extension}")
-      gzipped_content = :zlib.gzip(content)
+      gzipped_content = :zlib.gzip("#{content}]")
       File.write("#{path_no_ext}.#{@file_extension}", gzipped_content)
 
       :ok =

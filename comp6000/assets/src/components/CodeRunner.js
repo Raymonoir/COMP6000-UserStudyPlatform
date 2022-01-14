@@ -2,11 +2,30 @@ class CodeRunner extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            ran: false
+            loading: false
         }
+
+        this.runCode = this.runCode.bind(this);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.code && this.props != prevProps) {
+            this.runCode();
+        }
+
     }
 
     componentDidMount() {
+        if (this.props.code) {
+            this.runCode();
+        }
+    }
+
+    componentWillUnmount() {
+        this.state.abortController.abort();
+    }
+
+    runCode() {
         const abort = new AbortController();
 
         const request = fetch('http://localhost:3000/run', {
@@ -20,33 +39,25 @@ class CodeRunner extends React.Component {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 this.setState({
-                    ran: true,
+                    loading: false,
                     result: data
                 });
             });
 
         this.setState({
             request: request,
-            abortController: abort
+            abortController: abort,
+            loading: true
         });
     }
 
-    componentWillUnmount() {
-        this.state.abortController.abort();
-    }
-
     render() {
-        if (!this.state.ran) {
-            return <div className="container primary">Loading...</div>
-        }
-
         return (
-            <div className="container primary">
+            <div className={"container primary " + this.props.className}>
                 <div>
                     <h3>Console output</h3>
-                    {
+                    {this.state.result &&
                         this.state.result.logs.map((line, i) => {
                             return (
                                 <p key={i} className="console-line">
@@ -58,15 +69,20 @@ class CodeRunner extends React.Component {
                             )
                         })
                     }
+                    {!this.state.result &&
+                        <p>...</p>}
                 </div>
                 <hr />
                 <div>
                     <h3>Result</h3>
-                    {!this.state.result.error &&
+                    {this.state.result && !this.state.result.error &&
                         <p className="code-output">output: {this.state.result.output}</p>}
 
-                    {this.state.result.error &&
+                    {this.state.result && this.state.result.error &&
                         <p className="code-output error">error: {this.state.result.error}</p>}
+
+                    {!this.state.result &&
+                        <p>...</p>}
                 </div>
             </div>
         );

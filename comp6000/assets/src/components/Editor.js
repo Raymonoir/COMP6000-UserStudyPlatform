@@ -1,5 +1,6 @@
 import AceEditor from 'react-ace-builds';
 import 'ace-builds/src-noconflict/mode-javascript';
+import CodeRunner from './CodeRunner';
 
 class Editor extends React.Component {
     constructor(props) {
@@ -9,9 +10,13 @@ class Editor extends React.Component {
             history: [],
             startTime: +new Date(),
             lastUpdateTime: +new Date(),
-            editor: null
+            editor: null,
+            lastRanCode: '',
+            args: [],
+            function: ''
         }
 
+        this.runCode = this.runCode.bind(this);
         this.onChange = this.onChange.bind(this);
         this.replay = this.replay.bind(this);
         this.aceOnLoad = this.aceOnLoad.bind(this);
@@ -36,17 +41,24 @@ class Editor extends React.Component {
 
     render() {
         return (
-            <div ref="ace">
-                <AceEditor
-                    mode="javascript"
-                    className={window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow"}
-                    setOptions={{ useWorker: false }}
-                    value={this.state.value}
-                    onChange={this.onChange}
-                    onLoad={this.aceOnLoad}
-                />
-                <button onClick={this.replay}>replay</button>
-                <button onClick={this.getHistory}>get history</button>
+            <div>
+                <button className="button primary" onClick={this.runCode}>run</button>
+                <div className="editor-container">
+                    <AceEditor
+                        mode="javascript"
+                        className={"editor-on-page " + (window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow")}
+                        setOptions={{ useWorker: false }}
+                        value={this.state.value}
+                        onChange={this.onChange}
+                        onLoad={this.aceOnLoad}
+                    />
+                    <CodeRunner
+                        className="editor-code-output"
+                        code={this.state.lastRanCode}
+                        run={this.state.function}
+                        args={this.state.args}
+                    />
+                </div>
             </div >
         );
     }
@@ -125,6 +137,11 @@ class Editor extends React.Component {
         };
 
         doNextStep(history.shift());
+    }
+
+    runCode() {
+        // Updating this will trigger the CodeRunner to run the code
+        this.setState({ lastRanCode: this.state.value });
     }
 }
 

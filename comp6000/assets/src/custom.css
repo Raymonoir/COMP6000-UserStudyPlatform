@@ -32,3 +32,23 @@
 }
 
 /* END CodeRunner component styling */
+
+/* START Editor component styling */
+.editor-container {
+    display: flex;
+    width: 100%;
+    flex-flow: row wrap;
+    gap: 10px;
+}
+
+.editor-on-page {
+    min-width: 75%;
+    flex-grow: 1;
+}
+
+.editor-code-output {
+    min-width: 350px;
+    flex-grow: 1;
+}
+
+/* END Editor component styling */

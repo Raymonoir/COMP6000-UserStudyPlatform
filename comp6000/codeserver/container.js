@@ -34,9 +34,20 @@ let error;
 
 process.on('message', msg => {
     try {
-        userCode = msg.code + '\nmodule.exports = ' + msg.run;
+        if (msg.run) {
+            userCode = msg.code + '\nmodule.exports = ' + msg.run;
+        } else {
+            userCode = msg.code;
+        }
+
         const container = vm.run(userCode);
-        output = container(...msg.args);
+
+        if (msg.args && msg.run) {
+            output = container(...msg.args);
+        } else if (msg.run) {
+            output = container();
+        }
+
     } catch (e) {
         console.error(e.stack);
         error = e.message;

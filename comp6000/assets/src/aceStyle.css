@@ -1,0 +1,213 @@
+.ace-tomorrow .ace_gutter {
+    background: #f6f6f6;
+    color: #4D4D4C !important
+}
+
+.ace-tomorrow .ace_print-margin {
+    width: 1px;
+    background: #f6f6f6
+}
+
+.ace-tomorrow {
+    background-color: #FFFFFF;
+    color: #4D4D4C
+}
+
+.ace-tomorrow .ace_cursor {
+    color: #AEAFAD
+}
+
+.ace-tomorrow .ace_marker-layer .ace_selection {
+    background: #D6D6D6
+}
+
+.ace-tomorrow.ace_multiselect .ace_selection.ace_start {
+    box-shadow: 0 0 3px 0px #FFFFFF;
+}
+
+.ace-tomorrow .ace_marker-layer .ace_step {
+    background: rgb(255, 255, 0)
+}
+
+.ace-tomorrow .ace_marker-layer .ace_bracket {
+    margin: -1px 0 0 -1px;
+    border: 1px solid #D1D1D1
+}
+
+.ace-tomorrow .ace_marker-layer .ace_active-line {
+    background: #EFEFEF
+}
+
+.ace-tomorrow .ace_gutter-active-line {
+    background-color: #dcdcdc
+}
+
+.ace-tomorrow .ace_marker-layer .ace_selected-word {
+    border: 1px solid #D6D6D6
+}
+
+.ace-tomorrow .ace_invisible {
+    color: #D1D1D1
+}
+
+.ace-tomorrow .ace_keyword, .ace-tomorrow .ace_meta, .ace-tomorrow .ace_storage, .ace-tomorrow .ace_storage.ace_type, .ace-tomorrow .ace_support.ace_type {
+    color: #8959A8
+}
+
+.ace-tomorrow .ace_keyword.ace_operator {
+    color: #3E999F
+}
+
+.ace-tomorrow .ace_constant.ace_character, .ace-tomorrow .ace_constant.ace_language, .ace-tomorrow .ace_constant.ace_numeric, .ace-tomorrow .ace_keyword.ace_other.ace_unit, .ace-tomorrow .ace_support.ace_constant, .ace-tomorrow .ace_variable.ace_parameter {
+    color: #F5871F
+}
+
+.ace-tomorrow .ace_constant.ace_other {
+    color: #666969
+}
+
+.ace-tomorrow .ace_invalid {
+    color: #FFFFFF;
+    background-color: #C82829
+}
+
+.ace-tomorrow .ace_invalid.ace_deprecated {
+    color: #FFFFFF;
+    background-color: #8959A8
+}
+
+.ace-tomorrow .ace_fold {
+    background-color: #4271AE;
+    border-color: #4D4D4C
+}
+
+.ace-tomorrow .ace_entity.ace_name.ace_function, .ace-tomorrow .ace_support.ace_function, .ace-tomorrow .ace_variable {
+    color: #4271AE
+}
+
+.ace-tomorrow .ace_support.ace_class, .ace-tomorrow .ace_support.ace_type {
+    color: #C99E00
+}
+
+.ace-tomorrow .ace_heading, .ace-tomorrow .ace_markup.ace_heading, .ace-tomorrow .ace_string {
+    color: #718C00
+}
+
+.ace-tomorrow .ace_entity.ace_name.ace_tag, .ace-tomorrow .ace_entity.ace_other.ace_attribute-name, .ace-tomorrow .ace_meta.ace_tag, .ace-tomorrow .ace_string.ace_regexp, .ace-tomorrow .ace_variable {
+    color: #C82829
+}
+
+.ace-tomorrow .ace_comment {
+    color: #8E908C
+}
+
+.ace-tomorrow .ace_indent-guide {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bdu3f/BwAlfgctduB85QAAAABJRU5ErkJggg==) right repeat-y
+}
+
+.ace-tomorrow-night .ace_gutter {
+    background: #25282c;
+    color: #C5C8C6 !important
+}
+
+.ace-tomorrow-night .ace_print-margin {
+    width: 1px;
+    background: #25282c
+}
+
+.ace-tomorrow-night {
+    background-color: #1D1F21;
+    color: #C5C8C6
+}
+
+.ace-tomorrow-night .ace_cursor {
+    color: #AEAFAD
+}
+
+.ace-tomorrow-night .ace_marker-layer .ace_selection {
+    background: #373B41
+}
+
+.ace-tomorrow-night.ace_multiselect .ace_selection.ace_start {
+    box-shadow: 0 0 3px 0px #1D1F21;
+}
+
+.ace-tomorrow-night .ace_marker-layer .ace_step {
+    background: rgb(102, 82, 0)
+}
+
+.ace-tomorrow-night .ace_marker-layer .ace_bracket {
+    margin: -1px 0 0 -1px;
+    border: 1px solid #4B4E55
+}
+
+.ace-tomorrow-night .ace_marker-layer .ace_active-line {
+    background: #282A2E
+}
+
+.ace-tomorrow-night .ace_gutter-active-line {
+    background-color: #282A2E
+}
+
+.ace-tomorrow-night .ace_marker-layer .ace_selected-word {
+    border: 1px solid #373B41
+}
+
+.ace-tomorrow-night .ace_invisible {
+    color: #4B4E55
+}
+
+.ace-tomorrow-night .ace_keyword, .ace-tomorrow-night .ace_meta, .ace-tomorrow-night .ace_storage, .ace-tomorrow-night .ace_storage.ace_type, .ace-tomorrow-night .ace_support.ace_type {
+    color: #B294BB
+}
+
+.ace-tomorrow-night .ace_keyword.ace_operator {
+    color: #8ABEB7
+}
+
+.ace-tomorrow-night .ace_constant.ace_character, .ace-tomorrow-night .ace_constant.ace_language, .ace-tomorrow-night .ace_constant.ace_numeric, .ace-tomorrow-night .ace_keyword.ace_other.ace_unit, .ace-tomorrow-night .ace_support.ace_constant, .ace-tomorrow-night .ace_variable.ace_parameter {
+    color: #DE935F
+}
+
+.ace-tomorrow-night .ace_constant.ace_other {
+    color: #CED1CF
+}
+
+.ace-tomorrow-night .ace_invalid {
+    color: #CED2CF;
+    background-color: #DF5F5F
+}
+
+.ace-tomorrow-night .ace_invalid.ace_deprecated {
+    color: #CED2CF;
+    background-color: #B798BF
+}
+
+.ace-tomorrow-night .ace_fold {
+    background-color: #81A2BE;
+    border-color: #C5C8C6
+}
+
+.ace-tomorrow-night .ace_entity.ace_name.ace_function, .ace-tomorrow-night .ace_support.ace_function, .ace-tomorrow-night .ace_variable {
+    color: #81A2BE
+}
+
+.ace-tomorrow-night .ace_support.ace_class, .ace-tomorrow-night .ace_support.ace_type {
+    color: #F0C674
+}
+
+.ace-tomorrow-night .ace_heading, .ace-tomorrow-night .ace_markup.ace_heading, .ace-tomorrow-night .ace_string {
+    color: #B5BD68
+}
+
+.ace-tomorrow-night .ace_entity.ace_name.ace_tag, .ace-tomorrow-night .ace_entity.ace_other.ace_attribute-name, .ace-tomorrow-night .ace_meta.ace_tag, .ace-tomorrow-night .ace_string.ace_regexp, .ace-tomorrow-night .ace_variable {
+    color: #CC6666
+}
+
+.ace-tomorrow-night .ace_comment {
+    color: #969896
+}
+
+.ace-tomorrow-night .ace_indent-guide {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHB3d/8PAAOIAdULw8qMAAAAAElFTkSuQmCC) right repeat-y
+}

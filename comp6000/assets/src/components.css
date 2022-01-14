@@ -1,0 +1,108 @@
+.button {
+    padding: 10px;
+    border-radius: 10px;
+    border-style: none;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.button.primary {
+    background-color: var(--primary-button);
+    color: #FFFFFF;
+}
+
+.button.primary:hover {
+    background-color: var(--primary-button-hover);
+}
+
+.button.secondary {
+    background-color: var(--secondary-button);
+    color: var(--secondary-button-text);
+}
+
+.button.secondary:hover {
+    background-color: var(--secondary-button-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+    .button.secondary:hover {
+        color: var(--primary-button);
+    }
+}
+
+.button.tertiary {
+    background-color: var(--tertiary-button);
+    color: var(--tertiary-button-text);
+}
+
+.button.tertiary:hover {
+    background-color: var(--tertiary-button-hover);
+}
+
+input::placeholder, textarea::placeholder, select::placeholder {
+    color: var(--tertiary-text);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+
+input, textarea, select {
+    background-color: var(--secondary-background);
+    border-radius: 3px;
+    border-width: 2px;
+    border-color: var(--nearly-black);
+    font-size: 16px;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 48px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: 16px;
+    color: var(--secondary-text);
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+a {
+    color: var(--link-colour);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+hr {
+    display: block;
+    border-style: none;
+    background-color: var(--nearly-black);
+    height: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+    hr {
+        background-color: white;
+    }
+}

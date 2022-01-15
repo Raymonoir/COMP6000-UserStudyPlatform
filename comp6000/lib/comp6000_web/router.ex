@@ -24,7 +24,7 @@ defmodule Comp6000Web.Router do
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
-    scope "/users", Users do
+    scope "/users", User do
       get("/logout", UserController, :logout)
       get("/loggedin", UserController, :logged_in)
       get("/get-studies", UserController, :get_studies)
@@ -42,7 +42,7 @@ defmodule Comp6000Web.Router do
       post("/:study_id/task/:id/answer/create", AnswerController, :create)
 
       post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
-      post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :submit)
+      post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
 
       post(
         "/:study_id/task/:task_id/:uuid/code/append",

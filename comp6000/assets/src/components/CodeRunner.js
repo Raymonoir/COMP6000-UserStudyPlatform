@@ -53,11 +53,26 @@ class CodeRunner extends React.Component {
     }
 
     render() {
+        let result = <p>...</p>;
+        if (this.state.result) {
+            if (this.state.result.error) {
+                if (this.state.result.error == 'timeout') {
+                    result = <p className="code-output error">Your code took too long to run</p>
+                } else {
+                    result = <p className="code-output error">An error occured when attempting to run your code</p>
+                }
+            } else if (this.state.result.userCodeError) {
+                result = <p className="code-output error">error: {this.state.result.userCodeError}</p>
+            } else {
+                result = <p className="code-output">output: {this.state.result.output}</p>
+            }
+        }
+
         return (
             <div className={"container primary " + this.props.className}>
                 <div>
                     <h3>Console output</h3>
-                    {this.state.result &&
+                    {this.state.result && this.state.result.logs &&
                         this.state.result.logs.map((line, i) => {
                             return (
                                 <p key={i} className="console-line">
@@ -75,14 +90,7 @@ class CodeRunner extends React.Component {
                 <hr />
                 <div>
                     <h3>Result</h3>
-                    {this.state.result && !this.state.result.error &&
-                        <p className="code-output">output: {this.state.result.output}</p>}
-
-                    {this.state.result && this.state.result.error &&
-                        <p className="code-output error">error: {this.state.result.error}</p>}
-
-                    {!this.state.result &&
-                        <p>...</p>}
+                    {result}
                 </div>
             </div>
         );

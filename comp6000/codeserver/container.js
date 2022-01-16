@@ -58,7 +58,7 @@ process.on('message', msg => {
         output: output
     };
     if (error) {
-        result.error = error;
+        result.userCodeError = error;
     }
     process.send(result);
 })

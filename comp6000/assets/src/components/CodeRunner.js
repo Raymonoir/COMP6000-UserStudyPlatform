@@ -53,18 +53,18 @@ class CodeRunner extends React.Component {
     }
 
     render() {
-        let result = <p>...</p>;
+        let result = <p data-cy="code-output">...</p>;
         if (this.state.result) {
             if (this.state.result.error) {
                 if (this.state.result.error == 'timeout') {
-                    result = <p className="code-output error">Your code took too long to run</p>
+                    result = <p className="code-output error" data-cy="code-output">Your code took too long to run</p>
                 } else {
-                    result = <p className="code-output error">An error occured when attempting to run your code</p>
+                    result = <p className="code-output error" data-cy="code-output">An error occured when attempting to run your code</p>
                 }
             } else if (this.state.result.userCodeError) {
-                result = <p className="code-output error">error: {this.state.result.userCodeError}</p>
+                result = <p className="code-output error" data-cy="code-output">error: {this.state.result.userCodeError}</p>
             } else {
-                result = <p className="code-output">output: {this.state.result.output}</p>
+                result = <p className="code-output" data-cy="code-output">output: {this.state.result.output}</p>
             }
         }
 
@@ -75,7 +75,7 @@ class CodeRunner extends React.Component {
                     {this.state.result && this.state.result.logs &&
                         this.state.result.logs.map((line, i) => {
                             return (
-                                <p key={i} className="console-line">
+                                <p key={i} className="console-line" data-cy="console-line">
                                     <span className={"console-line type " + line.type}>{line.type}: </span>
                                     {line.data.map((part, j) => {
                                         return <span key={j} className="console-line data">{part + " "}</span>

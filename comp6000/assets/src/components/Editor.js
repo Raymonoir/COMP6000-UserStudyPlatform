@@ -42,7 +42,7 @@ class Editor extends React.Component {
     render() {
         return (
             <div>
-                <button className="button primary" onClick={this.runCode}>run</button>
+                <button className="button primary" onClick={this.runCode} data-cy="run">run</button>
                 <div className="editor-container">
                     <AceEditor
                         mode="javascript"

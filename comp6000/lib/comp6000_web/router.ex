@@ -39,19 +39,19 @@ defmodule Comp6000Web.Router do
       post("/:study_id/task/create", TaskController, :create)
       get("/:study_id/get_tasks", TaskController, :get_tasks)
 
-      post("/:study_id/task/:id/answer/create", AnswerController, :create)
+      post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
 
       post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
       post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
 
       post(
-        "/:study_id/task/:task_id/:uuid/code/append",
+        "/:study_id/task/:task_id/:uuid/replay_data/append",
         ResultController,
         :append_replay_data
       )
 
       get(
-        "/:study_id/task/:task_id/:uuid/code/complete",
+        "/:study_id/task/:task_id/:uuid/replay_data/complete",
         ResultController,
         :complete_replay_data
       )

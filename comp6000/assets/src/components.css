@@ -52,8 +52,9 @@ input:focus, textarea:focus, select:focus {
     outline: none;
 }
 
-input, textarea, select {
+input, textarea, select, .input-style {
     background-color: var(--secondary-background);
+    border-style: solid;
     border-radius: 3px;
     border-width: 2px;
     border-color: var(--nearly-black);
@@ -92,6 +93,11 @@ a:hover {
 p {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+label {
+    margin-top: 2mm;
+    margin-bottom: 2mm;
 }
 
 hr {

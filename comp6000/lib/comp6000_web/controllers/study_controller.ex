@@ -6,7 +6,6 @@ defmodule Comp6000Web.Study.StudyController do
   def create(conn, params) do
     case Studies.create_study(params) do
       {:ok, study} ->
-        Storage.create_study_directory(study)
         json(conn, %{created_study: study.id})
 
       {:error, changeset} ->

@@ -1,4 +1,4 @@
-defmodule Comp6000Web.Users.UserController do
+defmodule Comp6000Web.User.UserController do
   use Comp6000Web, :controller
   import Plug.Conn
 

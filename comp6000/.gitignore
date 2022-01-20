@@ -32,3 +32,5 @@ comp6000-*.tar
 npm-debug.log
 /assets/node_modules/
 
+/codeserver/node_modules/
+

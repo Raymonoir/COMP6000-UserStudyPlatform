@@ -1,4 +1,4 @@
-defmodule Comp6000Web.Controllers.UsersControllerTest do
+defmodule Comp6000Web.UsersControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.Users
 

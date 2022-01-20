@@ -71,13 +71,13 @@ tasks = studies.tasks
 # Insert two results for each task
 result1_1 = %{
   content: "I think the answer is 4",
-  unique_user_id: "fgh567fgh56",
+  unique_participant_id: "fgh567fgh56",
   task_id: task1.id
 }
 
 result1_2 = %{
   content: "I think the answer is 3",
-  unique_user_id: "56gf6gygd63g",
+  unique_participant_id: "56gf6gygd63g",
   task_id: task1.id
 }
 
@@ -86,13 +86,13 @@ result1_2 = %{
 
 result2_1 = %{
   content: "I think the answer is 5",
-  unique_user_id: "kasniudw8",
+  unique_participant_id: "kasniudw8",
   task_id: task2.id
 }
 
 result2_2 = %{
   content: "I think the answer is 10",
-  unique_user_id: "87duy8dhiedj",
+  unique_participant_id: "87duy8dhiedj",
   task_id: task2.id
 }
 

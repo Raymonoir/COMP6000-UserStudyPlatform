@@ -2,6 +2,7 @@ import App from './components/App';
 import A from './components/A';
 import B from './components/B';
 import Login from './components/Login';
+import Editor from './components/Editor';
 import RequiresLogin from './components/RequiresLogin';
 import reportWebVitals from './reportWebVitals';
 
@@ -21,6 +22,9 @@ ReactDOM.render(
             </Route>
             <Route path="/b">
                 <B />
+            </Route>
+            <Route path="/editor">
+                <Editor/>
             </Route>
         </Route>
     </BrowserRouter >,

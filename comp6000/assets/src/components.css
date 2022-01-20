@@ -99,3 +99,16 @@ label {
     margin-top: 2mm;
     margin-bottom: 2mm;
 }
+
+hr {
+    display: block;
+    border-style: none;
+    background-color: var(--nearly-black);
+    height: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+    hr {
+        background-color: white;
+    }
+}

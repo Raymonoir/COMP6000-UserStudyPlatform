@@ -20,23 +20,33 @@ defmodule Comp6000.Plugs.SessionTest do
   end
 
   describe "call/2" do
-    test "no username in the session sets current_user to nil in assigns", %{conn: conn} do
+    test "no username in the session sets current_participant to a uuid in session", %{conn: conn} do
       conn = get(conn, "/api/users/loggedin")
-      assert conn.assigns[:current_user] == nil
+
+      uuid = get_session(conn, :current_participant)
+
+      assert uuid != nil
+
+      conn = get(conn, "/api/users/loggedin")
+
+      assert uuid == get_session(conn, :current_participant)
+      assert uuid == conn.assigns[:current_participant]
     end
 
-    test "username in the session sets the current user to the user with provided username", %{
-      conn: conn,
-      user: user
-    } do
+    test "username in the session sets the current user in assigns to the user with provided username",
+         %{
+           conn: conn,
+           user: user
+         } do
       conn =
         conn
         |> put_session(:username, user.username)
         |> send_resp(:ok, "")
 
-      next_conn = get(conn, "/api/users/loggedin")
+      conn = get(conn, "/api/users/loggedin")
 
-      assert next_conn.assigns[:current_user] == user
+      assert conn.assigns[:current_user] == user
+      assert get_session(conn, :username) == user.username
     end
   end
 end

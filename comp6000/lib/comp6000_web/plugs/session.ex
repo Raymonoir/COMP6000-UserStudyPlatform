@@ -22,12 +22,21 @@ defmodule Comp6000Web.Plugs.Session do
   def call(conn, _opts) do
     username = get_session(conn, :username)
 
-    user =
-      case username do
-        nil -> nil
-        username -> Comp6000.Contexts.Users.get_user_by(username: username)
-      end
+    if username == nil do
+      participant = get_session(conn, :current_participant)
 
-    assign(conn, :current_user, user)
+      participant = if participant, do: participant, else: generate_unique_id()
+
+      conn
+      |> assign(:current_participant, participant)
+      |> put_session(:current_participant, participant)
+      |> configure_session(renew: true)
+    else
+      assign(conn, :current_user, Comp6000.Contexts.Users.get_user_by(username: username))
+    end
+  end
+
+  def generate_unique_id() do
+    UUID.uuid4()
   end
 end

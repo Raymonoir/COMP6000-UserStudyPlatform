@@ -126,18 +126,18 @@ defmodule Comp6000Web.UsersControllerTest do
     end
   end
 
-  describe "POST /api/users/logout" do
+  describe "GET /api/users/logout" do
     test "returns correct json when a user is logged in", %{conn: conn} do
       conn = post(conn, "/api/users/login", %{username: "Ray123", password: "RaysPassword"})
       assert json_response(conn, 200) == %{"login" => true}
       assert get_session(conn, :username) == "Ray123"
 
-      conn = post(conn, "/api/users/logout", %{})
+      conn = get(conn, "/api/users/logout", %{})
       assert json_response(conn, 200) == %{"login" => false}
     end
 
     test "returns correct json when a user is not logged in", %{conn: conn} do
-      conn = post(conn, "/api/users/logout", %{})
+      conn = get(conn, "/api/users/logout", %{})
       assert json_response(conn, 200) == %{"login" => false}
       refute get_session(conn, :username) == "Ray123"
     end

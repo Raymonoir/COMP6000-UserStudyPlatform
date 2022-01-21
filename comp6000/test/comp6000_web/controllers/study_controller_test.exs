@@ -1,4 +1,4 @@
-defmodule Comp6000Web.StudyControllerTest do
+defmodule Comp6000Web.Study.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Studies, Users}
 
@@ -13,8 +13,6 @@ defmodule Comp6000Web.StudyControllerTest do
       lastname: "Ward"
     })
 
-    on_exit(&clear_local_storage/0)
-
     :ok
   end
 
@@ -24,25 +22,14 @@ defmodule Comp6000Web.StudyControllerTest do
     task_count: 0
   }
 
-  # An exceedingly nasty function to delete all files and directories within local-storage once tests are complete
-  defp clear_local_storage() do
-    Enum.map(File.ls!("#{@storage_path}"), fn study_dir ->
-      if File.dir?("#{@storage_path}/#{study_dir}") do
-        Enum.map(File.ls!("#{@storage_path}/#{study_dir}"), fn task_dir ->
-          Enum.map(File.ls!("#{@storage_path}/#{study_dir}/#{task_dir}"), fn file ->
-            File.rm("#{@storage_path}/#{study_dir}/#{task_dir}/#{file}")
-          end)
-
-          File.rmdir!("#{@storage_path}/#{study_dir}/#{task_dir}")
-        end)
-
-        File.rmdir!("#{@storage_path}/#{study_dir}")
-      end
-    end)
-  end
+  @invalid_study %{
+    title: "My Study",
+    username: "Non-existing Username",
+    task_count: 0
+  }
 
   describe "POST /study/create" do
-    test "create route with valid parameters creates study, and directory", %{conn: conn} do
+    test "valid parameters creates study and directory", %{conn: conn} do
       conn = post(conn, "/api/study/create", @valid_study)
 
       result = json_response(conn, 200)
@@ -55,6 +42,14 @@ defmodule Comp6000Web.StudyControllerTest do
       assert study.title == "My Study"
 
       assert File.exists?("#{@storage_path}/#{id}")
+    end
+
+    test "invalid parameters does not creates study or directory", %{conn: conn} do
+      conn = post(conn, "/api/study/create", @invalid_study)
+
+      result = json_response(conn, 200)
+
+      assert %{"error" => "user does not exist"} = result
     end
   end
 end

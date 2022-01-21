@@ -3,6 +3,7 @@ defmodule Comp6000.Schemas.User do
   import Ecto.Changeset
   alias Comp6000.Schemas.{User, Study}
 
+  @derive {Jason.Encoder, only: [:username, :firstname, :lastname, :email]}
   schema "user" do
     field(:username, :string, primary_key: true)
     field(:firstname, :string)

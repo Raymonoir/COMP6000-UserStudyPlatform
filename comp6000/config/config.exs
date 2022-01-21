@@ -12,7 +12,9 @@ config :comp6000,
   storage_directory_path: "local-storage",
   storage_file_extension: "json",
   completed_file_extension: "gzip",
-  chunk_delimiter: ","
+  chunk_delimiter: ",",
+  storage_file_start: "[",
+  storage_file_end: "]"
 
 # Configures the endpoint
 config :comp6000, Comp6000Web.Endpoint,

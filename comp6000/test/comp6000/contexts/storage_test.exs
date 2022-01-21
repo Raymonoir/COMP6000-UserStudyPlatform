@@ -1,48 +1,37 @@
 defmodule Comp6000.Contexts.StorageTest do
   use Comp6000.DataCase, async: true
-  alias Comp6000.Contexts.{Storage, Studies, Users, Tasks, Results}
+  alias Comp6000.Schemas.{Study, Task, Result}
+  alias Comp6000.Contexts.{Storage, Users}
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
   @file_extension Application.get_env(:comp6000, :storage_file_extension)
   @completed_extension Application.get_env(:comp6000, :completed_file_extension)
 
+  # Use changeset and Repo directly to miss the use of Storage within the contexts
   setup do
     {:ok, user} =
       Users.create_user(%{username: "Ray123", email: "Ray@email.com", password: "password12345"})
 
     {:ok, study} =
-      Studies.create_study(%{username: user.username, title: "A Study Title", task_count: 0})
+      %Study{}
+      |> Study.changeset(%{username: user.username, title: "A Study Title", task_count: 0})
+      |> Repo.insert()
 
     {:ok, task} =
-      Tasks.create_task(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
+      %Task{}
+      |> Task.changeset(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
+      |> Repo.insert()
 
     {:ok, result} =
-      Results.create_result(%{
+      %Result{}
+      |> Result.changeset(%{
         task_id: task.id,
         unique_participant_id: "567f56d67s67as76d7s8",
         content: "3"
       })
-
-    on_exit(&clear_local_storage/0)
+      |> Repo.insert()
 
     %{study: study, task: task, result: result}
-  end
-
-  # An exceedingly nasty function to delete all files and directories within local-storage once tests are complete
-  defp clear_local_storage() do
-    Enum.map(File.ls!("#{@storage_path}"), fn study_dir ->
-      if File.dir?("#{@storage_path}/#{study_dir}") do
-        Enum.map(File.ls!("#{@storage_path}/#{study_dir}"), fn task_dir ->
-          Enum.map(File.ls!("#{@storage_path}/#{study_dir}/#{task_dir}"), fn file ->
-            File.rm("#{@storage_path}/#{study_dir}/#{task_dir}/#{file}")
-          end)
-
-          File.rmdir!("#{@storage_path}/#{study_dir}/#{task_dir}")
-        end)
-
-        File.rmdir!("#{@storage_path}/#{study_dir}")
-      end
-    end)
   end
 
   describe "create_study_directory/1" do

@@ -18,19 +18,44 @@ defmodule Comp6000Web.Router do
 
   scope "/app", Comp6000Web do
     pipe_through(:browser)
-
     get("/*path", PageController, :index)
   end
 
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
-    post("/users/logout", UsersController, :logout)
-    post("/users/create", UsersController, :create)
-    post("/users/login", UsersController, :login)
-    get("/users/loggedin", UsersController, :logged_in)
+    scope "/users", User do
+      get("/logout", UserController, :logout)
+      get("/loggedin", UserController, :logged_in)
+      get("/get-studies", UserController, :get_studies)
 
-    post("/study/create", StudyController, :create)
+      post("/login", UserController, :login)
+      post("/create", UserController, :create)
+    end
+
+    scope "/study", Study do
+      post("/create", StudyController, :create)
+
+      post("/:study_id/task/create", TaskController, :create)
+      get("/:study_id/get_tasks", TaskController, :get_tasks)
+
+      post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
+
+      post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
+      post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
+
+      post(
+        "/:study_id/task/:task_id/:uuid/replay_data/append",
+        ResultController,
+        :append_replay_data
+      )
+
+      get(
+        "/:study_id/task/:task_id/:uuid/replay_data/complete",
+        ResultController,
+        :complete_replay_data
+      )
+    end
 
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

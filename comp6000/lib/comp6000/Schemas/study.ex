@@ -3,6 +3,7 @@ defmodule Comp6000.Schemas.Study do
   import Ecto.Changeset
   alias Comp6000.Schemas.{Task, User, Study}
 
+  @derive {Jason.Encoder, only: [:username, :title, :task_count, :tasks]}
   @foreign_key_type :string
   schema "study" do
     belongs_to(:user, User, references: :username, foreign_key: :username)

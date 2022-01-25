@@ -2,7 +2,7 @@ defmodule Comp6000.Contexts.Results do
   import Ecto.Query
   alias Comp6000.Repo
   alias Comp6000.Schemas.{Result, Task}
-  alias Comp6000.Contexts.Storage
+  alias Comp6000.Contexts.{Storage, Tasks, Studies}
 
   def get_result_by(params) do
     Repo.get_by(Result, params)
@@ -33,5 +33,14 @@ defmodule Comp6000.Contexts.Results do
     query = from(r in Result, where: r.task_id == ^task.id and r.unique_participant_id == ^uuid)
 
     Repo.all(query)
+  end
+
+  def get_study_for_result(%Result{} = result) do
+    task = Tasks.get_task_by(id: result.task_id)
+    Studies.get_study_by(id: task.study_id)
+  end
+
+  def increment_participant_count(%Result{} = result) do
+    Studies.increment_participant_count(get_study_for_result(result))
   end
 end

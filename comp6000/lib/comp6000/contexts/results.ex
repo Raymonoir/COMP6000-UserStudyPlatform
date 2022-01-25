@@ -14,6 +14,7 @@ defmodule Comp6000.Contexts.Results do
          |> Repo.insert() do
       {:ok, result} ->
         Storage.create_result_file(result)
+        increment_participant_count(result)
         {:ok, result}
 
       {:error, changeset} ->

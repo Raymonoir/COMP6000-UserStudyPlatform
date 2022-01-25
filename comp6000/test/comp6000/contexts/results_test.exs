@@ -1,7 +1,7 @@
 defmodule Comp6000.Contexts.ResultsTest do
   use Comp6000.DataCase, async: true
   alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
-  alias Comp6000.Schemas.Result
+  alias Comp6000.Schemas.{Result, Study}
 
   setup do
     {:ok, user} =
@@ -25,24 +25,32 @@ defmodule Comp6000.Contexts.ResultsTest do
     }
 
     %{
+      study: study,
       valid_result_params1: valid_result_params1,
       invalid_result_params: invalid_result_params
     }
   end
 
   describe "create_result/1" do
-    test "valid parameters creates result and appends to database", %{
-      valid_result_params1: valid_result_params1
-    } do
+    test "valid parameters creates result and appends to database, study participant count is increased",
+         %{
+           valid_result_params1: valid_result_params1,
+           study: study
+         } do
       {:ok, result} = Results.create_result(valid_result_params1)
       assert result == Repo.get_by(Result, id: result.id)
+
+      assert Repo.get_by(Study, id: study.id).participant_count == 1
     end
 
-    test "invalid parameters does not create answer and does not append to database", %{
-      invalid_result_params: invalid_result_params
-    } do
+    test "invalid parameters does not create answer and does not append to database, study participant count is not increased",
+         %{
+           invalid_result_params: invalid_result_params,
+           study: study
+         } do
       {:error, _changeset} = Results.create_result(invalid_result_params)
       refute Repo.get_by(Result, content: invalid_result_params[:content])
+      assert Repo.get_by(Study, id: study.id).participant_count == 0
     end
   end
 
@@ -71,5 +79,13 @@ defmodule Comp6000.Contexts.ResultsTest do
     {:ok, _result} = Results.delete_result(result)
     refute result == Results.get_result_by(content: valid_result_params1[:content])
     refute result == Results.get_result_by(task_id: valid_result_params1[:task_id])
+  end
+
+  test "get_study_for_result/1 returns the study associated with a result", %{
+    valid_result_params1: valid_result_params1,
+    study: study
+  } do
+    {:ok, result} = Results.create_result(valid_result_params1)
+    assert Results.get_study_for_result(result).id == study.id
   end
 end

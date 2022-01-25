@@ -28,7 +28,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
     task_count: 0
   }
 
-  describe "POST /study/create" do
+  describe "POST /api/study/create" do
     test "valid parameters creates study and directory", %{conn: conn} do
       conn = post(conn, "/api/study/create", @valid_study)
 
@@ -50,6 +50,67 @@ defmodule Comp6000Web.Study.StudyControllerTest do
       result = json_response(conn, 200)
 
       assert %{"error" => "user does not exist"} = result
+    end
+  end
+
+  describe "GET /api/study/get-by/participant_code/:participant_code" do
+    test "valid participant code returns correct study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/get-by/participant-code/#{study.participant_code}")
+
+      json_result = json_response(conn, 200)
+
+      assert %{
+               "study" => %{
+                 "task_count" => 0,
+                 "tasks" => [],
+                 "title" => "My Study",
+                 "username" => "Ray123"
+               }
+             } = json_result
+    end
+
+    test "invalid participant code returns no study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/get-by/participant-code/jibber-jabber")
+
+      json_result = json_response(conn, 200)
+
+      assert %{"study" => nil} = json_result
+    end
+  end
+
+  describe "GET /api/study/get-by/id/:id" do
+    test "valid id returns correct study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/get-by/id/#{study.id}")
+
+      json_result = json_response(conn, 200)
+
+      id = study.id
+
+      assert %{
+               "study" => %{
+                 "task_count" => 0,
+                 "tasks" => [],
+                 "title" => "My Study",
+                 "username" => "Ray123",
+                 "id" => ^id
+               }
+             } = json_result
+    end
+
+    test "invalid id returns no study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/get-by/id/5678905678")
+
+      json_result = json_response(conn, 200)
+
+      assert %{"study" => nil} = json_result
     end
   end
 end

@@ -30,16 +30,26 @@ defmodule Comp6000Web.Router do
       get("/get-studies", UserController, :get_studies)
 
       post("/login", UserController, :login)
+
       post("/create", UserController, :create)
+      post("/:username/edit", UserController, :edit)
+      get("/:username/delete", UserController, :delete)
     end
 
     scope "/study", Study do
       post("/create", StudyController, :create)
+      post("/:study_id/edit", StudyController, :edit)
+      get("/:study_id/delete", StudyController, :delete)
 
       post("/:study_id/task/create", TaskController, :create)
+      post("/:study_id/task/:task_id/edit", TaskController, :edit)
+      get("/:study_id/task/:task_id/delete", TaskController, :delete)
+
       get("/:study_id/get_tasks", TaskController, :get_tasks)
 
       post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
+      post("/:study_id/task/:task_id/answer/:answer_id/edit", AnswerController, :edit)
+      get("/:study_id/task/:task_id/answer/:answer_id/delete", AnswerController, :delete)
 
       post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
       post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)

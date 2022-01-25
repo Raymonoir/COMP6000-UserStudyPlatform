@@ -48,4 +48,10 @@ defmodule Comp6000Web.User.UserController do
       json(conn, user_studies: Comp6000.Contexts.Studies.get_studies_for_user(current_user))
     end
   end
+
+  def edit(conn, _params) do
+  end
+
+  def delete(conn, _params) do
+  end
 end

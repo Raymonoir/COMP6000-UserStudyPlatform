@@ -92,9 +92,9 @@ defmodule Comp6000Web.Study.TaskControllerTest do
       task2: task2,
       task3: task3
     } do
-      {:ok, task1} = Tasks.create_task(task1)
-      {:ok, task2} = Tasks.create_task(task2)
-      {:ok, task3} = Tasks.create_task(task3)
+      {:ok, _task1} = Tasks.create_task(task1)
+      {:ok, _task2} = Tasks.create_task(task2)
+      {:ok, _task3} = Tasks.create_task(task3)
 
       conn = get(conn, "/api/study/0/get_tasks")
 

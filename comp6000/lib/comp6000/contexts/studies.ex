@@ -13,7 +13,9 @@ defmodule Comp6000.Contexts.Studies do
   end
 
   def create_study(params \\ %{}) do
-    case %Study{}
+    study = %Study{participant_code: UUID.uuid4()}
+
+    case study
          |> Study.changeset(params)
          |> Repo.insert() do
       {:ok, study} ->
@@ -39,6 +41,14 @@ defmodule Comp6000.Contexts.Studies do
     query = from(s in Study, where: s.username == ^user.username)
 
     Repo.all(query)
+  end
+
+  def increment_participant_count(%Study{} = study) do
+    if study.participant_count + 1 == study.participant_max do
+      update_study(study, %{participant_count: study.participant_count + 1, participant_code: nil})
+    else
+      update_study(study, %{participant_count: study.participant_count + 1})
+    end
   end
 
   def get_all_for_study(%Study{} = study) do

@@ -30,8 +30,9 @@ defmodule Comp6000.Contexts.StudiesTest do
   end
 
   describe "create_study/1" do
-    test "valid parameters creates study and appends to database" do
+    test "valid parameters creates study with participant_code and appends to database" do
       {:ok, study} = Studies.create_study(@valid_study_params1)
+      assert study.participant_code != nil
       assert study == Repo.get_by(Study, id: study.id) |> Repo.preload(:tasks)
     end
 
@@ -96,5 +97,26 @@ defmodule Comp6000.Contexts.StudiesTest do
     {:ok, _study} = Studies.delete_study(study)
     refute study == Studies.get_study_by(title: @valid_study_params1[:title])
     refute study == Studies.get_study_by(task_count: @valid_study_params1[:task_count])
+  end
+
+  describe "increment_participant_count/1" do
+    test "increments the participant_count on a study" do
+      {:ok, study} = Studies.create_study(@valid_study_params1)
+      assert study.participant_count == 0
+      Studies.increment_participant_count(study)
+
+      study = Studies.get_study_by(title: @valid_study_params1[:title])
+      assert study.participant_count == 1
+    end
+
+    test "if increment makes participant count equal to participant max, sets participant code to nil" do
+      {:ok, study} = Studies.create_study(@valid_study_params1)
+      {:ok, study} = Studies.update_study(study, %{participant_max: 10, participant_count: 9})
+      assert study.participant_code != nil
+      {:ok, study} = Studies.increment_participant_count(study)
+
+      assert study.participant_count == 10
+      assert study.participant_code == nil
+    end
   end
 end

@@ -4,6 +4,7 @@ import B from './components/B';
 import Login from './components/Login';
 import Editor from './components/Editor';
 import RequiresLogin from './components/RequiresLogin';
+import StudyManager from './components/StudyManager';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
@@ -26,6 +27,7 @@ ReactDOM.render(
             <Route path="/editor">
                 <Editor/>
             </Route>
+            <Route path="/study/:key" component={StudyManager} />
         </Route>
     </BrowserRouter >,
     document.getElementById('root')

@@ -9,7 +9,8 @@ class CodeRunner extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.code && this.props != prevProps) {
+        if (this.props.code && (this.props.code != prevProps.code || this.props.run != prevProps.run || this.props.args != prevProps.args)) {
+            console.log('props updated');
             this.runCode();
         }
 
@@ -22,7 +23,9 @@ class CodeRunner extends React.Component {
     }
 
     componentWillUnmount() {
-        this.state.abortController.abort();
+        if (this.state.abortController) {
+            this.state.abortController.abort();
+        }
     }
 
     runCode() {
@@ -43,6 +46,12 @@ class CodeRunner extends React.Component {
                     loading: false,
                     result: data
                 });
+                
+                // Send the result back to our parent.
+                // This is used by StudyMananager to check if you have passed a task
+                if (this.props.onExecutionComplete) {
+                    this.props.onExecutionComplete(data);
+                }
             });
 
         this.setState({

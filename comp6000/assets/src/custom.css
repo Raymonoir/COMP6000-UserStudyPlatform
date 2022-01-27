@@ -53,6 +53,30 @@
 
 /* END Editor component styling */
 
+/* START TaskList component styling */
+
+.task-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.task-list-item>.task-tick {
+    display: none;
+}
+
+.task-list-item.completed>.task-tick {
+    color: green;
+    display: inline;
+}
+
+.task-list-item.completed>.task-description {
+    text-decoration: line-through;
+}
+
+/* END TaskList component styling */
+
 /* START Popup component styling */
 
 .popup {

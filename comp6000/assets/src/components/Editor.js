@@ -42,7 +42,6 @@ class Editor extends React.Component {
     render() {
         return (
             <div>
-                <button className="button primary" onClick={this.runCode} data-cy="run">run</button>
                 <div className="editor-container">
                     <AceEditor
                         mode="javascript"
@@ -52,15 +51,16 @@ class Editor extends React.Component {
                         onChange={this.onChange}
                         onLoad={this.aceOnLoad}
                     />
-                    <CodeRunner
+                </div>
+            </div >
+        );
+        //<button className="button primary" onClick={this.runCode} data-cy="run">run</button>
+        /* <CodeRunner
                         className="editor-code-output"
                         code={this.state.lastRanCode}
                         run={this.state.function}
                         args={this.state.args}
-                    />
-                </div>
-            </div >
-        );
+                    /> */
     }
 
     aceOnLoad(instance) {
@@ -76,6 +76,11 @@ class Editor extends React.Component {
             history: updatedHistory,
             lastUpdateTime: currTime
         });
+
+        // Send the current code back to our parent
+        if (this.props.onCodeChange) {
+            this.props.onCodeChange(value);
+        }
     }
 
     getHistory(clear = true) {

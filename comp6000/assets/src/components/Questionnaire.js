@@ -18,7 +18,7 @@ class Questionnaire extends React.Component {
     }
 
     submit() {
-        console.log(this.state.answers);
+        this.props.onSubmit(this.props.type, this.state.answers);
     }
 
     render() {
@@ -31,7 +31,7 @@ class Questionnaire extends React.Component {
                             <Question
                                 key={i}
                                 question={q}
-                                questionNum={i+1}
+                                questionNum={i + 1}
                                 onAnswerChange={this.onAnswerChange}
                             />
                         )

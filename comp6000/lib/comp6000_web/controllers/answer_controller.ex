@@ -12,8 +12,8 @@ defmodule Comp6000Web.Study.AnswerController do
     end
   end
 
-  def edit(conn, %{"answer_id" => answer_id} = params) do
-    answer = Answers.get_answer_by(id: answer_id)
+  def edit(conn, %{"task_id" => task_id} = params) do
+    answer = Answers.get_answer_by(task_id: task_id)
 
     case Answers.update_answer(answer, params) do
       {:ok, answer} ->
@@ -24,8 +24,8 @@ defmodule Comp6000Web.Study.AnswerController do
     end
   end
 
-  def delete(conn, %{"answer_id" => answer_id}) do
-    answer = Answers.get_by(id: answer_id)
+  def delete(conn, %{"task_id" => task_id} = params) do
+    answer = Answers.get_answer_by(task_id: task_id)
     {:ok, answer} = Answers.delete_answer(answer)
     json(conn, %{deleted_answer: answer.id})
   end

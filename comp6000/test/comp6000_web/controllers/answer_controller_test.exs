@@ -1,6 +1,6 @@
 defmodule Comp6000Web.Study.AnswerControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Users, Studies, Tasks}
+  alias Comp6000.Contexts.{Users, Studies, Tasks, Answers}
 
   setup %{conn: conn} do
     {:ok, user} =
@@ -19,7 +19,7 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
     %{conn: conn, study: study, task: task}
   end
 
-  describe "POST /api/study/:study_id/task/:id/answer/create" do
+  describe "POST /api/study/:study_id/task/:task_id/answer/create" do
     test "valid parameters creates an answer to a task", %{conn: conn, task: task, study: study} do
       answer_data = %{content: "the answer should be 4566"}
 
@@ -38,6 +38,46 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
       result = json_response(conn, 200)
 
       assert %{"error" => "content can't be blank"} = result
+    end
+  end
+
+  describe "POST /api/study/:study_id/task/:task_id/answer/edit" do
+    test "valid parameters edits answer", %{conn: conn, study: study, task: task} do
+      {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
+
+      conn =
+        post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/edit", %{
+          content: "different_content"
+        })
+
+      result = json_response(conn, 200)
+      assert result == %{"updated_answer" => answer.id}
+      assert Answers.get_answer_by(id: answer.id).content == "different_content"
+    end
+
+    test "invalid parameters does not edit answer", %{conn: conn, study: study, task: task} do
+      {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
+
+      conn =
+        post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/edit", %{
+          content: nil
+        })
+
+      result = json_response(conn, 200)
+      assert result == %{"error" => "content can't be blank"}
+      assert Answers.get_answer_by(id: answer.id) == answer
+    end
+  end
+
+  describe "GET /api/study/:study_id/task/:task_id/answer/delete" do
+    test "valid parameters deletes answer", %{conn: conn, study: study, task: task} do
+      {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
+
+      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/answer/delete")
+
+      result = json_response(conn, 200)
+      assert result == %{"deleted_answer" => answer.id}
+      refute Answers.get_answer_by(id: answer.id)
     end
   end
 end

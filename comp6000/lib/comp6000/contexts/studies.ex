@@ -37,6 +37,17 @@ defmodule Comp6000.Contexts.Studies do
     Repo.delete(study)
   end
 
+  def add_participant(%Study{} = study, participant) do
+    participants = study.participant_list
+
+    if participant not in participants do
+      {:ok, study} = update_study(study, %{participant_list: [participant | participants]})
+      study
+    else
+      study
+    end
+  end
+
   def get_studies_for_user(%User{} = user) do
     query = from(s in Study, where: s.username == ^user.username)
 
@@ -52,6 +63,6 @@ defmodule Comp6000.Contexts.Studies do
   end
 
   def get_all_for_study(%Study{} = study) do
-    study = Repo.preload(study, tasks: [:results, :answer], user: [])
+    Repo.preload(study, tasks: [:results, :answer], user: [])
   end
 end

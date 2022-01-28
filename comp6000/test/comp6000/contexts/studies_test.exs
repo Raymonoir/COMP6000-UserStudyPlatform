@@ -119,4 +119,27 @@ defmodule Comp6000.Contexts.StudiesTest do
       assert study.participant_code == nil
     end
   end
+
+  describe "add_participant/2" do
+    test "adds a participant to the participant_list of a study, no duplicates allowed" do
+      {:ok, study} = Studies.create_study(@valid_study_params1)
+      assert study.participant_list == []
+
+      study = Studies.add_participant(study, "participant1")
+
+      assert study.participant_list == ["participant1"]
+
+      study = Studies.add_participant(study, "participant2")
+
+      assert study.participant_list == ["participant2", "participant1"]
+
+      study = Studies.add_participant(study, "participant1")
+
+      assert study.participant_list == ["participant2", "participant1"]
+
+      study = Studies.add_participant(study, "participant3")
+
+      assert study.participant_list == ["participant3", "participant2", "participant1"]
+    end
+  end
 end

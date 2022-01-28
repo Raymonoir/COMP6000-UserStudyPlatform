@@ -42,6 +42,16 @@ defmodule Comp6000.Schemas.User do
     |> validate_length(:password, min: 10, max: 100)
   end
 
+  def downcase_username(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{username: username}} ->
+        put_change(changeset, :username, String.downcase(username))
+
+      _else ->
+        changeset
+    end
+  end
+
   defp set_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->

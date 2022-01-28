@@ -62,7 +62,7 @@ defmodule Comp6000Web.Study.TaskControllerTest do
     end
   end
 
-  describe "GET /api/study/:study_id/get_tasks" do
+  describe "GET /api/study/:study_id/get-tasks" do
     test "valid study_id returns all created tasks", %{
       conn: conn,
       task1: task1,
@@ -73,7 +73,7 @@ defmodule Comp6000Web.Study.TaskControllerTest do
       {:ok, task2} = Tasks.create_task(task2)
       {:ok, task3} = Tasks.create_task(task3)
 
-      conn = get(conn, "/api/study/#{task1.study_id}/get_tasks")
+      conn = get(conn, "/api/study/#{task1.study_id}/get-tasks")
 
       result = json_response(conn, 200)
 
@@ -96,7 +96,7 @@ defmodule Comp6000Web.Study.TaskControllerTest do
       {:ok, _task2} = Tasks.create_task(task2)
       {:ok, _task3} = Tasks.create_task(task3)
 
-      conn = get(conn, "/api/study/0/get_tasks")
+      conn = get(conn, "/api/study/0/get-tasks")
 
       result = json_response(conn, 200)
 

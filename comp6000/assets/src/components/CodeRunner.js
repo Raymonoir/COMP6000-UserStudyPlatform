@@ -46,7 +46,7 @@ class CodeRunner extends React.Component {
                     loading: false,
                     result: data
                 });
-                
+
                 // Send the result back to our parent.
                 // This is used by StudyMananager to check if you have passed a task
                 if (this.props.onExecutionComplete) {
@@ -77,9 +77,27 @@ class CodeRunner extends React.Component {
             }
         }
 
+        let executedFunction;
+        if (this.props.run) {
+            executedFunction = (
+                <div>
+                    <h3>Ran</h3>
+                    <p className="console-line">{this.props.run}(
+                        {
+                            this.props.args.map((arg, i) => {
+                                return <span className="console-line" key={i}>{arg}{i < this.props.args.length - 1 ? ", " : ""}</span>
+                            })
+                        }
+                        )
+                    </p>
+                </div>
+            );
+        }
+
         return (
             <div className={"container primary " + this.props.className}>
                 <div>
+                    {this.state.result && executedFunction}
                     <h3>Console output</h3>
                     {this.state.result && this.state.result.logs &&
                         this.state.result.logs.map((line, i) => {

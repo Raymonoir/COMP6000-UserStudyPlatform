@@ -13,8 +13,11 @@ defmodule Comp6000.Contexts.Results do
          |> Result.changeset(params)
          |> Repo.insert() do
       {:ok, result} ->
-        Storage.create_result_file(result)
-        increment_participant_count(result)
+        result
+        |> Storage.create_result_file()
+        |> increment_participant_count()
+        |> associate_participant_with_study()
+
         {:ok, result}
 
       {:error, changeset} ->
@@ -36,12 +39,19 @@ defmodule Comp6000.Contexts.Results do
     Repo.all(query)
   end
 
+  def associate_participant_with_study(%Result{} = result) do
+    result
+    |> get_study_for_result()
+    |> Studies.add_participant(result.unique_participant_id)
+  end
+
   def get_study_for_result(%Result{} = result) do
     task = Tasks.get_task_by(id: result.task_id)
     Studies.get_study_by(id: task.study_id)
   end
 
   def increment_participant_count(%Result{} = result) do
-    Studies.increment_participant_count(get_study_for_result(result))
+    {:ok, _study} = Studies.increment_participant_count(get_study_for_result(result))
+    result
   end
 end

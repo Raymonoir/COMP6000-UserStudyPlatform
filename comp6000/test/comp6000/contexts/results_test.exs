@@ -32,7 +32,7 @@ defmodule Comp6000.Contexts.ResultsTest do
   end
 
   describe "create_result/1" do
-    test "valid parameters creates result and appends to database, study participant count is increased",
+    test "valid parameters creates result and appends to database, study participant count is increased, participant is associated with study",
          %{
            valid_result_params1: valid_result_params1,
            study: study
@@ -40,7 +40,9 @@ defmodule Comp6000.Contexts.ResultsTest do
       {:ok, result} = Results.create_result(valid_result_params1)
       assert result == Repo.get_by(Result, id: result.id)
 
-      assert Repo.get_by(Study, id: study.id).participant_count == 1
+      study = Repo.get_by(Study, id: study.id)
+      assert study.participant_count == 1
+      assert study.participant_list == [valid_result_params1.unique_participant_id]
     end
 
     test "invalid parameters does not create answer and does not append to database, study participant count is not increased",
@@ -50,7 +52,10 @@ defmodule Comp6000.Contexts.ResultsTest do
          } do
       {:error, _changeset} = Results.create_result(invalid_result_params)
       refute Repo.get_by(Result, content: invalid_result_params[:content])
-      assert Repo.get_by(Study, id: study.id).participant_count == 0
+
+      study = Repo.get_by(Study, id: study.id)
+      assert study.participant_count == 0
+      assert study.participant_list == []
     end
   end
 
@@ -87,5 +92,18 @@ defmodule Comp6000.Contexts.ResultsTest do
   } do
     {:ok, result} = Results.create_result(valid_result_params1)
     assert Results.get_study_for_result(result).id == study.id
+  end
+
+  test "increment_participant_count increments study participant count", %{
+    valid_result_params1: valid_result_params1,
+    study: study
+  } do
+    {:ok, _result} = Results.create_result(valid_result_params1)
+    study = Repo.get_by(Study, id: study.id)
+    assert study.participant_count == 1
+
+    {:ok, _result} = Results.create_result(valid_result_params1)
+    study = Repo.get_by(Study, id: study.id)
+    assert study.participant_count == 2
   end
 end

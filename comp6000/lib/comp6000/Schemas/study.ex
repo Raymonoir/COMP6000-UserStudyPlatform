@@ -23,6 +23,7 @@ defmodule Comp6000.Schemas.Study do
     field(:participant_count, :integer, default: 0)
     field(:participant_max, :integer)
     field(:participant_code, :string)
+    field(:participant_list, {:array, :string}, default: [])
 
     timestamps()
   end
@@ -35,7 +36,8 @@ defmodule Comp6000.Schemas.Study do
       :task_count,
       :participant_count,
       :participant_max,
-      :participant_code
+      :participant_code,
+      :participant_list
     ])
     |> cast_assoc(:tasks, with: &Task.changeset/2)
     |> validate_required([:title, :username, :task_count])

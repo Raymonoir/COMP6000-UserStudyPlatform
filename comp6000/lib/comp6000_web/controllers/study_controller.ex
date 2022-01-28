@@ -13,7 +13,6 @@ defmodule Comp6000Web.Study.StudyController do
     end
   end
 
-
   def edit(conn, %{"study_id" => study_id} = params) do
     study = Studies.get_study_by(id: study_id)
 
@@ -29,9 +28,9 @@ defmodule Comp6000Web.Study.StudyController do
   def delete(conn, %{"study_id" => study_id} = _params) do
     study = Studies.get_study_by(id: study_id)
     {:ok, study} = Studies.delete_study(study)
-    json(conn, deleted_study: study.id)
+    json(conn, %{deleted_study: study.id})
   end
-  
+
   def get_study_by_code(conn, %{"participant_code" => participant_code} = _params) do
     study = Studies.get_study_by(participant_code: participant_code)
 

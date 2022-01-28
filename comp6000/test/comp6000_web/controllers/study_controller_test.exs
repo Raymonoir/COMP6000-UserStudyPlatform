@@ -113,4 +113,44 @@ defmodule Comp6000Web.Study.StudyControllerTest do
       assert %{"study" => nil} = json_result
     end
   end
+
+  describe "POST /api/study/:study_id/edit" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/#{study.id}/edit", %{
+          title: "An updated study title"
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"updated_study" => _id} = json_result
+      assert Studies.get_study_by(id: study.id).title == "An updated study title"
+    end
+
+    test "invalid parameters does not edit study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/#{study.id}/edit", %{
+          title: nil
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"error" => "title can't be blank"} == json_result
+      assert Studies.get_study_by(id: study.id) == study
+    end
+  end
+
+  describe "GET /api/study/:study_id/delete" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/#{study.id}/delete")
+
+      json_result = json_response(conn, 200)
+      assert %{"deleted_study" => _id} = json_result
+      refute Studies.get_study_by(id: study.id)
+    end
+  end
 end

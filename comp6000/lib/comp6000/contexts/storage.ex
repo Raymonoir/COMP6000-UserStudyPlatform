@@ -81,7 +81,7 @@ defmodule Comp6000.Contexts.Storage do
              @storage_file_start
            ) do
         :ok ->
-          :ok
+          result
 
         {:error, _reason} ->
           :error
@@ -122,7 +122,7 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?("#{path_no_ext}.#{@file_extension}") do
       {:ok, content} = File.read("#{path_no_ext}.#{@file_extension}")
-      gzipped_content = :zlib.gzip(content)
+      gzipped_content = :zlib.gzip("#{content}#{@storage_file_end}")
       File.write("#{path_no_ext}.#{@file_extension}", gzipped_content)
 
       :ok =

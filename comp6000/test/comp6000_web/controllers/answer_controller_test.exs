@@ -27,7 +27,7 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
 
       result = json_response(conn, 200)
 
-      assert %{"created_answer" => id} = result
+      assert %{"created_answer" => _id} = result
     end
 
     test "invalid parameters does not create an answer", %{conn: conn, task: task, study: study} do

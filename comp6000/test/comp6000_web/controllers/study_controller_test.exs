@@ -72,7 +72,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
     end
 
     test "invalid participant code returns no study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
+      {:ok, _study} = Studies.create_study(@valid_study)
 
       conn = get(conn, "/api/study/get-by/participant-code/jibber-jabber")
 
@@ -104,7 +104,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
     end
 
     test "invalid id returns no study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
+      {:ok, _study} = Studies.create_study(@valid_study)
 
       conn = get(conn, "/api/study/get-by/id/5678905678")
 

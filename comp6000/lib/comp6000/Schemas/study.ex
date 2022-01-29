@@ -12,7 +12,8 @@ defmodule Comp6000.Schemas.Study do
              :tasks,
              :participant_count,
              :participant_max,
-             :participant_code
+             :participant_code,
+             :participant_list
            ]}
   @foreign_key_type :string
   schema "study" do

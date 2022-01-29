@@ -52,4 +52,11 @@ defmodule Comp6000Web.Study.StudyController do
       json(conn, %{study: nil})
     end
   end
+
+  def get_all(conn, %{"study_id" => study_id} = _params) do
+    study = Studies.get_study_by(id: study_id)
+    study = Studies.get_all_for_study(study)
+
+    json(conn, %{study: study})
+  end
 end

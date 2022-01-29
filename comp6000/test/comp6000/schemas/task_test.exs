@@ -42,8 +42,7 @@ defmodule Comp6000.Schemas.TaskTest do
 
       assert errors_on(changeset) == %{
                content: ["can't be blank"],
-               study_id: ["can't be blank"],
-               task_number: ["can't be blank"]
+               study_id: ["can't be blank"]
              }
     end
 

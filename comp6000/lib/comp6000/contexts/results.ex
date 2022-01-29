@@ -30,7 +30,13 @@ defmodule Comp6000.Contexts.Results do
   end
 
   def get_results_for_task(%Task{} = task) do
-    Repo.preload(task, :results)
+    Repo.preload(task, :results).results
+  end
+
+  def get_all_results_for_uuid(uuid) do
+    query = from(r in Result, where: r.unique_participant_id == ^uuid)
+
+    Repo.all(query)
   end
 
   def get_result_for_task_uuid(task, uuid) do

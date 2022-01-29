@@ -156,11 +156,6 @@ defmodule Comp6000Web.Study.ResultControllerTest do
     end
   end
 
-  # post(
-  #   "/:study_id/task/:task_id/:uuid/replay_data/append",
-  #   ResultController,
-  #   :append_replay_data
-  # )
   describe "POST /api/study/:study_id/task/:task_id/:uuid/replay_data/append" do
     test "valid parameters appends replay data", %{conn: conn, study: study, task: task} do
       uuid = UUID.uuid4()
@@ -221,6 +216,35 @@ defmodule Comp6000Web.Study.ResultControllerTest do
 
       assert File.read!("#{path}.#{@completed_extension}") ==
                :zlib.gzip("#{@storage_file_start}#{content}#{@storage_file_end}")
+    end
+  end
+
+  describe "GET /api/study/:study_id/task/:task_id/get-results" do
+    test "valid parameters returns results", %{conn: conn, study: study, task: task} do
+      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/get-results")
+
+      assert json_response(conn, 200) == %{"results" => []}
+
+      {:ok, result1} =
+        Results.create_result(%{
+          unique_participant_id: "sudbsdbjh",
+          content: "Content!",
+          task_id: task.id
+        })
+
+      {:ok, result2} =
+        Results.create_result(%{
+          unique_participant_id: "45678iuhgf",
+          content: "Content2!",
+          task_id: task.id
+        })
+
+      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/get-results")
+
+      %{"results" => [returned_result1, returned_result2]} = json_response(conn, 200)
+
+      assert returned_result1["id"] == result1.id
+      assert returned_result2["id"] == result2.id
     end
   end
 end

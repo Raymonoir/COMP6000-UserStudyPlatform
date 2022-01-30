@@ -11,4 +11,22 @@ defmodule Comp6000Web.Study.AnswerController do
         json(conn, %{error: Helpers.get_changeset_errors(changeset)})
     end
   end
+
+  def edit(conn, %{"task_id" => task_id} = params) do
+    answer = Answers.get_answer_by(task_id: task_id)
+
+    case Answers.update_answer(answer, params) do
+      {:ok, answer} ->
+        json(conn, %{updated_answer: answer.id})
+
+      {:error, changeset} ->
+        json(conn, %{error: Helpers.get_changeset_errors(changeset)})
+    end
+  end
+
+  def delete(conn, %{"task_id" => task_id} = params) do
+    answer = Answers.get_answer_by(task_id: task_id)
+    {:ok, answer} = Answers.delete_answer(answer)
+    json(conn, %{deleted_answer: answer.id})
+  end
 end

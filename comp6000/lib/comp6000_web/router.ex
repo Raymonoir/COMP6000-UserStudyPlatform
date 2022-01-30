@@ -30,11 +30,36 @@ defmodule Comp6000Web.Router do
       get("/get-studies", UserController, :get_studies)
 
       post("/login", UserController, :login)
+
       post("/create", UserController, :create)
+
+      post("/:username/edit", UserController, :edit)
+      get("/:username/delete", UserController, :delete)
+    end
+
+    scope "/participant", Participant do
+      get("/get-uuid", ParticipantController, :get_participant_uuid)
+      get("/:participant_uuid/list-results", ParticipantController, :get_participant_results)
+    end
+
+    # TODO
+    scope "/metrics", Metrics do
+      get("/:task_id", MetricsController, :get_metrics_for_task)
+      get("/:task_id/:participant_uuid", MetricsController, :get_metrics_for_result)
+      get("/:particpant_uuid", MetricsController, :get_metrics_for_participant)
     end
 
     scope "/study", Study do
       post("/create", StudyController, :create)
+      post("/:study_id/edit", StudyController, :edit)
+      get("/:study_id/delete", StudyController, :delete)
+      get("/:study_id/get-all", StudyController, :get_all)
+
+      post("/:study_id/task/create", TaskController, :create)
+      post("/:study_id/task/:task_id/edit", TaskController, :edit)
+      get("/:study_id/task/:task_id/delete", TaskController, :delete)
+
+      get("/:study_id/get_tasks", TaskController, :get_tasks)
       get("/get-by/id/:id", StudyController, :get_study_by_id)
       get("/get-by/participant-code/:participant_code", StudyController, :get_study_by_code)
 
@@ -42,9 +67,12 @@ defmodule Comp6000Web.Router do
       get("/:study_id/get-tasks", TaskController, :get_tasks)
 
       post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
+      post("/:study_id/task/:task_id/answer/edit", AnswerController, :edit)
+      get("/:study_id/task/:task_id/answer/delete", AnswerController, :delete)
 
       post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
       post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
+      get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
 
       post(
         "/:study_id/task/:task_id/:uuid/replay_data/append",

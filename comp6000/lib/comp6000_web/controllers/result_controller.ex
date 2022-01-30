@@ -69,4 +69,10 @@ defmodule Comp6000Web.Study.ResultController do
   def result_submit(conn, params) do
     json(conn, %{invalid_result_parameters: params})
   end
+
+  def get_results(conn, %{"task_id" => task_id} = _params) do
+    task = Tasks.get_task_by(id: task_id)
+
+    json(conn, %{results: Results.get_results_for_task(task)})
+  end
 end

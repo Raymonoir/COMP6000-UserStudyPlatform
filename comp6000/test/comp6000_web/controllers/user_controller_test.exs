@@ -1,4 +1,4 @@
-defmodule Comp6000Web.UsersControllerTest do
+defmodule Comp6000Web.UserControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.Users
 
@@ -140,6 +140,36 @@ defmodule Comp6000Web.UsersControllerTest do
       conn = get(conn, "/api/users/logout", %{})
       assert json_response(conn, 200) == %{"login" => false}
       refute get_session(conn, :username) == "Ray123"
+    end
+  end
+
+  describe "POST /api/users/:username/edit" do
+    test "valid parameters edits a user", %{conn: conn} do
+      conn =
+        post(conn, "/api/users/Ray123/edit", %{
+          email: "Jonny"
+        })
+
+      assert json_response(conn, 200) == %{"error" => "email has invalid format"}
+      refute Users.get_user_by(username: "Ray123").email == "Jonny"
+    end
+
+    test "invalid parameters does not edit a user", %{conn: conn} do
+      conn =
+        post(conn, "/api/users/Ray123/edit", %{
+          firstname: "Jonny"
+        })
+
+      assert json_response(conn, 200) == %{"updated_user" => "Ray123"}
+      assert Users.get_user_by(username: "Ray123").firstname == "Jonny"
+    end
+  end
+
+  describe "GET /api/users/:username/delete" do
+    test "valid parameters deletes a user", %{conn: conn} do
+      conn = get(conn, "/api/users/Ray123/delete")
+      assert json_response(conn, 200) == %{"deleted_user" => "Ray123"}
+      refute Users.get_user_by(username: "Ray123")
     end
   end
 end

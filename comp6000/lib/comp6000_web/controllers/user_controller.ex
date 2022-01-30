@@ -1,6 +1,7 @@
 defmodule Comp6000Web.User.UserController do
   use Comp6000Web, :controller
   import Plug.Conn
+  alias Comp6000.Contexts.Users
 
   def login(conn, %{"username" => username, "password" => password} = _params) do
     case Comp6000Web.Authentication.login(username, password) do
@@ -43,9 +44,27 @@ defmodule Comp6000Web.User.UserController do
     current_user = get_session(conn, :current_user)
 
     if current_user == nil do
-      json(conn, %{user: "no one logged in"})
+      json(conn, %{user: "not logged in"})
     else
       json(conn, user_studies: Comp6000.Contexts.Studies.get_studies_for_user(current_user))
+    end
+  end
+
+  def edit(conn, %{"username" => username} = params) do
+    user = Users.get_user_by(username: username)
+
+    case Users.update_user(user, params) do
+      {:ok, user} -> json(conn, %{updated_user: user.username})
+      {:error, changeset} -> json(conn, %{error: Helpers.get_changeset_errors(changeset)})
+    end
+  end
+
+  def delete(conn, %{"username" => username} = _params) do
+    user = Users.get_user_by(username: username)
+
+    case Users.delete_user(user) do
+      {:ok, user} -> json(conn, %{deleted_user: user.username})
+      {:error, changeset} -> json(conn, %{error: Helpers.get_changeset_errors(changeset)})
     end
   end
 end

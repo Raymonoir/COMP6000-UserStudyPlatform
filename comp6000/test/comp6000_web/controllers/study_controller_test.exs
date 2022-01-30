@@ -1,6 +1,6 @@
 defmodule Comp6000Web.Study.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Studies, Users}
+  alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
 
@@ -111,6 +111,106 @@ defmodule Comp6000Web.Study.StudyControllerTest do
       json_result = json_response(conn, 200)
 
       assert %{"study" => nil} = json_result
+    end
+  end
+
+  describe "POST /api/study/:study_id/edit" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/#{study.id}/edit", %{
+          title: "An updated study title"
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"updated_study" => _id} = json_result
+      assert Studies.get_study_by(id: study.id).title == "An updated study title"
+    end
+
+    test "invalid parameters does not edit study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/#{study.id}/edit", %{
+          title: nil
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"error" => "title can't be blank"} == json_result
+      assert Studies.get_study_by(id: study.id) == study
+    end
+  end
+
+  describe "GET /api/study/:study_id/delete" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = get(conn, "/api/study/#{study.id}/delete")
+
+      json_result = json_response(conn, 200)
+      assert %{"deleted_study" => _id} = json_result
+      refute Studies.get_study_by(id: study.id)
+    end
+  end
+
+  describe "GET /api/study/:study_id/get-all" do
+    test "valid parameters returns all information for a study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      {:ok, task1} = Tasks.create_task(%{study_id: study.id, content: "What is life?"})
+
+      {:ok, task2} =
+        Tasks.create_task(%{
+          study_id: study.id,
+          content: "How are you?",
+          optional_info: "background"
+        })
+
+      {:ok, _result} =
+        Results.create_result(%{
+          task_id: task1.id,
+          content: "Life is life",
+          unique_participant_id: "7876rer"
+        })
+
+      conn = get(conn, "/api/study/#{study.id}/get-all")
+
+      %{
+        "study" => %{
+          "id" => study_id,
+          "participant_code" => _code,
+          "participant_count" => 1,
+          "participant_max" => nil,
+          "participant_list" => ["7876rer"],
+          "task_count" => task_count,
+          "tasks" => [
+            %{
+              "content" => "What is life?",
+              "id" => task1_id,
+              "optional_info" => nil,
+              "task_number" => task1_number
+            },
+            %{
+              "content" => "How are you?",
+              "id" => task2_id,
+              "optional_info" => "background",
+              "task_number" => task2_number
+            }
+          ],
+          "title" => "My Study",
+          "username" => "Ray123"
+        }
+      } = json_response(conn, 200)
+
+      study = Studies.get_study_by(id: study.id)
+      assert study_id == study.id
+      assert task_count == study.task_count
+      assert task1_id == task1.id
+      assert task1_number == task1.task_number
+
+      assert task2_id == task2.id
+      assert task2_number == task2.task_number
     end
   end
 end

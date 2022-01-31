@@ -3,6 +3,7 @@ defmodule Comp6000.Schemas.Answer do
   import Ecto.Changeset
   alias Comp6000.Schemas.{Task, Answer}
 
+  @derive {Jason.Encoder, only: [:content, :id]}
   schema "answer" do
     belongs_to(:task, Task)
     field(:content, :string)

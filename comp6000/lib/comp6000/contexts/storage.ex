@@ -5,6 +5,8 @@ defmodule Comp6000.Contexts.Storage do
   @file_extension Application.get_env(:comp6000, :storage_file_extension)
   @completed_extension Application.get_env(:comp6000, :completed_file_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
+  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
+  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
 
   def create_study_directory(%Study{} = study) do
     study_id = study.id
@@ -74,9 +76,12 @@ defmodule Comp6000.Contexts.Storage do
     path = "#{@storage_path}/#{study_id}/#{task_id}"
 
     if File.exists?(path) do
-      case File.write("#{path}/#{result.unique_participant_id}.#{@file_extension}", "") do
+      case File.write(
+             "#{path}/#{result.unique_participant_id}.#{@file_extension}",
+             @storage_file_start
+           ) do
         :ok ->
-          :ok
+          result
 
         {:error, _reason} ->
           :error
@@ -96,10 +101,15 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?(path) do
       {:ok, current_content} = File.read(path)
-      new_content = "#{current_content}#{@chunk_delimiter}#{chunk}"
+
+      new_content =
+        if current_content == @storage_file_start do
+          "#{current_content}#{chunk}"
+        else
+          "#{current_content}#{@chunk_delimiter}#{chunk}"
+        end
+
       File.write(path, new_content)
-    else
-      :error
     end
   end
 
@@ -112,7 +122,7 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?("#{path_no_ext}.#{@file_extension}") do
       {:ok, content} = File.read("#{path_no_ext}.#{@file_extension}")
-      gzipped_content = :zlib.gzip(content)
+      gzipped_content = :zlib.gzip("#{content}#{@storage_file_end}")
       File.write("#{path_no_ext}.#{@file_extension}", gzipped_content)
 
       :ok =

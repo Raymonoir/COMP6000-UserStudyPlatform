@@ -17,8 +17,7 @@ defmodule Comp6000.Contexts.TasksTest do
     }
 
     invalid_task_params = %{
-      content: "I forgot the task number",
-      study_id: study.id
+      content: "I forgot the task number"
     }
 
     %{

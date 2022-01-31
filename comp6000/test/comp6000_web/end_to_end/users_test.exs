@@ -7,7 +7,7 @@ defmodule Comp6000Web.EndToEnd.UsersTest do
   describe "/users/create route" do
     test "Creating a user and retrieving the created user from the database", %{conn: conn} do
       conn =
-        post(conn, Routes.users_path(conn, :create), %{
+        post(conn, Routes.user_path(conn, :create), %{
           username: "James123",
           password: "JamesPass321",
           email: "James@email.com"
@@ -25,7 +25,7 @@ defmodule Comp6000Web.EndToEnd.UsersTest do
     test "Creating a user with inavlid parameters and attempting to retrieve the created user from the database",
          %{conn: conn} do
       conn =
-        post(conn, Routes.users_path(conn, :create), %{
+        post(conn, Routes.user_path(conn, :create), %{
           username: "James123",
           password: "tooShort",
           email: "NoAtSign"

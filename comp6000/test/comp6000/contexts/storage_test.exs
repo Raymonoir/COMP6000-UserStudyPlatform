@@ -1,48 +1,40 @@
 defmodule Comp6000.Contexts.StorageTest do
   use Comp6000.DataCase, async: true
-  alias Comp6000.Contexts.{Storage, Studies, Users, Tasks, Results}
+  alias Comp6000.Schemas.{Study, Task, Result}
+  alias Comp6000.Contexts.{Storage, Users}
 
   @storage_path Application.get_env(:comp6000, :storage_directory_path)
   @file_extension Application.get_env(:comp6000, :storage_file_extension)
   @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
+  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
+  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
 
+  # Use changeset and Repo directly to miss the use of Storage within the contexts
   setup do
     {:ok, user} =
       Users.create_user(%{username: "Ray123", email: "Ray@email.com", password: "password12345"})
 
     {:ok, study} =
-      Studies.create_study(%{username: user.username, title: "A Study Title", task_count: 0})
+      %Study{}
+      |> Study.changeset(%{username: user.username, title: "A Study Title", task_count: 0})
+      |> Repo.insert()
 
     {:ok, task} =
-      Tasks.create_task(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
+      %Task{}
+      |> Task.changeset(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
+      |> Repo.insert()
 
     {:ok, result} =
-      Results.create_result(%{
+      %Result{}
+      |> Result.changeset(%{
         task_id: task.id,
         unique_participant_id: "567f56d67s67as76d7s8",
         content: "3"
       })
-
-    on_exit(&clear_local_storage/0)
+      |> Repo.insert()
 
     %{study: study, task: task, result: result}
-  end
-
-  # An exceedingly nasty function to delete all files and directories within local-storage once tests are complete
-  defp clear_local_storage() do
-    Enum.map(File.ls!("#{@storage_path}"), fn study_dir ->
-      if File.dir?("#{@storage_path}/#{study_dir}") do
-        Enum.map(File.ls!("#{@storage_path}/#{study_dir}"), fn task_dir ->
-          Enum.map(File.ls!("#{@storage_path}/#{study_dir}/#{task_dir}"), fn file ->
-            File.rm("#{@storage_path}/#{study_dir}/#{task_dir}/#{file}")
-          end)
-
-          File.rmdir!("#{@storage_path}/#{study_dir}/#{task_dir}")
-        end)
-
-        File.rmdir!("#{@storage_path}/#{study_dir}")
-      end
-    end)
   end
 
   describe "create_study_directory/1" do
@@ -93,11 +85,15 @@ defmodule Comp6000.Contexts.StorageTest do
       :ok = File.mkdir("#{@storage_path}/#{study.id}")
       :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
 
-      :ok = Storage.create_result_file(result)
+      assert result == Storage.create_result_file(result)
 
       assert File.exists?(
                "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
              )
+
+      assert File.read!(
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
+             ) == @storage_file_start
     end
   end
 
@@ -113,20 +109,24 @@ defmodule Comp6000.Contexts.StorageTest do
       path =
         "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
 
-      :ok = File.write(path, "")
+      :ok = File.write(path, @storage_file_start)
 
       chunk1 = "chunk1data"
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
       :ok = Storage.append_result_file(result, chunk1)
-      {:ok, ",chunk1data"} = File.read(path)
+      {:ok, "#{@storage_file_start}chunk1data"} = File.read(path)
 
       :ok = Storage.append_result_file(result, chunk2)
-      {:ok, ",chunk1data,chunk2data"} = File.read(path)
+
+      {:ok, "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
       :ok = Storage.append_result_file(result, chunk3)
-      {:ok, ",chunk1data,chunk2data,chunk3data"} = File.read(path)
+
+      {:ok,
+       "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data"} =
+        File.read(path)
     end
   end
 
@@ -142,7 +142,7 @@ defmodule Comp6000.Contexts.StorageTest do
       path =
         "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
 
-      unzipped_content = "A few chunks"
+      unzipped_content = "#{@storage_file_start}A few chunks"
       :ok = File.write(path, unzipped_content)
 
       :ok = Storage.complete_file_storage(result)
@@ -161,7 +161,7 @@ defmodule Comp6000.Contexts.StorageTest do
         )
 
       result = :zlib.gunzip(gzipped_content)
-      assert result == unzipped_content
+      assert result == "#{unzipped_content}#{@storage_file_end}"
     end
   end
 

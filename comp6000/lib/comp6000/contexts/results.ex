@@ -14,7 +14,8 @@ defmodule Comp6000.Contexts.Results do
          |> Repo.insert() do
       {:ok, result} ->
         result
-        |> Storage.create_result_file()
+        |> Storage.create_participant_directory()
+        |> Storage.create_participant_files()
         |> increment_participant_count()
         |> associate_participant_with_study()
 

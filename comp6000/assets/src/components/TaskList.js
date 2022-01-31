@@ -24,12 +24,12 @@ class TaskList extends React.Component {
                             <div key={num} className={"task-list-item full-width " + (task.complete ? "completed" : "")}>
                                 <span className="task-tick">✓</span>
                                 <span className="task-description"><b>{num + 1}: </b>{task.description}</span>
-                                <button className="button tertiary" onClick={() => { this.props.runTest(num); }}>Test</button>
+                                <button className="button tertiary" onClick={() => { this.props.runTest(num, true); }} disabled={this.props.disableTesting}>Test</button>
                             </div>
                         );
                     })
                 }
-                <button className="button primary" onClick={this.runAllTests}>Run all tests</button>
+                <button className="button primary" onClick={this.runAllTests} disabled={this.props.disableTesting}>Run all tests</button>
             </div>
         );
     }

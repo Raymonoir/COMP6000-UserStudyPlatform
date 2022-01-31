@@ -91,7 +91,9 @@ class StudyManager extends React.Component {
                 code: '',
                 function: '',
                 arguments: []
-            }
+            },
+            showConsole: false,
+            loading: false
         };
 
         console.log(this.props.match.params.key);
@@ -112,7 +114,7 @@ class StudyManager extends React.Component {
         this.setState({ code: code });
     }
 
-    runTest(taskNum) {
+    runTest(taskNum, showResult) {
         return new Promise((resolve, reject) => {
             let task = this.state.study.tasks[taskNum];
             // We have already tested if you have passed this test and the code hasn't been changed since then.
@@ -121,6 +123,7 @@ class StudyManager extends React.Component {
                 resolve(task.complete);
             } else {
                 this.setState({
+                    loading: true,
                     lastRanCode: {
                         code: this.state.code,
                         function: task.function,
@@ -135,7 +138,11 @@ class StudyManager extends React.Component {
                         }
                         let updatedStudy = this.state.study;
                         updatedStudy.tasks[taskNum] = task;
-                        this.setState({ study: updatedStudy });
+                        this.setState({
+                            study: updatedStudy,
+                            showConsole: showResult,
+                            loading: false
+                        });
                         resolve(task.complete);
                     }
                 });
@@ -152,7 +159,7 @@ class StudyManager extends React.Component {
     */
     runAllTests(test = 0, originalResolve) {
         return new Promise((resolve, reject) => {
-            this.runTest(test)
+            this.runTest(test, false)
                 .then((passed) => {
                     if (!passed) {
                         if (originalResolve) {
@@ -213,9 +220,14 @@ class StudyManager extends React.Component {
                         ]}
                     />
                 }
-                <TaskList tasks={this.state.study.tasks} runTest={this.runTest} />
+                <TaskList
+                    tasks={this.state.study.tasks}
+                    runTest={this.runTest}
+                    disableTesting={this.state.loading}
+                />
                 <Editor onCodeChange={this.onCodeChange} />
                 <CodeRunner
+                    className={this.state.showConsole ? "" : "hidden"}
                     code={this.state.lastRanCode.code}
                     run={this.state.lastRanCode.function}
                     args={this.state.lastRanCode.arguments}
@@ -223,7 +235,9 @@ class StudyManager extends React.Component {
                 />
                 <button
                     className="button primary"
-                    onClick={() => { this.completeCoding(); }}>
+                    onClick={() => { this.completeCoding(); }}
+                    disabled={this.state.loading}
+                >
                     Complete
                 </button>
             </div>

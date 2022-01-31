@@ -114,12 +114,14 @@ class StudyManager extends React.Component {
         this.setState({ code: code });
     }
 
-    runTest(taskNum, showResult) {
+    runTest(taskNum, showResult, allowRetest = false) {
         return new Promise((resolve, reject) => {
             let task = this.state.study.tasks[taskNum];
-            // We have already tested if you have passed this test and the code hasn't been changed since then.
-            // No need to waste time running the test again
-            if ((this.state.code == this.state.lastRanCode.code) && (this.state.lastRanCode.function == task.function) && task.complete != undefined) {
+            if (!this.state.code) {
+                resolve(task.complete);
+            } else if ((this.state.code == this.state.lastRanCode.code) && (this.state.lastRanCode.function == task.function) && task.complete != undefined) {
+                // We have already tested if you have passed this test and the code hasn't been changed since then.
+                // No need to waste time running the test again
                 resolve(task.complete);
             } else {
                 this.setState({
@@ -138,11 +140,22 @@ class StudyManager extends React.Component {
                         }
                         let updatedStudy = this.state.study;
                         updatedStudy.tasks[taskNum] = task;
-                        this.setState({
+                        let stateUpdate = {
                             study: updatedStudy,
                             showConsole: showResult,
                             loading: false
-                        });
+                        }
+
+                        // Don't keep the test we ran stored to allow retesting again
+                        if (allowRetest) {
+                            stateUpdate.lastRanCode = {
+                                code: '',
+                                function: '',
+                                arguments: []
+                            }
+                        }
+
+                        this.setState(stateUpdate);
                         resolve(task.complete);
                     }
                 });
@@ -162,6 +175,13 @@ class StudyManager extends React.Component {
             this.runTest(test, false)
                 .then((passed) => {
                     if (!passed) {
+                        this.setState({
+                            lastRanCode: {
+                                code: '',
+                                function: '',
+                                arguments: []
+                            }
+                        });
                         if (originalResolve) {
                             originalResolve(false);
                         } else {
@@ -175,13 +195,20 @@ class StudyManager extends React.Component {
                         // made here as it isn't the one returned to the original caller
                         this.runAllTests(test + 1, originalResolve ? originalResolve : resolve);
                     } else {
+                        this.setState({
+                            lastRanCode: {
+                                code: '',
+                                function: '',
+                                arguments: []
+                            }
+                        });
                         if (originalResolve) {
                             originalResolve(true);
                         } else {
                             resolve(true);
                         }
                     }
-                })
+                });
         });
     }
 

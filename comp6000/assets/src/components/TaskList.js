@@ -6,7 +6,7 @@ class TaskList extends React.Component {
     }
 
     runAllTests(e, test = 0) {
-        this.props.runTest(test)
+        this.props.runTest(test, false, true)
             .then(() => {
                 if (test < this.props.tasks.length - 1) {
                     this.runAllTests(e, test + 1);

@@ -2,7 +2,7 @@ ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(Comp6000.Repo, :manual)
 
 ExUnit.after_suite(fn _ ->
-  storage_path = Application.get_env(:comp6000, :storage_directory_path)
+  storage_path = Application.get_env(:comp6000, :storage_path)
 
   Enum.map(File.ls!("#{storage_path}"), fn study_dir ->
     if File.dir?("#{storage_path}/#{study_dir}") do

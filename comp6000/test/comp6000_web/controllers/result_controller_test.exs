@@ -2,15 +2,14 @@ defmodule Comp6000Web.Study.ResultControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Users, Studies, Tasks, Results}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @storage_path Application.get_env(:comp6000, :storage_path)
+  @extension Application.get_env(:comp6000, :extension)
+  @completed_extension Application.get_env(:comp6000, :completed_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
-  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
-  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
-
-  @compile_data_filename "compile-data"
-  @replay_data_filename "replay-data"
+  @file_start Application.get_env(:comp6000, :file_start)
+  @file_end Application.get_env(:comp6000, :file_end)
+  @compile_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :compile_filename)
 
   setup %{conn: conn} do
     {:ok, user} =
@@ -170,14 +169,13 @@ defmodule Comp6000Web.Study.ResultControllerTest do
           @result_json
         )
 
-      path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_data_filename}.#{@file_extension}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_filename}.#{@extension}"
 
       assert File.exists?(path)
 
       assert json_response(conn, 200) == %{"replay-data_appeneded" => "ok"}
 
-      assert "#{@storage_file_start}content" == File.read!(path)
+      assert "#{@file_start}content" == File.read!(path)
 
       post(
         conn,
@@ -185,7 +183,7 @@ defmodule Comp6000Web.Study.ResultControllerTest do
         @result_json
       )
 
-      assert "#{@storage_file_start}content#{@chunk_delimiter}content" == File.read!(path)
+      assert "#{@file_start}content#{@chunk_delimiter}content" == File.read!(path)
     end
 
     test "valid parameters appends compile data", %{conn: conn, study: study, task: task} do
@@ -198,14 +196,13 @@ defmodule Comp6000Web.Study.ResultControllerTest do
           @result_json
         )
 
-      path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_data_filename}.#{@file_extension}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_filename}.#{@extension}"
 
       assert File.exists?(path)
 
       assert json_response(conn, 200) == %{"compile-data_appeneded" => "ok"}
 
-      assert "#{@storage_file_start}content" == File.read!(path)
+      assert "#{@file_start}content" == File.read!(path)
 
       post(
         conn,
@@ -213,7 +210,7 @@ defmodule Comp6000Web.Study.ResultControllerTest do
         @result_json
       )
 
-      assert "#{@storage_file_start}content#{@chunk_delimiter}content" == File.read!(path)
+      assert "#{@file_start}content#{@chunk_delimiter}content" == File.read!(path)
     end
   end
 
@@ -228,11 +225,11 @@ defmodule Comp6000Web.Study.ResultControllerTest do
         unique_participant_id: uuid
       })
 
-      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_data_filename}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_filename}"
 
       File.write(
-        "#{path}.#{@file_extension}",
-        "#{@storage_file_start}#{content}"
+        "#{path}.#{@extension}",
+        "#{@file_start}#{content}"
       )
 
       conn =
@@ -244,10 +241,10 @@ defmodule Comp6000Web.Study.ResultControllerTest do
       assert json_response(conn, 200) == %{"replay-data_completed" => "ok"}
 
       assert File.exists?("#{path}.#{@completed_extension}")
-      refute File.exists?("#{path}.#{@file_extension}")
+      refute File.exists?("#{path}.#{@extension}")
 
       assert File.read!("#{path}.#{@completed_extension}") ==
-               :zlib.gzip("#{@storage_file_start}#{content}#{@storage_file_end}")
+               :zlib.gzip("#{@file_start}#{content}#{@file_end}")
     end
 
     test "valid parameters completes compile_data", %{conn: conn, study: study, task: task} do
@@ -260,11 +257,11 @@ defmodule Comp6000Web.Study.ResultControllerTest do
         unique_participant_id: uuid
       })
 
-      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_data_filename}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_filename}"
 
       File.write(
-        "#{path}.#{@file_extension}",
-        "#{@storage_file_start}#{content}"
+        "#{path}.#{@extension}",
+        "#{@file_start}#{content}"
       )
 
       conn =
@@ -276,10 +273,10 @@ defmodule Comp6000Web.Study.ResultControllerTest do
       assert json_response(conn, 200) == %{"compile-data_completed" => "ok"}
 
       assert File.exists?("#{path}.#{@completed_extension}")
-      refute File.exists?("#{path}.#{@file_extension}")
+      refute File.exists?("#{path}.#{@extension}")
 
       assert File.read!("#{path}.#{@completed_extension}") ==
-               :zlib.gzip("#{@storage_file_start}#{content}#{@storage_file_end}")
+               :zlib.gzip("#{@file_start}#{content}#{@file_end}")
     end
   end
 

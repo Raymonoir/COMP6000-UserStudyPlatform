@@ -3,15 +3,14 @@ defmodule Comp6000.Contexts.StorageTest do
   alias Comp6000.Schemas.{Study, Task, Result}
   alias Comp6000.Contexts.{Storage, Users}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @storage_path Application.get_env(:comp6000, :storage_path)
+  @extension Application.get_env(:comp6000, :extension)
+  @completed_extension Application.get_env(:comp6000, :completed_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
-  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
-  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
-
-  @compile_data_filename "compile-data"
-  @replay_data_filename "replay-data"
+  @file_start Application.get_env(:comp6000, :file_start)
+  @file_end Application.get_env(:comp6000, :file_end)
+  @compile_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :compile_filename)
 
   # Use changeset and Repo directly to miss the use of Storage within the contexts
   setup do
@@ -103,20 +102,20 @@ defmodule Comp6000.Contexts.StorageTest do
       assert result == Storage.create_participant_files(result)
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_data_filename}.#{@file_extension}"
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
              )
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_data_filename}.#{@file_extension}"
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
              )
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_data_filename}.#{@file_extension}"
-             ) == @storage_file_start
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+             ) == @file_start
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_data_filename}.#{@file_extension}"
-             ) == @storage_file_start
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+             ) == @file_start
     end
   end
 
@@ -129,24 +128,24 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_data_filename}.#{@file_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
 
-      :ok = File.write(path, @storage_file_start)
+      :ok = File.write(path, @file_start)
 
       chunk1 = "chunk1data"
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
       :ok = Storage.append_data(result, chunk1, :replay)
-      {:ok, "#{@storage_file_start}chunk1data"} = File.read(path)
+      {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
       :ok = Storage.append_data(result, chunk2, :replay)
 
-      {:ok, "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
+      {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
       :ok = Storage.append_data(result, chunk3, :replay)
 
-      "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
+      "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
         File.read!(path)
     end
 
@@ -158,24 +157,24 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_data_filename}.#{@file_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
 
-      :ok = File.write(path, @storage_file_start)
+      :ok = File.write(path, @file_start)
 
       chunk1 = "chunk1data"
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
       :ok = Storage.append_data(result, chunk1, :compile)
-      {:ok, "#{@storage_file_start}chunk1data"} = File.read(path)
+      {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
       :ok = Storage.append_data(result, chunk2, :compile)
 
-      {:ok, "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
+      {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
       :ok = Storage.append_data(result, chunk3, :compile)
 
-      "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
+      "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
         File.read!(path)
     end
   end
@@ -189,21 +188,21 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path_no_ext =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_data_filename}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}"
 
-      unzipped_content = "#{@storage_file_start}A few chunks"
-      :ok = File.write("#{path_no_ext}.#{@file_extension}", unzipped_content)
+      unzipped_content = "#{@file_start}A few chunks"
+      :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
 
       :ok = Storage.complete_data(result, :replay)
 
       assert File.exists?("#{path_no_ext}.#{@completed_extension}")
 
-      refute File.exists?("#{path_no_ext}.#{@file_extension}")
+      refute File.exists?("#{path_no_ext}.#{@extension}")
 
       {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
 
       result = :zlib.gunzip(gzipped_content)
-      assert result == "#{unzipped_content}#{@storage_file_end}"
+      assert result == "#{unzipped_content}#{@file_end}"
     end
 
     test "gzips content and renames compile_data file with .gzip file extension", %{
@@ -214,21 +213,21 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path_no_ext =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_data_filename}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}"
 
-      unzipped_content = "#{@storage_file_start}A few chunks"
-      :ok = File.write("#{path_no_ext}.#{@file_extension}", unzipped_content)
+      unzipped_content = "#{@file_start}A few chunks"
+      :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
 
       :ok = Storage.complete_data(result, :compile)
 
       assert File.exists?("#{path_no_ext}.#{@completed_extension}")
 
-      refute File.exists?("#{path_no_ext}.#{@file_extension}")
+      refute File.exists?("#{path_no_ext}.#{@extension}")
 
       {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
 
       result = :zlib.gunzip(gzipped_content)
-      assert result == "#{unzipped_content}#{@storage_file_end}"
+      assert result == "#{unzipped_content}#{@file_end}"
     end
   end
 
@@ -241,7 +240,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_data_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
@@ -258,7 +257,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_data_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)

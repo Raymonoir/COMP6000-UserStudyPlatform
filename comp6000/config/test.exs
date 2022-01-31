@@ -3,7 +3,7 @@ import Config
 config :bcrypt_elixir, :log_rounds, 1
 
 config :comp6000,
-  storage_directory_path: "test/support/local-storage"
+  storage_path: "test/support/local-storage"
 
 # Configure your database
 #

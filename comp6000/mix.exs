@@ -20,7 +20,7 @@ defmodule Comp6000.MixProject do
   def application do
     [
       mod: {Comp6000.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :bcrypt_elixir]
     ]
   end
 

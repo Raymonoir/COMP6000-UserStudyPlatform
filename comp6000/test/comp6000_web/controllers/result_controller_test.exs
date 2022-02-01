@@ -2,12 +2,14 @@ defmodule Comp6000Web.Study.ResultControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Users, Studies, Tasks, Results}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @storage_path Application.get_env(:comp6000, :storage_path)
+  @extension Application.get_env(:comp6000, :extension)
+  @completed_extension Application.get_env(:comp6000, :completed_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
-  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
-  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
+  @file_start Application.get_env(:comp6000, :file_start)
+  @file_end Application.get_env(:comp6000, :file_end)
+  @compile_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :compile_filename)
 
   setup %{conn: conn} do
     {:ok, user} =
@@ -156,36 +158,63 @@ defmodule Comp6000Web.Study.ResultControllerTest do
     end
   end
 
-  describe "POST /api/study/:study_id/task/:task_id/:uuid/replay_data/append" do
+  describe "POST /api/study/:study_id/task/:task_id/:uuid/replay-data/append" do
     test "valid parameters appends replay data", %{conn: conn, study: study, task: task} do
       uuid = UUID.uuid4()
 
       conn =
         post(
           conn,
-          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay_data/append",
+          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay-data/append",
           @result_json
         )
 
-      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}.#{@file_extension}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_filename}.#{@extension}"
 
       assert File.exists?(path)
 
-      assert json_response(conn, 200) == %{"result_appeneded" => "ok"}
+      assert json_response(conn, 200) == %{"replay-data_appeneded" => "ok"}
 
-      assert "#{@storage_file_start}content" == File.read!(path)
+      assert "#{@file_start}content" == File.read!(path)
 
       post(
         conn,
-        "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay_data/append",
+        "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay-data/append",
         @result_json
       )
 
-      assert "#{@storage_file_start}content#{@chunk_delimiter}content" == File.read!(path)
+      assert "#{@file_start}content#{@chunk_delimiter}content" == File.read!(path)
+    end
+
+    test "valid parameters appends compile data", %{conn: conn, study: study, task: task} do
+      uuid = UUID.uuid4()
+
+      conn =
+        post(
+          conn,
+          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/compile-data/append",
+          @result_json
+        )
+
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_filename}.#{@extension}"
+
+      assert File.exists?(path)
+
+      assert json_response(conn, 200) == %{"compile-data_appeneded" => "ok"}
+
+      assert "#{@file_start}content" == File.read!(path)
+
+      post(
+        conn,
+        "/api/study/#{study.id}/task/#{task.id}/#{uuid}/compile-data/append",
+        @result_json
+      )
+
+      assert "#{@file_start}content#{@chunk_delimiter}content" == File.read!(path)
     end
   end
 
-  describe "GET /api/study/:study_id/task/:task_id/:uuid/replay_data/complete" do
+  describe "GET /api/study/:study_id/task/:task_id/:uuid/replay-data/complete" do
     test "valid parameters completes replay_data", %{conn: conn, study: study, task: task} do
       uuid = UUID.uuid4()
       content = "Some Content!"
@@ -196,26 +225,58 @@ defmodule Comp6000Web.Study.ResultControllerTest do
         unique_participant_id: uuid
       })
 
-      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}"
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@replay_filename}"
 
       File.write(
-        "#{path}.#{@file_extension}",
-        "#{@storage_file_start}#{content}"
+        "#{path}.#{@extension}",
+        "#{@file_start}#{content}"
       )
 
       conn =
         get(
           conn,
-          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay_data/complete"
+          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/replay-data/complete"
         )
 
-      assert json_response(conn, 200) == %{"result_completed" => "ok"}
+      assert json_response(conn, 200) == %{"replay-data_completed" => "ok"}
 
       assert File.exists?("#{path}.#{@completed_extension}")
-      refute File.exists?("#{path}.#{@file_extension}")
+      refute File.exists?("#{path}.#{@extension}")
 
       assert File.read!("#{path}.#{@completed_extension}") ==
-               :zlib.gzip("#{@storage_file_start}#{content}#{@storage_file_end}")
+               :zlib.gzip("#{@file_start}#{content}#{@file_end}")
+    end
+
+    test "valid parameters completes compile_data", %{conn: conn, study: study, task: task} do
+      uuid = UUID.uuid4()
+      content = "Some Content!"
+
+      Results.create_result(%{
+        task_id: task.id,
+        content: "placeholder",
+        unique_participant_id: uuid
+      })
+
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{uuid}/#{@compile_filename}"
+
+      File.write(
+        "#{path}.#{@extension}",
+        "#{@file_start}#{content}"
+      )
+
+      conn =
+        get(
+          conn,
+          "/api/study/#{study.id}/task/#{task.id}/#{uuid}/compile-data/complete"
+        )
+
+      assert json_response(conn, 200) == %{"compile-data_completed" => "ok"}
+
+      assert File.exists?("#{path}.#{@completed_extension}")
+      refute File.exists?("#{path}.#{@extension}")
+
+      assert File.read!("#{path}.#{@completed_extension}") ==
+               :zlib.gzip("#{@file_start}#{content}#{@file_end}")
     end
   end
 

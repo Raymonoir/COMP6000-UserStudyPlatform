@@ -2,7 +2,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
+  @storage_path Application.get_env(:comp6000, :storage_path)
 
   setup do
     Users.create_user(%{
@@ -18,8 +18,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
 
   @valid_study %{
     title: "My Study",
-    username: "Ray123",
-    task_count: 0
+    username: "Ray123"
   }
 
   @invalid_study %{

@@ -74,16 +74,17 @@ defmodule Comp6000Web.Router do
       post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
       get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
 
+      # Where :datatype is either "compile-data" or "replay-data"
       post(
-        "/:study_id/task/:task_id/:uuid/replay_data/append",
+        "/:study_id/task/:task_id/:uuid/:data_type/append",
         ResultController,
-        :append_replay_data
+        :append_data
       )
 
       get(
-        "/:study_id/task/:task_id/:uuid/replay_data/complete",
+        "/:study_id/task/:task_id/:uuid/:data_type/complete",
         ResultController,
-        :complete_replay_data
+        :complete_data
       )
     end
 

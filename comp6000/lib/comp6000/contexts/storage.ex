@@ -1,12 +1,14 @@
 defmodule Comp6000.Contexts.Storage do
   alias Comp6000.Schemas.{Study, Task, Result}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @storage_path Application.get_env(:comp6000, :storage_path)
+  @extension Application.get_env(:comp6000, :extension)
+  @completed_extension Application.get_env(:comp6000, :completed_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
-  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
-  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
+  @file_start Application.get_env(:comp6000, :file_start)
+  @file_end Application.get_env(:comp6000, :file_end)
+  @compile_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :compile_filename)
 
   def create_study_directory(%Study{} = study) do
     study_id = study.id
@@ -68,7 +70,7 @@ defmodule Comp6000.Contexts.Storage do
     end
   end
 
-  def create_result_file(%Result{} = result) do
+  def create_participant_directory(%Result{} = result) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
     task_id = task.id
@@ -76,34 +78,53 @@ defmodule Comp6000.Contexts.Storage do
     path = "#{@storage_path}/#{study_id}/#{task_id}"
 
     if File.exists?(path) do
-      case File.write(
-             "#{path}/#{result.unique_participant_id}.#{@file_extension}",
-             @storage_file_start
-           ) do
+      case File.mkdir("#{path}/#{result.unique_participant_id}") do
         :ok ->
           result
 
-        {:error, _reason} ->
-          :error
+        {:error, :eexist} ->
+          result
+
+        {:error, reason} ->
+          {:error, reason}
       end
     else
       :error
     end
   end
 
-  def append_result_file(%Result{} = result, chunk) do
+  def create_participant_files(%Result{} = result) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
     task_id = task.id
 
-    path =
-      "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}.#{@file_extension}"
+    :ok =
+      File.write(
+        "#{get_participant_files_path(result, :replay)}.#{@extension}",
+        @file_start
+      )
+
+    :ok =
+      File.write(
+        "#{get_participant_files_path(result, :compile)}.#{@extension}",
+        @file_start
+      )
+
+    result
+  end
+
+  def append_data(%Result{} = result, chunk, filetype) do
+    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
+    study_id = task.study_id
+    task_id = task.id
+
+    path = "#{get_participant_files_path(result, filetype)}.#{@extension}"
 
     if File.exists?(path) do
       {:ok, current_content} = File.read(path)
 
       new_content =
-        if current_content == @storage_file_start do
+        if current_content == @file_start do
           "#{current_content}#{chunk}"
         else
           "#{current_content}#{@chunk_delimiter}#{chunk}"
@@ -113,38 +134,50 @@ defmodule Comp6000.Contexts.Storage do
     end
   end
 
-  def complete_file_storage(%Result{} = result) do
+  def complete_data(%Result{} = result, filetype) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
     task_id = task.id
 
-    path_no_ext = "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}"
+    path_no_ext = "#{get_participant_files_path(result, filetype)}"
 
-    if File.exists?("#{path_no_ext}.#{@file_extension}") do
-      {:ok, content} = File.read("#{path_no_ext}.#{@file_extension}")
-      gzipped_content = :zlib.gzip("#{content}#{@storage_file_end}")
-      File.write("#{path_no_ext}.#{@file_extension}", gzipped_content)
+    if File.exists?("#{path_no_ext}.#{@extension}") do
+      {:ok, content} = File.read("#{path_no_ext}.#{@extension}")
+      gzipped_content = :zlib.gzip("#{content}#{@file_end}")
+      File.write("#{path_no_ext}.#{@extension}", gzipped_content)
 
-      :ok =
-        File.rename("#{path_no_ext}.#{@file_extension}", "#{path_no_ext}.#{@completed_extension}")
+      :ok = File.rename("#{path_no_ext}.#{@extension}", "#{path_no_ext}.#{@completed_extension}")
     else
       :error
     end
   end
 
-  def get_completed_file_content(%Result{} = result) do
+  def get_completed_data(%Result{} = result, filetype) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
     task_id = task.id
 
-    path =
-      "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}.#{@completed_extension}"
+    path = "#{get_participant_files_path(result, filetype)}.#{@completed_extension}"
 
     if File.exists?(path) do
       {:ok, content} = File.read(path)
       :zlib.gunzip(content)
     else
       :error
+    end
+  end
+
+  defp get_participant_files_path(%Result{} = result, filetype) do
+    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
+    study_id = task.study_id
+    task_id = task.id
+
+    case filetype do
+      :compile ->
+        "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}/#{@compile_filename}"
+
+      :replay ->
+        "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}/#{@replay_filename}"
     end
   end
 end

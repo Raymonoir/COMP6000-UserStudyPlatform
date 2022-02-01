@@ -2,10 +2,17 @@ defmodule Comp6000Web.Study.ResultController do
   use Comp6000Web, :controller
   alias Comp6000.Contexts.{Tasks, Results, Storage}
 
-  def append_replay_data(
+  def append_data(
         conn,
-        %{"task_id" => task_id, "uuid" => uuid, "content" => content} = _params
+        %{"task_id" => task_id, "uuid" => uuid, "data_type" => data_type, "content" => content} =
+          _params
       ) do
+    filetype =
+      case data_type do
+        "compile-data" -> :compile
+        "replay-data" -> :replay
+      end
+
     task = Tasks.get_task_by(id: task_id)
 
     result = Results.get_result_by(task_id: task_id, unique_participant_id: uuid)
@@ -24,18 +31,28 @@ defmodule Comp6000Web.Study.ResultController do
         result
       end
 
-    json(conn, %{result_appeneded: Storage.append_result_file(result, content)})
+    json(conn, %{
+      String.to_atom("#{data_type}_appeneded") => Storage.append_data(result, content, filetype)
+    })
   end
 
-  def complete_replay_data(
+  def complete_data(
         conn,
-        %{"task_id" => task_id, "uuid" => uuid} = _params
+        %{"task_id" => task_id, "data_type" => data_type, "uuid" => uuid} = _params
       ) do
+    filetype =
+      case data_type do
+        "compile-data" -> :compile
+        "replay-data" -> :replay
+      end
+
     task = Tasks.get_task_by(id: task_id)
 
     result = Results.get_result_by(task_id: task_id, unique_participant_id: uuid)
 
-    json(conn, %{result_completed: Storage.complete_file_storage(result)})
+    json(conn, %{
+      String.to_atom("#{data_type}_completed") => Storage.complete_data(result, filetype)
+    })
   end
 
   def background_submit(

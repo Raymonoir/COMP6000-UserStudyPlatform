@@ -66,6 +66,7 @@ defmodule Comp6000Web.Router do
       post("/:study_id/task/create", TaskController, :create)
       get("/:study_id/get-tasks", TaskController, :get_tasks)
 
+      get("/:study_id/task/:task_id/answer/get", AnswerController, :get)
       post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
       post("/:study_id/task/:task_id/answer/edit", AnswerController, :edit)
       get("/:study_id/task/:task_id/answer/delete", AnswerController, :delete)

@@ -12,6 +12,12 @@ defmodule Comp6000Web.Study.AnswerController do
     end
   end
 
+  def get(conn, %{"task_id" => task_id} = _params) do
+    answer = Answers.get_answer_by(task_id: task_id)
+
+    json(conn, %{answer: answer})
+  end
+
   def edit(conn, %{"task_id" => task_id} = params) do
     answer = Answers.get_answer_by(task_id: task_id)
 

@@ -24,7 +24,7 @@ defmodule Comp6000.Contexts.Tasks do
   def get_all_tasks_for_study(%Study{} = study) do
     query = from(t in Task, where: t.study_id == ^study.id)
 
-    Repo.all(query)
+    Repo.all(query) |> Repo.preload(:answer)
   end
 
   def update_task(%Task{} = task, params) do

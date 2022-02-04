@@ -3,7 +3,7 @@ defmodule Comp6000.Schemas.Task do
   import Ecto.Changeset
   alias Comp6000.Schemas.{Study, Result, Answer, Task}
 
-  @derive {Jason.Encoder, only: [:task_number, :content, :optional_info, :id]}
+  @derive {Jason.Encoder, only: [:task_number, :content, :optional_info, :id, :answer]}
   # Content = the actual question the researcher is asking
   schema "task" do
     belongs_to(:study, Study)

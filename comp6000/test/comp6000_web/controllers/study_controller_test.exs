@@ -1,6 +1,6 @@
 defmodule Comp6000Web.Study.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
+  alias Comp6000.Contexts.{Studies, Users, Tasks, Results, Answers}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
 
@@ -166,6 +166,12 @@ defmodule Comp6000Web.Study.StudyControllerTest do
           optional_info: "background"
         })
 
+      {:ok, answer} =
+        Answers.create_answer(%{
+          content: "How are you?",
+          task_id: task1.id
+        })
+
       {:ok, _result} =
         Results.create_result(%{
           task_id: task1.id,
@@ -185,6 +191,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
           "task_count" => task_count,
           "tasks" => [
             %{
+              "answer" => %{"content" => "How are you?", "id" => answer_id},
               "content" => "What is life?",
               "id" => task1_id,
               "optional_info" => nil,
@@ -210,6 +217,8 @@ defmodule Comp6000Web.Study.StudyControllerTest do
 
       assert task2_id == task2.id
       assert task2_number == task2.task_number
+
+      assert answer_id == answer.id
     end
   end
 end

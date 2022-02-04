@@ -80,4 +80,17 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
       refute Answers.get_answer_by(id: answer.id)
     end
   end
+
+  describe "GET /api/study/:study_id/task/:task_id/answer/get" do
+    test "valid parameters gets answer", %{conn: conn, study: study, task: task} do
+      {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
+
+      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/answer/get")
+
+      %{"answer" => answer_data} = json_response(conn, 200)
+
+      assert answer_data["content"] == answer.content
+      assert answer_data["id"] == answer.id
+    end
+  end
 end

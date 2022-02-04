@@ -3,12 +3,14 @@ defmodule Comp6000.Contexts.StorageTest do
   alias Comp6000.Schemas.{Study, Task, Result}
   alias Comp6000.Contexts.{Storage, Users}
 
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
+  @storage_path Application.get_env(:comp6000, :storage_path)
+  @extension Application.get_env(:comp6000, :extension)
+  @completed_extension Application.get_env(:comp6000, :completed_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
-  @storage_file_start Application.get_env(:comp6000, :storage_file_start)
-  @storage_file_end Application.get_env(:comp6000, :storage_file_end)
+  @file_start Application.get_env(:comp6000, :file_start)
+  @file_end Application.get_env(:comp6000, :file_end)
+  @compile_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :compile_filename)
 
   # Use changeset and Repo directly to miss the use of Storage within the contexts
   setup do
@@ -80,108 +82,194 @@ defmodule Comp6000.Contexts.StorageTest do
     end
   end
 
-  describe "create_result_file/1" do
-    test "creates file at correct location", %{study: study, task: task, result: result} do
+  describe "create_participant_directory/1" do
+    test "creates directory using a result", %{study: study, task: task, result: result} do
       :ok = File.mkdir("#{@storage_path}/#{study.id}")
       :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
 
-      assert result == Storage.create_result_file(result)
+      assert result = Storage.create_participant_directory(result)
 
-      assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
-             )
+      path = "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}"
 
-      assert File.read!(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
-             ) == @storage_file_start
+      assert File.exists?(path)
     end
   end
 
-  describe "append_result_file/2" do
-    test "appends data to created results file", %{
+  describe "create_participant_files/1" do
+    test "creates files at correct location", %{study: study, task: task, result: result} do
+      create_all_dirs(study, task, result)
+
+      assert result == Storage.create_participant_files(result)
+
+      assert File.exists?(
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+             )
+
+      assert File.exists?(
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+             )
+
+      assert File.read!(
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+             ) == @file_start
+
+      assert File.read!(
+               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+             ) == @file_start
+    end
+  end
+
+  describe "append_data/3" do
+    test "appends data to replay_data file", %{
       study: study,
       task: task,
       result: result
     } do
-      :ok = File.mkdir("#{@storage_path}/#{study.id}")
-      :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
+      create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
 
-      :ok = File.write(path, @storage_file_start)
+      :ok = File.write(path, @file_start)
 
       chunk1 = "chunk1data"
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
-      :ok = Storage.append_result_file(result, chunk1)
-      {:ok, "#{@storage_file_start}chunk1data"} = File.read(path)
+      :ok = Storage.append_data(result, chunk1, :replay)
+      {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
-      :ok = Storage.append_result_file(result, chunk2)
+      :ok = Storage.append_data(result, chunk2, :replay)
 
-      {:ok, "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
+      {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
-      :ok = Storage.append_result_file(result, chunk3)
+      :ok = Storage.append_data(result, chunk3, :replay)
 
-      {:ok,
-       "#{@storage_file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data"} =
-        File.read(path)
+      "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
+        File.read!(path)
     end
-  end
 
-  describe "complete_file_storage/1" do
-    test "gzips content and renames file with .gzip file extension", %{
+    test "appends data to compile_data file", %{
       study: study,
       task: task,
       result: result
     } do
-      :ok = File.mkdir("#{@storage_path}/#{study.id}")
-      :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
+      create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
 
-      unzipped_content = "#{@storage_file_start}A few chunks"
-      :ok = File.write(path, unzipped_content)
+      :ok = File.write(path, @file_start)
 
-      :ok = Storage.complete_file_storage(result)
+      chunk1 = "chunk1data"
+      chunk2 = "chunk2data"
+      chunk3 = "chunk3data"
 
-      assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@completed_extension}"
-             )
+      :ok = Storage.append_data(result, chunk1, :compile)
+      {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
-      refute File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@file_extension}"
-             )
+      :ok = Storage.append_data(result, chunk2, :compile)
 
-      {:ok, gzipped_content} =
-        File.read(
-          "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@completed_extension}"
-        )
+      {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
+
+      :ok = Storage.append_data(result, chunk3, :compile)
+
+      "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
+        File.read!(path)
+    end
+  end
+
+  describe "complete_data/2" do
+    test "gzips content and renames replay_data file with .gzip file extension", %{
+      study: study,
+      task: task,
+      result: result
+    } do
+      create_all_dirs(study, task, result)
+
+      path_no_ext =
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}"
+
+      unzipped_content = "#{@file_start}A few chunks"
+      :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
+
+      :ok = Storage.complete_data(result, :replay)
+
+      assert File.exists?("#{path_no_ext}.#{@completed_extension}")
+
+      refute File.exists?("#{path_no_ext}.#{@extension}")
+
+      {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
 
       result = :zlib.gunzip(gzipped_content)
-      assert result == "#{unzipped_content}#{@storage_file_end}"
+      assert result == "#{unzipped_content}#{@file_end}"
     end
-  end
 
-  describe "get_completed_file_content/1" do
-    test "returns content stored in a completed file", %{
+    test "gzips content and renames compile_data file with .gzip file extension", %{
       study: study,
       task: task,
       result: result
     } do
-      :ok = File.mkdir("#{@storage_path}/#{study.id}")
-      :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
+      create_all_dirs(study, task, result)
+
+      path_no_ext =
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}"
+
+      unzipped_content = "#{@file_start}A few chunks"
+      :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
+
+      :ok = Storage.complete_data(result, :compile)
+
+      assert File.exists?("#{path_no_ext}.#{@completed_extension}")
+
+      refute File.exists?("#{path_no_ext}.#{@extension}")
+
+      {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
+
+      result = :zlib.gunzip(gzipped_content)
+      assert result == "#{unzipped_content}#{@file_end}"
+    end
+  end
+
+  describe "get_completed_data/2" do
+    test "returns content stored in completed replay_data file", %{
+      study: study,
+      task: task,
+      result: result
+    } do
+      create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
       :ok = File.write(path, gzipped_content)
 
-      assert unzipped_content == Storage.get_completed_file_content(result)
+      assert unzipped_content == Storage.get_completed_data(result, :replay)
     end
+
+    test "returns content stored in completed compile_data file", %{
+      study: study,
+      task: task,
+      result: result
+    } do
+      create_all_dirs(study, task, result)
+
+      path =
+        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@completed_extension}"
+
+      unzipped_content = "A few chunks"
+      gzipped_content = :zlib.gzip(unzipped_content)
+      :ok = File.write(path, gzipped_content)
+
+      assert unzipped_content == Storage.get_completed_data(result, :compile)
+    end
+  end
+
+  def create_all_dirs(study, task, result) do
+    File.mkdir!("#{@storage_path}/#{study.id}")
+    File.mkdir!("#{@storage_path}/#{study.id}/#{task.id}")
+    File.mkdir!("#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}")
   end
 end

@@ -1,4 +1,4 @@
-defmodule Comp6000Web.Study.AnswerController do
+defmodule Comp6000Web.AnswerController do
   use Comp6000Web, :controller
   alias Comp6000.Contexts.Answers
 
@@ -12,14 +12,18 @@ defmodule Comp6000Web.Study.AnswerController do
     end
   end
 
-  def get(conn, %{"task_id" => task_id} = _params) do
-    answer = Answers.get_answer_by(task_id: task_id)
+  def get(conn, %{"answer_id" => answer_id} = _params) do
+    answer = Answers.get_answer_by(id: answer_id)
 
-    json(conn, %{answer: answer})
+    if answer != nil do
+      json(conn, %{answer: answer})
+    else
+      json(conn, %{answer: nil})
+    end
   end
 
-  def edit(conn, %{"task_id" => task_id} = params) do
-    answer = Answers.get_answer_by(task_id: task_id)
+  def edit(conn, %{"answer_id" => answer_id} = params) do
+    answer = Answers.get_answer_by(id: answer_id)
 
     case Answers.update_answer(answer, params) do
       {:ok, answer} ->
@@ -30,8 +34,8 @@ defmodule Comp6000Web.Study.AnswerController do
     end
   end
 
-  def delete(conn, %{"task_id" => task_id} = params) do
-    answer = Answers.get_answer_by(task_id: task_id)
+  def delete(conn, %{"answer_id" => answer_id} = _params) do
+    answer = Answers.get_answer_by(id: answer_id)
     {:ok, answer} = Answers.delete_answer(answer)
     json(conn, %{deleted_answer: answer.id})
   end

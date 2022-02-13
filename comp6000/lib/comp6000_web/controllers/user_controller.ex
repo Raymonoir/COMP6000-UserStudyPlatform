@@ -40,15 +40,15 @@ defmodule Comp6000Web.User.UserController do
     |> configure_session(renew: true)
   end
 
-  def get_studies(conn, _params) do
-    current_user = get_session(conn, :current_user)
+  # def get_studies(conn, _params) do
+  #   current_user = get_session(conn, :current_user)
 
-    if current_user == nil do
-      json(conn, %{user: "not logged in"})
-    else
-      json(conn, user_studies: Comp6000.Contexts.Studies.get_studies_for_user(current_user))
-    end
-  end
+  #   if current_user == nil do
+  #     json(conn, %{user: "not logged in"})
+  #   else
+  #     json(conn, user_studies: Comp6000.Contexts.Studies.get_studies_for_user(current_user))
+  #   end
+  # end
 
   def edit(conn, %{"username" => username} = params) do
     user = Users.get_user_by(username: username)

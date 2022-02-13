@@ -19,21 +19,21 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
     %{conn: conn, study: study, task: task}
   end
 
-  describe "POST /api/study/:study_id/task/:task_id/answer/create" do
-    test "valid parameters creates an answer to a task", %{conn: conn, task: task, study: study} do
+  describe "POST /api/answer/create" do
+    test "valid parameters creates an answer to a task", %{conn: conn, task: task} do
       answer_data = %{content: "the answer should be 4566"}
 
-      conn = post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/create", answer_data)
+      conn = post(conn, "/api/answer/create", Map.put(answer_data, :task_id, task.id))
 
       result = json_response(conn, 200)
 
       assert %{"created_answer" => _id} = result
     end
 
-    test "invalid parameters does not create an answer", %{conn: conn, task: task, study: study} do
+    test "invalid parameters does not create an answer", %{conn: conn, task: task} do
       answer_data = %{not_content: "nope"}
 
-      conn = post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/create", answer_data)
+      conn = post(conn, "/api/answer/create", Map.put(answer_data, :task_id, task.id))
 
       result = json_response(conn, 200)
 
@@ -41,12 +41,13 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
     end
   end
 
-  describe "POST /api/study/:study_id/task/:task_id/answer/edit" do
-    test "valid parameters edits answer", %{conn: conn, study: study, task: task} do
+  describe "POST /api/answer/edit" do
+    test "valid parameters edits answer", %{conn: conn, task: task} do
       {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
 
       conn =
-        post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/edit", %{
+        post(conn, "/api/answer/edit", %{
+          answer_id: answer.id,
           content: "different_content"
         })
 
@@ -55,11 +56,12 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
       assert Answers.get_answer_by(id: answer.id).content == "different_content"
     end
 
-    test "invalid parameters does not edit answer", %{conn: conn, study: study, task: task} do
+    test "invalid parameters does not edit answer", %{conn: conn, task: task} do
       {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
 
       conn =
-        post(conn, "/api/study/#{study.id}/task/#{task.id}/answer/edit", %{
+        post(conn, "/api/answer/edit", %{
+          answer_id: answer.id,
           content: nil
         })
 
@@ -69,11 +71,11 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
     end
   end
 
-  describe "GET /api/study/:study_id/task/:task_id/answer/delete" do
-    test "valid parameters deletes answer", %{conn: conn, study: study, task: task} do
+  describe "POST /api/answer/delete" do
+    test "valid parameters deletes answer", %{conn: conn, task: task} do
       {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
 
-      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/answer/delete")
+      conn = post(conn, "/api/answer/delete", %{answer_id: answer.id})
 
       result = json_response(conn, 200)
       assert result == %{"deleted_answer" => answer.id}
@@ -81,11 +83,11 @@ defmodule Comp6000Web.Study.AnswerControllerTest do
     end
   end
 
-  describe "GET /api/study/:study_id/task/:task_id/answer/get" do
-    test "valid parameters gets answer", %{conn: conn, study: study, task: task} do
+  describe "POST /api/answer/get" do
+    test "valid parameters gets answer", %{conn: conn, task: task} do
       {:ok, answer} = Answers.create_answer(%{content: "Some content", task_id: task.id})
 
-      conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/answer/get")
+      conn = post(conn, "/api/answer/get", %{answer_id: answer.id})
 
       %{"answer" => answer_data} = json_response(conn, 200)
 

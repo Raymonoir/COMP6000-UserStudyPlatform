@@ -27,14 +27,37 @@ defmodule Comp6000Web.Router do
     scope "/users", User do
       get("/logout", UserController, :logout)
       get("/loggedin", UserController, :logged_in)
-      get("/get-studies", UserController, :get_studies)
-
       post("/login", UserController, :login)
-
       post("/create", UserController, :create)
+      post("/edit", UserController, :edit)
+      post("/delete", UserController, :delete)
+      # get("/get-studies", UserController, :get_studies)
+    end
 
-      post("/:username/edit", UserController, :edit)
-      get("/:username/delete", UserController, :delete)
+    scope "/study", Study do
+      post("/create", StudyController, :create)
+      post("/edit", StudyController, :edit)
+      post("/delete", StudyController, :delete)
+      post("/get", StudyController, :get)
+    end
+
+    scope "/task" do
+      post("/create", TaskController, :create)
+      post("/edit", TaskController, :edit)
+      post("/delete", TaskController, :delete)
+      post("/get", TaskController, :get)
+    end
+
+    scope "/answer" do
+      post("/get", AnswerController, :get)
+      post("/create", AnswerController, :create)
+      post("/edit", AnswerController, :edit)
+      post("/delete", AnswerController, :delete)
+    end
+
+    scope "/result" do
+      post("/append", ResultController, :append_data)
+      get("/complete", ResultController, :complete_data)
     end
 
     scope "/participant", Participant do
@@ -49,45 +72,9 @@ defmodule Comp6000Web.Router do
       get("/:particpant_uuid", MetricsController, :get_metrics_for_participant)
     end
 
-    scope "/study", Study do
-      post("/create", StudyController, :create)
-      post("/:study_id/edit", StudyController, :edit)
-      get("/:study_id/delete", StudyController, :delete)
-      get("/:study_id/get-all", StudyController, :get_all)
-
-      post("/:study_id/task/create", TaskController, :create)
-      post("/:study_id/task/:task_id/edit", TaskController, :edit)
-      get("/:study_id/task/:task_id/delete", TaskController, :delete)
-
-      get("/:study_id/get_tasks", TaskController, :get_tasks)
-      get("/get-by/id/:id", StudyController, :get_study_by_id)
-      get("/get-by/participant-code/:participant_code", StudyController, :get_study_by_code)
-
-      post("/:study_id/task/create", TaskController, :create)
-      get("/:study_id/get-tasks", TaskController, :get_tasks)
-
-      get("/:study_id/task/:task_id/answer/get", AnswerController, :get)
-      post("/:study_id/task/:task_id/answer/create", AnswerController, :create)
-      post("/:study_id/task/:task_id/answer/edit", AnswerController, :edit)
-      get("/:study_id/task/:task_id/answer/delete", AnswerController, :delete)
-
-      post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
-      post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
-      get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
-
-      # Where :datatype is either "compile-data" or "replay-data"
-      post(
-        "/:study_id/task/:task_id/:uuid/:data_type/append",
-        ResultController,
-        :append_data
-      )
-
-      get(
-        "/:study_id/task/:task_id/:uuid/:data_type/complete",
-        ResultController,
-        :complete_data
-      )
-    end
+    # post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
+    # post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
+    # get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
 
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

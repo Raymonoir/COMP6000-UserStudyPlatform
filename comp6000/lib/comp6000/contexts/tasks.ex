@@ -5,7 +5,11 @@ defmodule Comp6000.Contexts.Tasks do
   alias Comp6000.Contexts.Storage
 
   def get_task_by(params) do
-    Repo.get_by(Task, params)
+    case params[:id] do
+      nil -> Repo.get_by(Task, params)
+      id when is_integer(id) -> Repo.get_by(Task, params)
+      _else -> nil
+    end
   end
 
   def create_task(params \\ %{}) do

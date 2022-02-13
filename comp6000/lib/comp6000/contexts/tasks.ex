@@ -13,16 +13,9 @@ defmodule Comp6000.Contexts.Tasks do
   end
 
   def create_task(params \\ %{}) do
-    case %Task{}
-         |> Task.changeset(params)
-         |> Repo.insert() do
-      {:ok, task} ->
-        Storage.create_task_directory(task)
-        {:ok, task}
-
-      {:error, changeset} ->
-        {:error, changeset}
-    end
+    %Task{}
+    |> Task.changeset(params)
+    |> Repo.insert()
   end
 
   def get_all_tasks_for_study(%Study{} = study) do

@@ -38,44 +38,12 @@ defmodule Comp6000.Contexts.Storage do
     end
   end
 
-  def create_task_directory(%Task{} = task) do
-    path = "#{@storage_path}/#{task.study_id}"
-
-    if File.exists?(path) do
-      case File.mkdir("#{path}/#{task.id}") do
-        :ok ->
-          :ok
-
-        {:error, _reason} ->
-          :error
-      end
-    else
-      :error
-    end
-  end
-
-  def delete_task_directory(%Task{} = task) do
-    path = "#{@storage_path}/#{task.study_id}/#{task.id}"
-
-    if File.exists?(path) do
-      case File.rmdir(path) do
-        :ok ->
-          :ok
-
-        {:error, _reason} ->
-          :error
-      end
-    else
-      :error
-    end
-  end
-
   def create_participant_directory(%Result{} = result) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
     task_id = task.id
 
-    path = "#{@storage_path}/#{study_id}/#{task_id}"
+    path = "#{@storage_path}/#{study_id}"
 
     if File.exists?(path) do
       case File.mkdir("#{path}/#{result.unique_participant_id}") do
@@ -170,14 +138,13 @@ defmodule Comp6000.Contexts.Storage do
   defp get_participant_files_path(%Result{} = result, filetype) do
     task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
     study_id = task.study_id
-    task_id = task.id
 
     case filetype do
       :compile ->
-        "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}/#{@compile_filename}"
+        "#{@storage_path}/#{study_id}/#{result.unique_participant_id}/#{@compile_filename}"
 
       :replay ->
-        "#{@storage_path}/#{study_id}/#{task_id}/#{result.unique_participant_id}/#{@replay_filename}"
+        "#{@storage_path}/#{study_id}/#{result.unique_participant_id}/#{@replay_filename}"
     end
   end
 end

@@ -30,7 +30,7 @@ defmodule Comp6000.Contexts.StorageTest do
     {:ok, result} =
       %Result{}
       |> Result.changeset(%{
-        task_id: task.id,
+        study_id: study.id,
         unique_participant_id: "567f56d67s67as76d7s8",
         content: "3"
       })

@@ -45,7 +45,7 @@ defmodule Comp6000Web.Study.StudyController do
     studies = Studies.get_studies_for_user(Users.get_user_by(username: username))
 
     if studies != nil do
-      studies = Enum.map(studies, fn study -> study = Studies.get_all_for_study(study) end)
+      studies = Enum.map(studies, fn study -> Studies.get_all_for_study(study) end)
       json(conn, %{study: studies})
     else
       json(conn, %{study: nil})

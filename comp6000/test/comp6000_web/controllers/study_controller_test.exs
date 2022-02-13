@@ -164,7 +164,7 @@ defmodule Comp6000Web.StudyControllerTest do
 
       {:ok, _result} =
         Results.create_result(%{
-          task_id: task1.id,
+          study_id: study.id,
           content: "Life is life",
           unique_participant_id: "7876rer"
         })

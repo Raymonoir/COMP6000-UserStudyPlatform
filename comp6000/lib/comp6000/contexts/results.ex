@@ -5,7 +5,11 @@ defmodule Comp6000.Contexts.Results do
   alias Comp6000.Contexts.{Storage, Tasks, Studies}
 
   def get_result_by(params) do
-    Repo.get_by(Result, params)
+    case params[:id] do
+      nil -> Repo.get_by(Result, params)
+      id when is_integer(id) -> Repo.get_by(Result, params)
+      _else -> nil
+    end
   end
 
   def create_result(params \\ %{}) do

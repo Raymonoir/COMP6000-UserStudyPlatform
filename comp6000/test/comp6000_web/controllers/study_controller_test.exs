@@ -1,4 +1,4 @@
-defmodule Comp6000Web.Study.StudyControllerTest do
+defmodule Comp6000Web.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Studies, Users, Tasks, Results, Answers}
 
@@ -52,11 +52,75 @@ defmodule Comp6000Web.Study.StudyControllerTest do
     end
   end
 
-  describe "GET /api/study/get-by/participant_code/:participant_code" do
+  # describe "POST /api/study/get" do
+  #   test "valid id returns correct study", %{conn: conn} do
+  #     {:ok, study} = Studies.create_study(@valid_study)
+
+  #     conn = post(conn, "/api/study/get", %{study_id: study.id})
+
+  #     json_result = json_response(conn, 200)
+
+  #     id = study.id
+
+  #     assert %{
+  #              "study" => %{
+  #                "task_count" => 0,
+  #                "tasks" => [],
+  #                "title" => "My Study",
+  #                "username" => "Ray123",
+  #                "id" => ^id
+  #              }
+  #            } = json_result
+  #   end
+  # end
+
+  describe "POST /api/study/edit" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/edit", %{
+          study_id: study.id,
+          title: "An updated study title"
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"updated_study" => _id} = json_result
+      assert Studies.get_study_by(id: study.id).title == "An updated study title"
+    end
+
+    test "invalid parameters does not edit study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn =
+        post(conn, "/api/study/edit", %{
+          study_id: study.id,
+          title: nil
+        })
+
+      json_result = json_response(conn, 200)
+      assert %{"error" => "title can't be blank"} == json_result
+      assert Studies.get_study_by(id: study.id) == study
+    end
+  end
+
+  describe "POST /api/study/delete" do
+    test "valid parameters edits study", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      conn = post(conn, "/api/study/delete", %{study_id: study.id})
+
+      json_result = json_response(conn, 200)
+      assert %{"deleted_study" => _id} = json_result
+      refute Studies.get_study_by(id: study.id)
+    end
+  end
+
+  describe "POST /api/study/get" do
     test "valid participant code returns correct study", %{conn: conn} do
       {:ok, study} = Studies.create_study(@valid_study)
 
-      conn = get(conn, "/api/study/get-by/participant-code/#{study.participant_code}")
+      conn = post(conn, "/api/study/get", %{participant_code: study.participant_code})
 
       json_result = json_response(conn, 200)
 
@@ -73,87 +137,13 @@ defmodule Comp6000Web.Study.StudyControllerTest do
     test "invalid participant code returns no study", %{conn: conn} do
       {:ok, _study} = Studies.create_study(@valid_study)
 
-      conn = get(conn, "/api/study/get-by/participant-code/jibber-jabber")
+      conn = post(conn, "/api/study/get", %{participant_code: "jibjabjob"})
 
       json_result = json_response(conn, 200)
 
       assert %{"study" => nil} = json_result
     end
-  end
 
-  describe "GET /api/study/get-by/id/:id" do
-    test "valid id returns correct study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
-
-      conn = get(conn, "/api/study/get-by/id/#{study.id}")
-
-      json_result = json_response(conn, 200)
-
-      id = study.id
-
-      assert %{
-               "study" => %{
-                 "task_count" => 0,
-                 "tasks" => [],
-                 "title" => "My Study",
-                 "username" => "Ray123",
-                 "id" => ^id
-               }
-             } = json_result
-    end
-
-    test "invalid id returns no study", %{conn: conn} do
-      {:ok, _study} = Studies.create_study(@valid_study)
-
-      conn = get(conn, "/api/study/get-by/id/5678905678")
-
-      json_result = json_response(conn, 200)
-
-      assert %{"study" => nil} = json_result
-    end
-  end
-
-  describe "POST /api/study/:study_id/edit" do
-    test "valid parameters edits study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
-
-      conn =
-        post(conn, "/api/study/#{study.id}/edit", %{
-          title: "An updated study title"
-        })
-
-      json_result = json_response(conn, 200)
-      assert %{"updated_study" => _id} = json_result
-      assert Studies.get_study_by(id: study.id).title == "An updated study title"
-    end
-
-    test "invalid parameters does not edit study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
-
-      conn =
-        post(conn, "/api/study/#{study.id}/edit", %{
-          title: nil
-        })
-
-      json_result = json_response(conn, 200)
-      assert %{"error" => "title can't be blank"} == json_result
-      assert Studies.get_study_by(id: study.id) == study
-    end
-  end
-
-  describe "GET /api/study/:study_id/delete" do
-    test "valid parameters edits study", %{conn: conn} do
-      {:ok, study} = Studies.create_study(@valid_study)
-
-      conn = get(conn, "/api/study/#{study.id}/delete")
-
-      json_result = json_response(conn, 200)
-      assert %{"deleted_study" => _id} = json_result
-      refute Studies.get_study_by(id: study.id)
-    end
-  end
-
-  describe "GET /api/study/:study_id/get-all" do
     test "valid parameters returns all information for a study", %{conn: conn} do
       {:ok, study} = Studies.create_study(@valid_study)
 
@@ -179,7 +169,7 @@ defmodule Comp6000Web.Study.StudyControllerTest do
           unique_participant_id: "7876rer"
         })
 
-      conn = get(conn, "/api/study/#{study.id}/get-all")
+      conn = post(conn, "/api/study/get", %{study_id: study.id})
 
       %{
         "study" => %{
@@ -219,6 +209,16 @@ defmodule Comp6000Web.Study.StudyControllerTest do
       assert task2_number == task2.task_number
 
       assert answer_id == answer.id
+    end
+
+    test "invalid id returns no study", %{conn: conn} do
+      {:ok, _study} = Studies.create_study(@valid_study)
+
+      conn = post(conn, "/api/study/get", %{study_id: "7dg"})
+
+      json_result = json_response(conn, 200)
+
+      assert %{"study" => nil} = json_result
     end
   end
 end

@@ -143,10 +143,11 @@ defmodule Comp6000Web.UserControllerTest do
     end
   end
 
-  describe "POST /api/users/:username/edit" do
+  describe "POST /api/users/edit" do
     test "valid parameters edits a user", %{conn: conn} do
       conn =
-        post(conn, "/api/users/Ray123/edit", %{
+        post(conn, "/api/users/edit", %{
+          username: "Ray123",
           email: "Jonny"
         })
 
@@ -156,7 +157,8 @@ defmodule Comp6000Web.UserControllerTest do
 
     test "invalid parameters does not edit a user", %{conn: conn} do
       conn =
-        post(conn, "/api/users/Ray123/edit", %{
+        post(conn, "/api/users/edit", %{
+          username: "Ray123",
           firstname: "Jonny"
         })
 
@@ -165,9 +167,9 @@ defmodule Comp6000Web.UserControllerTest do
     end
   end
 
-  describe "GET /api/users/:username/delete" do
+  describe "POST /api/users/delete" do
     test "valid parameters deletes a user", %{conn: conn} do
-      conn = get(conn, "/api/users/Ray123/delete")
+      conn = post(conn, "/api/users/delete", %{username: "Ray123"})
       assert json_response(conn, 200) == %{"deleted_user" => "Ray123"}
       refute Users.get_user_by(username: "Ray123")
     end

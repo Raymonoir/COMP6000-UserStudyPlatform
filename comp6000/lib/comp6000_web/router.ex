@@ -55,9 +55,10 @@ defmodule Comp6000Web.Router do
       post("/delete", AnswerController, :delete)
     end
 
-    scope "/result" do
+    scope "/data" do
       post("/append", ResultController, :append_data)
-      get("/complete", ResultController, :complete_data)
+      post("/complete", ResultController, :complete_data)
+      post("/get", ResultController, :get)
     end
 
     scope "/participant", Participant do

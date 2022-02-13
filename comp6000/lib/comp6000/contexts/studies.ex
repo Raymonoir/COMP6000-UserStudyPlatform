@@ -67,6 +67,6 @@ defmodule Comp6000.Contexts.Studies do
   end
 
   def get_all_for_study(%Study{} = study) do
-    Repo.preload(study, tasks: [:results, :answer], user: [])
+    Repo.preload(study, results: [], tasks: [:answer], user: [])
   end
 end

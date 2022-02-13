@@ -39,9 +39,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   def create_participant_directory(%Result{} = result) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
-    task_id = task.id
+    study_id = result.study_id
 
     path = "#{@storage_path}/#{study_id}"
 
@@ -62,9 +60,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   def create_participant_files(%Result{} = result) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
-    task_id = task.id
+    study_id = result.study_id
 
     :ok =
       File.write(
@@ -82,9 +78,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   def append_data(%Result{} = result, chunk, filetype) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
-    task_id = task.id
+    study_id = result.study_id
 
     path = "#{get_participant_files_path(result, filetype)}.#{@extension}"
 
@@ -103,9 +97,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   def complete_data(%Result{} = result, filetype) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
-    task_id = task.id
+    study_id = result.study_id
 
     path_no_ext = "#{get_participant_files_path(result, filetype)}"
 
@@ -121,9 +113,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   def get_completed_data(%Result{} = result, filetype) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
-    task_id = task.id
+    study_id = result.study_id
 
     path = "#{get_participant_files_path(result, filetype)}.#{@completed_extension}"
 
@@ -136,8 +126,7 @@ defmodule Comp6000.Contexts.Storage do
   end
 
   defp get_participant_files_path(%Result{} = result, filetype) do
-    task = Comp6000.Contexts.Tasks.get_task_by(id: result.task_id)
-    study_id = task.study_id
+    study_id = result.study_id
 
     case filetype do
       :compile ->

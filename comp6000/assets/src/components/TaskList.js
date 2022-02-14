@@ -23,7 +23,7 @@ class TaskList extends React.Component {
                         return (
                             <div key={num} className={"task-list-item full-width " + (task.complete ? "completed" : "")}>
                                 <span className="task-tick">✓</span>
-                                <span className="task-description"><b>{num + 1}: </b>{task.description}</span>
+                                <span className="task-description"><b>{num + 1}: </b>{task.content}</span>
                                 <button className="button tertiary" onClick={() => { this.props.runTest(num, true); }} disabled={this.props.disableTesting}>Test</button>
                             </div>
                         );

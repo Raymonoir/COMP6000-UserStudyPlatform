@@ -4,17 +4,18 @@ import Editor from './Editor';
 import CodeRunner from './CodeRunner';
 import TaskList from './TaskList';
 import Popup from './Popup';
+import backend from '../helpers/backend';
 
 class StudyManager extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             stage: 0,
-            study: {
+            /* study: {
                 "overview": "Welcome to our study about blah blah....",
                 "backgroundQuestionnaire": [
                     {
-                        "question": "Select something from this dropdown",
+                        "question": "TESTING Select something from this dropdown",
                         "type": "dropdown",
                         "options": [
                             "option A",
@@ -86,6 +87,11 @@ class StudyManager extends React.Component {
                         ]
                     }
                 ],
+            }, */
+            study: {
+                overview: "",
+                backgroundQuestionnaire: [],
+                tasks: []
             },
             lastRanCode: {
                 code: '',
@@ -97,6 +103,36 @@ class StudyManager extends React.Component {
         };
 
         console.log(this.props.match.params.key);
+        backend.get('/api/participant/get-uuid')
+            .then(data => {
+                this.state.userUUID = data.current_participant;
+            });
+
+        backend.get('/api/study/get-by/participant-code/' + this.props.match.params.key)
+            .then(data => {
+                console.log(data.study);
+                let updatedStudy = this.state.study;
+                updatedStudy.id = data.study.id;
+                let programmingTasks = [];
+
+                // Grab a background survey from the tasks if there is one
+                data.study.tasks.forEach(t => {
+                    if (t.optional_info == 'background') {
+                        updatedStudy.backgroundQuestionnaire = JSON.parse(t.content).questions;
+                    } else {
+                        programmingTasks.push(t);
+                    }
+                })
+
+
+                updatedStudy.tasks = programmingTasks;
+                for (let i = 0; i < updatedStudy.tasks.length; i++) {
+                    updatedStudy.tasks[i].answer.content = JSON.parse(updatedStudy.tasks[i].answer.content);
+                }
+                console.log(updatedStudy);
+                this.setState({ study: updatedStudy });
+                console.log(updatedStudy);
+            })
 
         this.submitQuestionnaire = this.submitQuestionnaire.bind(this);
         this.onCodeChange = this.onCodeChange.bind(this);
@@ -107,6 +143,9 @@ class StudyManager extends React.Component {
 
     submitQuestionnaire(type, answers) {
         console.log(type, answers);
+        backend.post('/api/study/' + this.state.study.id + '/background/' + this.state.userUUID + '/submit', {
+            content: JSON.stringify(answers)
+        });
         this.setState({ stage: this.state.stage + 1 });
     }
 
@@ -128,12 +167,12 @@ class StudyManager extends React.Component {
                     loading: true,
                     lastRanCode: {
                         code: this.state.code,
-                        function: task.function,
-                        arguments: task.tests[0].inputs
+                        function: task.answer.content.tests[0].function,
+                        arguments: task.answer.content.tests[0].inputs
                     },
                     onExecutionComplete: (result) => {
                         console.log('callback', result);
-                        if (result.output == task.tests[0].output) {
+                        if (result.output == task.answer.content.tests[0].output) {
                             task.complete = true;
                         } else {
                             task.complete = false;

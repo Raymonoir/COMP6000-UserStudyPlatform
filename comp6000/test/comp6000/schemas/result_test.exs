@@ -5,7 +5,7 @@ defmodule Comp6000.Schemas.ResultTest do
   @valid_params %{
     content: "I thought the answer was 6",
     unique_participant_id: "678fgh678",
-    task_id: 1
+    study_id: 1
   }
 
   @update_params %{
@@ -21,16 +21,16 @@ defmodule Comp6000.Schemas.ResultTest do
       changeset = Result.changeset(%Result{}, @valid_params)
       assert changeset.valid?
       assert changeset.changes.content == "I thought the answer was 6"
-      assert changeset.changes.task_id == 1
+      assert changeset.changes.study_id == 1
     end
 
     test "valid update params creates valid changeset" do
-      task = struct(Result, @valid_params)
-      changeset = Result.changeset(task, @update_params)
+      result = struct(Result, @valid_params)
+      changeset = Result.changeset(result, @update_params)
 
       assert changeset.changes.content == "Now I think its actually 69"
 
-      assert changeset.data.task_id == 1
+      assert changeset.data.study_id == 1
     end
 
     test "invalid creation params returns invalid changeset" do
@@ -39,7 +39,7 @@ defmodule Comp6000.Schemas.ResultTest do
 
       assert errors_on(changeset) == %{
                content: ["can't be blank"],
-               task_id: ["can't be blank"],
+               study_id: ["can't be blank"],
                unique_participant_id: ["can't be blank"]
              }
     end

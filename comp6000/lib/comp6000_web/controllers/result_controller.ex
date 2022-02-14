@@ -1,29 +1,33 @@
-defmodule Comp6000Web.Study.ResultController do
+defmodule Comp6000Web.ResultController do
   use Comp6000Web, :controller
-  alias Comp6000.Contexts.{Tasks, Results, Storage}
+  alias Comp6000.Contexts.{Tasks, Results, Storage, Studies}
 
   def append_data(
         conn,
-        %{"task_id" => task_id, "uuid" => uuid, "data_type" => data_type, "content" => content} =
-          _params
+        %{
+          "study_id" => study_id,
+          "participant_uuid" => uuid,
+          "data_type" => data_type,
+          "content" => content
+        } = _params
       ) do
     filetype =
       case data_type do
-        "compile-data" -> :compile
-        "replay-data" -> :replay
+        "compile_data" -> :compile
+        "replay_data" -> :replay
       end
 
-    task = Tasks.get_task_by(id: task_id)
+    study = Studies.get_study_by(id: study_id)
 
-    result = Results.get_result_by(task_id: task_id, unique_participant_id: uuid)
+    result = Results.get_result_by(unique_participant_id: uuid)
 
     result =
       if result == nil do
         {:ok, result} =
           Results.create_result(%{
-            task_id: task_id,
             unique_participant_id: uuid,
-            content: "placeholder"
+            content: "placeholder",
+            study_id: study.id
           })
 
         result
@@ -38,17 +42,19 @@ defmodule Comp6000Web.Study.ResultController do
 
   def complete_data(
         conn,
-        %{"task_id" => task_id, "data_type" => data_type, "uuid" => uuid} = _params
+        %{
+          "study_id" => study_id,
+          "participant_uuid" => uuid,
+          "data_type" => data_type
+        } = _params
       ) do
     filetype =
       case data_type do
-        "compile-data" -> :compile
-        "replay-data" -> :replay
+        "compile_data" -> :compile
+        "replay_data" -> :replay
       end
 
-    task = Tasks.get_task_by(id: task_id)
-
-    result = Results.get_result_by(task_id: task_id, unique_participant_id: uuid)
+    result = Results.get_result_by(study_id: study_id, unique_participant_id: uuid)
 
     json(conn, %{
       String.to_atom("#{data_type}_completed") => Storage.complete_data(result, filetype)

@@ -49,8 +49,6 @@ defmodule Comp6000Web.TaskControllerTest do
       assert stored_task
 
       assert stored_task.content == task1.content
-
-      assert File.exists?("#{@storage_path}/#{task1.study_id}/#{stored_task.id}")
     end
 
     test "valid parameters creates multiple tasks", %{

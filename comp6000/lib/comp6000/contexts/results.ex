@@ -44,8 +44,8 @@ defmodule Comp6000.Contexts.Results do
     Repo.all(query)
   end
 
-  def get_result_for_task_uuid(task, uuid) do
-    query = from(r in Result, where: r.task_id == ^task.id and r.unique_participant_id == ^uuid)
+  def get_result_for_study_uuid(study, uuid) do
+    query = from(r in Result, where: r.study_id == ^study.id and r.unique_participant_id == ^uuid)
 
     Repo.all(query)
   end
@@ -57,8 +57,7 @@ defmodule Comp6000.Contexts.Results do
   end
 
   def get_study_for_result(%Result{} = result) do
-    task = Tasks.get_task_by(id: result.task_id)
-    Studies.get_study_by(id: task.study_id)
+    Studies.get_study_by(id: result.study_id)
   end
 
   def increment_participant_count(%Result{} = result) do

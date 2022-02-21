@@ -287,18 +287,21 @@ class StudyManager extends React.Component {
                     />
                 }
                 <TaskList
+                    className="study-task-list"
                     tasks={this.state.study.tasks}
                     runTest={this.runTest}
                     disableTesting={this.state.loading}
                 />
-                <Editor onCodeChange={this.onCodeChange} />
+                <div className="full-width editor-container">
+                    <Editor className="editor-on-page" onCodeChange={this.onCodeChange} />
                 <CodeRunner
-                    className={this.state.showConsole ? "" : "hidden"}
+                        className={(this.state.showConsole ? "" : "hidden ") + "editor-code-output"}
                     code={this.state.lastRanCode.code}
                     run={this.state.lastRanCode.function}
                     args={this.state.lastRanCode.arguments}
                     onExecutionComplete={this.state.onExecutionComplete}
                 />
+                </div>
                 <button
                     className="button primary"
                     onClick={() => { this.completeCoding(); }}

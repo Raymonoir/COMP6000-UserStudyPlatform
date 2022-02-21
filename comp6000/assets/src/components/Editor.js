@@ -41,18 +41,14 @@ class Editor extends React.Component {
 
     render() {
         return (
-            <div>
-                <div className="editor-container">
-                    <AceEditor
-                        mode="javascript"
-                        className={"editor-on-page " + (window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow")}
-                        setOptions={{ useWorker: false }}
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        onLoad={this.aceOnLoad}
-                    />
-                </div>
-            </div >
+            <AceEditor
+                mode="javascript"
+                className={"editor-on-page " + (window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow")}
+                setOptions={{ useWorker: false }}
+                value={this.state.value}
+                onChange={this.onChange}
+                onLoad={this.aceOnLoad}
+            />
         );
         //<button className="button primary" onClick={this.runCode} data-cy="run">run</button>
         /* <CodeRunner

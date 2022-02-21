@@ -33,7 +33,11 @@
 
 /* END CodeRunner component styling */
 
-/* START Editor component styling */
+/* START StudyManager component styling */
+.study-task-list {
+    margin-bottom: 10px;
+}
+
 .editor-container {
     display: flex;
     width: 100%;
@@ -51,23 +55,41 @@
     flex-grow: 1;
 }
 
-/* END Editor component styling */
+/* END StudyManager component styling */
 
 /* START TaskList component styling */
 
 .task-list-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     gap: 25px;
 }
 
-.task-list-item>.task-tick {
-    display: none;
+.task-list-item>.button {
+    margin-left: auto;
 }
 
-.task-list-item.completed>.task-tick {
+.task-list-item>.task-tick,
+.task-list-item>.task-cross,
+.task-list-item>.task-untested {
+    display: none;
+    width: 25px
+}
+
+.task-list-item.passed>.task-tick {
     color: green;
+    font-size: 25px;
+    display: inline;
+}
+
+.task-list-item.failed>.task-cross {
+    color: red;
+    display: inline;
+}
+
+.task-list-item.untested>.task-untested {
+    color: var(--primary-text);
     display: inline;
 }
 

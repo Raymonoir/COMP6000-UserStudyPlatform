@@ -21,8 +21,10 @@ class TaskList extends React.Component {
                 {
                     this.props.tasks.map((task, num) => {
                         return (
-                            <div key={num} className={"task-list-item full-width " + (task.complete ? "completed" : "")}>
-                                <span className="task-tick">✓</span>
+                            <div key={num} className={"task-list-item full-width " + (task.complete ? "passed" : task.complete != undefined ? "failed" : "untested")}>
+                                <span className="task-tick">✔</span>
+                                <span className="task-cross">❌</span>
+                                <span className="task-untested">☐</span>
                                 <span className="task-description"><b>{num + 1}: </b>{task.content}</span>
                                 <button className="button tertiary" onClick={() => { this.props.runTest(num, true); }} disabled={this.props.disableTesting}>Test</button>
                             </div>

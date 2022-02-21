@@ -61,6 +61,16 @@ defmodule Comp6000Web.Router do
       post("/get", ResultController, :get)
     end
 
+    scope "/survey" do
+      post("/pre/create", SurveyController, :create_pre)
+      post("/pre/get", SurveyController, :get_pre)
+      post("/pre/submit", SurveyController, :submit_pre)
+
+      post("/post/create", SurveyController, :create_post)
+      post("/post/get", SurveyController, :get_post)
+      post("/post/submit", SurveyController, :submit_post)
+    end
+
     scope "/participant", Participant do
       get("/get-uuid", ParticipantController, :get_participant_uuid)
       get("/:participant_uuid/list-results", ParticipantController, :get_participant_results)

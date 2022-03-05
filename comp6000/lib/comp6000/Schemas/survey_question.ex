@@ -14,7 +14,7 @@ defmodule Comp6000.Schemas.SurveyQuestion do
 
   def changeset(%SurveyQuestion{} = survey_question, params) do
     survey_question
-    |> cast(params, [:questions, :preposition])
+    |> cast(params, [:study_id, :questions, :preposition])
     |> validate_required([:preposition])
     |> foreign_key_constraint(:study, name: :survey_question_study_id_fkey)
   end

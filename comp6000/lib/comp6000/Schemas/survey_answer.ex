@@ -12,9 +12,9 @@ defmodule Comp6000.Schemas.SurveyAnswer do
     timestamps()
   end
 
-  def changeset(%SurveyQuestion{} = survey_question, params) do
-    survey_question
-    |> cast(params, [:participant_uuid, :answers])
+  def changeset(%SurveyAnswer{} = survey_answer, params) do
+    survey_answer
+    |> cast(params, [:survey_question_id, :participant_uuid, :answers])
     |> validate_required([:participant_uuid, :answers])
     |> foreign_key_constraint(:study, name: :survey_answer_survey_question_id_fkey)
   end

@@ -1,5 +1,6 @@
 defmodule Comp6000.Contexts.SurveyQuestions do
   alias Comp6000.Schemas.SurveyQuestion
+  alias Comp6000.Repo
 
   def get_survey_question_by(params) do
     case params[:id] do

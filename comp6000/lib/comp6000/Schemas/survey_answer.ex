@@ -3,7 +3,7 @@ defmodule Comp6000.Schemas.SurveyAnswer do
   import Ecto.Changeset
   alias Comp6000.Schemas.{SurveyAnswer, SurveyQuestion}
 
-  @derive {Jason.Encoder, only: [:questions, :preposition]}
+  @derive {Jason.Encoder, only: [:id, :answers, :participant_uuid]}
   schema "survey_answer" do
     belongs_to(:survey_question, SurveyQuestion)
     field(:participant_uuid, :string)

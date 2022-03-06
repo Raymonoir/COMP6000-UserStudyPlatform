@@ -41,27 +41,27 @@ defmodule Comp6000Web.Router do
       post("/get", StudyController, :get)
     end
 
-    scope "/task" do
+    scope "/task", Task do
       post("/create", TaskController, :create)
       post("/edit", TaskController, :edit)
       post("/delete", TaskController, :delete)
       post("/get", TaskController, :get)
     end
 
-    scope "/answer" do
+    scope "/answer", Answer do
       post("/get", AnswerController, :get)
       post("/create", AnswerController, :create)
       post("/edit", AnswerController, :edit)
       post("/delete", AnswerController, :delete)
     end
 
-    scope "/data" do
+    scope "/data", Result do
       post("/append", ResultController, :append_data)
       post("/complete", ResultController, :complete_data)
       post("/get", ResultController, :get)
     end
 
-    scope "/survey" do
+    scope "/survey", Survey do
       post("/pre/create", SurveyController, :create_pre)
       post("/pre/get", SurveyController, :get_pre)
       post("/pre/submit", SurveyController, :submit_pre)

@@ -1,4 +1,4 @@
-defmodule Comp6000Web.ResultController do
+defmodule Comp6000Web.Result.ResultController do
   use Comp6000Web, :controller
   alias Comp6000.Contexts.{Tasks, Results, Storage, Studies}
 

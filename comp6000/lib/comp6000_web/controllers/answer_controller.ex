@@ -1,4 +1,4 @@
-defmodule Comp6000Web.AnswerController do
+defmodule Comp6000Web.Answer.AnswerController do
   use Comp6000Web, :controller
   alias Comp6000.Contexts.Answers
 

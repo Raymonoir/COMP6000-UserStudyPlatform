@@ -1,4 +1,4 @@
-defmodule Comp6000Web.TaskController do
+defmodule Comp6000Web.Task.TaskController do
   use Comp6000Web, :controller
   alias Comp6000.Contexts.{Tasks, Studies}
 

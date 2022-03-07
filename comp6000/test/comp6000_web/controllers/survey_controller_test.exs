@@ -1,4 +1,4 @@
-defmodule Comp6000Web.Controllers.SurveyControllerTest do
+defmodule Comp6000Web.SurveyControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Studies, Users, SurveyQuestions, SurveyAnswers}
 

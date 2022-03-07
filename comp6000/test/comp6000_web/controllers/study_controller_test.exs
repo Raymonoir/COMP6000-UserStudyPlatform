@@ -1,6 +1,6 @@
 defmodule Comp6000Web.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Studies, Users, Tasks, Results, Answers}
+  alias Comp6000.Contexts.{Studies, Users, Tasks, Metrics, Answers}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
 
@@ -163,10 +163,9 @@ defmodule Comp6000Web.StudyControllerTest do
         })
 
       {:ok, _result} =
-        Results.create_result(%{
+        Metrics.create_metrics(%{
           study_id: study.id,
-          content: "Life is life",
-          unique_participant_id: "7876rer"
+          participant_uuid: "7876rer"
         })
 
       conn = post(conn, "/api/study/get", %{study_id: study.id})

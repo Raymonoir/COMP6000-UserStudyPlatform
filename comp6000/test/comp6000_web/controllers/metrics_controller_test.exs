@@ -1,6 +1,6 @@
 defmodule Comp6000Web.MetricsControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Users, Studies, Tasks, Results}
+  alias Comp6000.Contexts.{Users, Studies, Tasks, Metrics}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
   @extension Application.get_env(:comp6000, :extension)
@@ -238,10 +238,9 @@ defmodule Comp6000Web.MetricsControllerTest do
       uuid = UUID.uuid4()
       content = "Some Content!"
 
-      Results.create_result(%{
+      Metrics.create_metrics(%{
         study_id: study.id,
-        content: "placeholder",
-        unique_participant_id: uuid
+        participant_uuid: uuid
       })
 
       path = "#{@storage_path}/#{study.id}/#{uuid}/#{@replay_filename}"
@@ -276,10 +275,9 @@ defmodule Comp6000Web.MetricsControllerTest do
       uuid = UUID.uuid4()
       content = "Some Content!"
 
-      Results.create_result(%{
+      Metrics.create_metrics(%{
         study_id: study.id,
-        content: "placeholder",
-        unique_participant_id: uuid
+        participant_uuid: uuid
       })
 
       path = "#{@storage_path}/#{study.id}/#{uuid}/#{@compile_filename}"

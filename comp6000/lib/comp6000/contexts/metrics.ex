@@ -12,56 +12,46 @@ defmodule Comp6000.Contexts.Metrics do
     end
   end
 
-  # def create_result(params \\ %{}) do
-  #   case %Result{}
-  #        |> Result.changeset(params)
-  #        |> Repo.insert() do
-  #     {:ok, result} ->
-  #       result
-  #       |> Storage.create_participant_directory()
-  #       |> Storage.create_participant_files()
-  #       |> increment_participant_count()
-  #       |> associate_participant_with_study()
+  def create_metrics(params \\ %{}) do
+    case %Metrics{}
+         |> Metrics.changeset(params)
+         |> Repo.insert() do
+      {:ok, metrics} ->
+        metrics
+        |> Storage.create_participant_directory()
+        |> Storage.create_participant_files()
+        |> increment_participant_count()
+        |> associate_participant_with_study()
 
-  #       {:ok, result}
+        {:ok, metrics}
 
-  #     {:error, changeset} ->
-  #       {:error, changeset}
-  #   end
-  # end
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
 
-  # def delete_result(%Result{} = result) do
-  #   Repo.delete(result)
-  # end
+  def delete_result(%Metrics{} = metrics) do
+    Repo.delete(metrics)
+  end
 
-  # def get_results_for_task(%Task{} = task) do
-  #   Repo.preload(task, :results).results
-  # end
+  def get_metrics_for_study(study, uuid) do
+    query = from(m in Metrics, where: m.study_id == ^study.id and m.participant_uuid == ^uuid)
 
-  # def get_all_results_for_uuid(uuid) do
-  #   query = from(r in Result, where: r.unique_participant_id == ^uuid)
+    Repo.all(query)
+  end
 
-  #   Repo.all(query)
-  # end
+  def associate_participant_with_study(%Metrics{} = metrics) do
+    metrics
+    |> get_study_for_metrics()
+    |> Studies.add_participant(metrics.participant_uuid)
+  end
 
-  # def get_result_for_study_uuid(study, uuid) do
-  #   query = from(r in Result, where: r.study_id == ^study.id and r.unique_participant_id == ^uuid)
+  def get_study_for_metrics(%Metrics{} = metrics) do
+    Studies.get_study_by(id: metrics.study_id)
+  end
 
-  #   Repo.all(query)
-  # end
-
-  # def associate_participant_with_study(%Result{} = result) do
-  #   result
-  #   |> get_study_for_result()
-  #   |> Studies.add_participant(result.unique_participant_id)
-  # end
-
-  # def get_study_for_result(%Result{} = result) do
-  #   Studies.get_study_by(id: result.study_id)
-  # end
-
-  # def increment_participant_count(%Result{} = result) do
-  #   {:ok, _study} = Studies.increment_participant_count(get_study_for_result(result))
-  #   result
-  # end
+  def increment_participant_count(%Metrics{} = metrics) do
+    {:ok, _study} = Studies.increment_participant_count(get_study_for_metrics(metrics))
+    metrics
+  end
 end

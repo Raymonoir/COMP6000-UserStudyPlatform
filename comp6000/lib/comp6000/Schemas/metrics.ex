@@ -3,7 +3,7 @@ defmodule Comp6000.Schemas.Metrics do
   import Ecto.Changeset
   alias Comp6000.Schemas.{Study, Metrics}
 
-  @derive {Jason.Encoder, only: [:unique_participant_id, :content, :id]}
+  @derive {Jason.Encoder, only: [:participant_uuid, :content, :id]}
   schema "metrics" do
     belongs_to(:study, Study)
     field(:participant_uuid, :string)

@@ -30,7 +30,9 @@ class TaskCreator extends React.Component {
         this.removeTestArgument = this.removeTestArgument.bind(this);
         this.onTestArgumentUpdate = this.onTestArgumentUpdate.bind(this);
         this.validateInput = this.validateInput.bind(this);
+        this.parseInput = this.parseInput.bind(this);
         this.onTestOutputUpdate = this.onTestOutputUpdate.bind(this);
+        this.complete = this.complete.bind(this);
     }
 
     onDetailChange(taskNum, event) {
@@ -161,6 +163,16 @@ class TaskCreator extends React.Component {
         return true;
     }
 
+    parseInput(type, value) {
+        if (type == 'number') {
+            return Number(value);
+        } else if (type == 'object') {
+            return JSON.parse(value);
+        } else {
+            return value;
+        }
+    }
+
     onTestOutputUpdate(taskNum, testNum, type, value) {
         let updatedTasks = this.state.tasks;
         updatedTasks[taskNum].tests[testNum].output = {
@@ -169,6 +181,43 @@ class TaskCreator extends React.Component {
             isValid: this.validateInput(type, value)
         }
         this.setState({ tasks: updatedTasks });
+    }
+
+    complete() {
+        // No need to keep the annotated type for each argument or return value so convert them
+        // to the type and discard that before the tasks get sent to the backend
+        let hasInvalidInput = false;
+        let updatedTasks = [];
+        this.state.tasks.forEach((task, taskNum) => {
+            let updatedTask = {
+                detail: task.detail,
+                tests: []
+            };
+            task.tests.forEach((test, testNum) => {
+                if (!test.output.isValid) {
+                    hasInvalidInput = true;
+                    return;
+                }
+                updatedTask.tests[testNum] = {
+                    run: test.run,
+                    args: [],
+                    output: this.parseInput(test.output.type, test.output.value)
+                };
+                test.args.forEach((arg, argNum) => {
+                    if (!arg.isValid) {
+                        hasInvalidInput = true;
+                        return;
+                    }
+                    updatedTask.tests[testNum].args[argNum] = this.parseInput(arg.type, arg.value);
+                })
+            });
+            updatedTasks[taskNum] = updatedTask;
+        });
+
+        if (!hasInvalidInput) {
+            console.log('valid', updatedTasks);
+            this.props.saveTasks(updatedTasks);
+        }
     }
 
     render() {
@@ -255,6 +304,7 @@ class TaskCreator extends React.Component {
                     })
                 }
                 <button className="button secondary" onClick={this.addTask}>Add Task</button>
+                <button className="button primary" onClick={this.complete}>Complete</button>
             </div>
         )
     }

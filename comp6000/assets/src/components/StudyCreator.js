@@ -10,6 +10,7 @@ class StudyCreator extends React.Component {
 
         this.nextStage = this.nextStage.bind(this);
         this.saveQuestions = this.saveQuestions.bind(this);
+        this.saveTasks = this.saveTasks.bind(this);
     }
 
     nextStage() {
@@ -31,6 +32,14 @@ class StudyCreator extends React.Component {
         console.log(questions, type);
     }
 
+    saveTasks(tasks) {
+        console.log('got tasks', tasks);
+        this.setState({
+            tasks: tasks,
+            stage: this.state.stage + 1
+        });
+    }
+
     render() {
         const intro = (
             <div>
@@ -50,7 +59,7 @@ class StudyCreator extends React.Component {
         } else if (this.state.stage == 1) {
             return <QuestionnaireCreator saveQuestions={this.saveQuestions} type="background" />
         } else {
-            return <TaskCreator />
+            return <TaskCreator saveTasks={this.saveTasks} />
         }
     }
 }

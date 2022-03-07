@@ -9,10 +9,14 @@ import Config
 
 config :comp6000,
   ecto_repos: [Comp6000.Repo],
-  storage_directory_path: "local-storage",
-  storage_file_extension: "json",
-  completed_file_extension: "gzip",
-  chunk_delimiter: ","
+  storage_path: "local-storage",
+  extension: "json",
+  completed_extension: "gzip",
+  chunk_delimiter: ",",
+  file_start: "[",
+  file_end: "]",
+  compile_filename: "compile-data",
+  replay_filename: "replay-data"
 
 # Configures the endpoint
 config :comp6000, Comp6000Web.Endpoint,

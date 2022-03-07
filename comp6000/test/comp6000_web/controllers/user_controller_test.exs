@@ -1,4 +1,4 @@
-defmodule Comp6000Web.UsersControllerTest do
+defmodule Comp6000Web.UserControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.Users
 
@@ -126,20 +126,52 @@ defmodule Comp6000Web.UsersControllerTest do
     end
   end
 
-  describe "POST /api/users/logout" do
+  describe "GET /api/users/logout" do
     test "returns correct json when a user is logged in", %{conn: conn} do
       conn = post(conn, "/api/users/login", %{username: "Ray123", password: "RaysPassword"})
       assert json_response(conn, 200) == %{"login" => true}
       assert get_session(conn, :username) == "Ray123"
 
-      conn = post(conn, "/api/users/logout", %{})
+      conn = get(conn, "/api/users/logout", %{})
       assert json_response(conn, 200) == %{"login" => false}
     end
 
     test "returns correct json when a user is not logged in", %{conn: conn} do
-      conn = post(conn, "/api/users/logout", %{})
+      conn = get(conn, "/api/users/logout", %{})
       assert json_response(conn, 200) == %{"login" => false}
       refute get_session(conn, :username) == "Ray123"
+    end
+  end
+
+  describe "POST /api/users/edit" do
+    test "valid parameters edits a user", %{conn: conn} do
+      conn =
+        post(conn, "/api/users/edit", %{
+          username: "Ray123",
+          email: "Jonny"
+        })
+
+      assert json_response(conn, 200) == %{"error" => "email has invalid format"}
+      refute Users.get_user_by(username: "Ray123").email == "Jonny"
+    end
+
+    test "invalid parameters does not edit a user", %{conn: conn} do
+      conn =
+        post(conn, "/api/users/edit", %{
+          username: "Ray123",
+          firstname: "Jonny"
+        })
+
+      assert json_response(conn, 200) == %{"updated_user" => "Ray123"}
+      assert Users.get_user_by(username: "Ray123").firstname == "Jonny"
+    end
+  end
+
+  describe "POST /api/users/delete" do
+    test "valid parameters deletes a user", %{conn: conn} do
+      conn = post(conn, "/api/users/delete", %{username: "Ray123"})
+      assert json_response(conn, 200) == %{"deleted_user" => "Ray123"}
+      refute Users.get_user_by(username: "Ray123")
     end
   end
 end

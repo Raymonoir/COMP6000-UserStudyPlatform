@@ -18,19 +18,74 @@ defmodule Comp6000Web.Router do
 
   scope "/app", Comp6000Web do
     pipe_through(:browser)
-
     get("/*path", PageController, :index)
   end
 
   scope "/api", Comp6000Web do
     pipe_through(:api)
 
-    post("/users/logout", UsersController, :logout)
-    post("/users/create", UsersController, :create)
-    post("/users/login", UsersController, :login)
-    get("/users/loggedin", UsersController, :logged_in)
+    scope "/users", User do
+      get("/logout", UserController, :logout)
+      get("/loggedin", UserController, :logged_in)
+      post("/login", UserController, :login)
+      post("/create", UserController, :create)
+      post("/edit", UserController, :edit)
+      post("/delete", UserController, :delete)
+      # get("/get-studies", UserController, :get_studies)
+    end
 
-    post("/study/create", StudyController, :create)
+    scope "/study", Study do
+      post("/create", StudyController, :create)
+      post("/edit", StudyController, :edit)
+      post("/delete", StudyController, :delete)
+      post("/get", StudyController, :get)
+    end
+
+    scope "/task", Task do
+      post("/create", TaskController, :create)
+      post("/edit", TaskController, :edit)
+      post("/delete", TaskController, :delete)
+      post("/get", TaskController, :get)
+    end
+
+    scope "/answer", Answer do
+      post("/get", AnswerController, :get)
+      post("/create", AnswerController, :create)
+      post("/edit", AnswerController, :edit)
+      post("/delete", AnswerController, :delete)
+    end
+
+    scope "/data", Result do
+      post("/append", ResultController, :append_data)
+      post("/complete", ResultController, :complete_data)
+      post("/get", ResultController, :get)
+    end
+
+    scope "/survey", Survey do
+      post("/pre/create", SurveyController, :create_pre)
+      post("/pre/get", SurveyController, :get_pre)
+      post("/pre/submit", SurveyController, :submit_pre)
+
+      post("/post/create", SurveyController, :create_post)
+      post("/post/get", SurveyController, :get_post)
+      post("/post/submit", SurveyController, :submit_post)
+    end
+
+    scope "/participant", Participant do
+      get("/get-uuid", ParticipantController, :get_participant_uuid)
+      get("/:participant_uuid/list-results", ParticipantController, :get_participant_results)
+    end
+
+    # TODO
+    scope "/metrics", Metrics do
+      get("/:task_id", MetricsController, :get_metrics_for_task)
+      get("/:task_id/:participant_uuid", MetricsController, :get_metrics_for_result)
+      get("/:particpant_uuid", MetricsController, :get_metrics_for_participant)
+    end
+
+    # post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
+    # post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
+    # get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
 
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

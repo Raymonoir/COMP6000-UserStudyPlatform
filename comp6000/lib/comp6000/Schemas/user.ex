@@ -3,6 +3,7 @@ defmodule Comp6000.Schemas.User do
   import Ecto.Changeset
   alias Comp6000.Schemas.{User, Study}
 
+  @derive {Jason.Encoder, only: [:username, :firstname, :lastname, :email]}
   schema "user" do
     field(:username, :string, primary_key: true)
     field(:firstname, :string)
@@ -39,6 +40,16 @@ defmodule Comp6000.Schemas.User do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> validate_length(:password, min: 10, max: 100)
+  end
+
+  def downcase_username(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{username: username}} ->
+        put_change(changeset, :username, String.downcase(username))
+
+      _else ->
+        changeset
+    end
   end
 
   defp set_password_hash(changeset) do

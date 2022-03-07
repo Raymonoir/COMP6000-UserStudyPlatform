@@ -1,7 +1,7 @@
 defmodule Comp6000.Contexts.ResultsTest do
   use Comp6000.DataCase, async: true
   alias Comp6000.Contexts.{Studies, Users, Tasks, Results}
-  alias Comp6000.Schemas.Result
+  alias Comp6000.Schemas.{Result, Study}
 
   setup do
     {:ok, user} =
@@ -14,35 +14,47 @@ defmodule Comp6000.Contexts.ResultsTest do
       Tasks.create_task(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
 
     valid_result_params1 = %{
-      task_id: task.id,
+      study_id: study.id,
       unique_participant_id: "567f56d67s67as76d7s8",
       content: "3"
     }
 
     invalid_result_params = %{
-      task_id: task.id,
       content: "No upid"
     }
 
     %{
+      study: study,
       valid_result_params1: valid_result_params1,
       invalid_result_params: invalid_result_params
     }
   end
 
   describe "create_result/1" do
-    test "valid parameters creates result and appends to database", %{
-      valid_result_params1: valid_result_params1
-    } do
+    test "valid parameters creates result and appends to database, study participant count is increased, participant is associated with study",
+         %{
+           valid_result_params1: valid_result_params1,
+           study: study
+         } do
       {:ok, result} = Results.create_result(valid_result_params1)
       assert result == Repo.get_by(Result, id: result.id)
+
+      study = Repo.get_by(Study, id: study.id)
+      assert study.participant_count == 1
+      assert study.participant_list == [valid_result_params1.unique_participant_id]
     end
 
-    test "invalid parameters does not create answer and does not append to database", %{
-      invalid_result_params: invalid_result_params
-    } do
+    test "invalid parameters does not create answer and does not append to database, study participant count is not increased",
+         %{
+           invalid_result_params: invalid_result_params,
+           study: study
+         } do
       {:error, _changeset} = Results.create_result(invalid_result_params)
       refute Repo.get_by(Result, content: invalid_result_params[:content])
+
+      study = Repo.get_by(Study, id: study.id)
+      assert study.participant_count == 0
+      assert study.participant_list == []
     end
   end
 
@@ -57,7 +69,7 @@ defmodule Comp6000.Contexts.ResultsTest do
              Results.get_result_by(content: valid_result_params1[:content])
 
     assert result ==
-             Results.get_result_by(task_id: valid_result_params1[:task_id])
+             Results.get_result_by(study_id: valid_result_params1[:study_id])
   end
 
   test "delete_result/1 deletes a result from the database", %{
@@ -70,6 +82,27 @@ defmodule Comp6000.Contexts.ResultsTest do
 
     {:ok, _result} = Results.delete_result(result)
     refute result == Results.get_result_by(content: valid_result_params1[:content])
-    refute result == Results.get_result_by(task_id: valid_result_params1[:task_id])
+    refute result == Results.get_result_by(study_id: valid_result_params1[:study_id])
+  end
+
+  test "get_study_for_result/1 returns the study associated with a result", %{
+    valid_result_params1: valid_result_params1,
+    study: study
+  } do
+    {:ok, result} = Results.create_result(valid_result_params1)
+    assert Results.get_study_for_result(result).id == study.id
+  end
+
+  test "increment_participant_count increments study participant count", %{
+    valid_result_params1: valid_result_params1,
+    study: study
+  } do
+    {:ok, _result} = Results.create_result(valid_result_params1)
+    study = Repo.get_by(Study, id: study.id)
+    assert study.participant_count == 1
+
+    {:ok, _result} = Results.create_result(valid_result_params1)
+    study = Repo.get_by(Study, id: study.id)
+    assert study.participant_count == 2
   end
 end

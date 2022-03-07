@@ -6,8 +6,16 @@ defmodule Comp6000.ReplayMetrics.Calculations do
   @completed_extension Application.get_env(:comp6000, :completed_file_extension)
   @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
 
-  def get_replay_data(uuid, task_id) do
-    result = Comp6000.Contexts.Result.get_result_by(id: task_id, unique_participant_id: uuid)
+  def calculate_all(Comp6000.Schemas.Study{} = study) do
+    participants = study.participant_list
+
+    Enum.reduce(participants, %{}. fn participant_uuid, acc ->
+
+    end)
+  end
+
+  def get_participant_data(participant_uuid, datatype) do
+
 
     Jason.decode!(Storage.get_completed_file_content(result))
   end

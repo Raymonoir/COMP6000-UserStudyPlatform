@@ -52,3 +52,27 @@
 }
 
 /* END Editor component styling */
+
+/* START QuestionnaireCreator styling */
+
+.remove_question {
+    float: right;
+}
+
+.new_question {
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.complete {
+    float: right;
+}
+
+.buttons {
+    margin-top: 1%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+/* END QuestionnaireCreator styling */

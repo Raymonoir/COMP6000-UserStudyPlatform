@@ -58,8 +58,10 @@ class StudyCreator extends React.Component {
             return intro;
         } else if (this.state.stage == 1) {
             return <QuestionnaireCreator saveQuestions={this.saveQuestions} type="background" />
-        } else {
+        } else if (this.state.stage == 2) {
             return <TaskCreator saveTasks={this.saveTasks} />
+        } else if (this.state.state == 3) {
+            return <QuestionnaireCreator saveQuestions={this.saveQuestions} type="post" />
         }
     }
 }

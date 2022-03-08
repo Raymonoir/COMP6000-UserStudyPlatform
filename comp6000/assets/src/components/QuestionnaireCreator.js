@@ -65,12 +65,13 @@ class QuestionnaireCreator extends React.Component {
     }
 
     complete() {
-        console.log(this.state.questions.map(q => {
+        const output = this.state.questions.map(q => {
             if (q.type == 'text') {
                 delete q.options;
             }
             return q;
-        }));
+        });
+        this.props.saveQuestions(output, this.props.type);
     }
 
     render() {
@@ -79,7 +80,9 @@ class QuestionnaireCreator extends React.Component {
                 {
                     this.state.questions.map((q, i) => {
                         return (
-                            <div key={i}>
+                            <div className="new_question"
+                                key={i}
+                            >
                                 <h3>Question {i + 1}</h3>
                                 <input
                                     type="text"
@@ -87,7 +90,7 @@ class QuestionnaireCreator extends React.Component {
                                     onChange={(e) => { this.onQuestionChange(i, e); }}
                                 />
                                 <button
-                                    className="button tertiary"
+                                    className="button tertiary remove_question"
                                     onClick={() => { this.removeQuestion(i) }}>
                                     Remove
                                 </button>
@@ -127,8 +130,10 @@ class QuestionnaireCreator extends React.Component {
                         )
                     })
                 }
-                <button className="button secondary" onClick={this.addQuestion}>Add Question</button>
-                <button className="button primary" onClick={this.complete}>Complete</button>
+                <div className="buttons">
+                    <button className="button secondary" onClick={this.addQuestion}>Add Question</button>
+                    <button className="button primary complete" onClick={this.complete}>Complete</button>
+                </div>
             </div>
         )
     }

@@ -1,6 +1,6 @@
 defmodule Comp6000Web.ParticipantControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Users, Studies, Tasks, Results}
+  alias Comp6000.Contexts.{Users, Studies, Tasks}
 
   # describe "GET /api/participant/get-uuid" do
   #   test "returns uuid of current participant", %{conn: conn} do

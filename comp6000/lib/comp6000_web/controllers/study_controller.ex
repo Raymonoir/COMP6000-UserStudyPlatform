@@ -1,7 +1,7 @@
 defmodule Comp6000Web.Study.StudyController do
   use Comp6000Web, :controller
   import Plug.Conn
-  alias Comp6000.Contexts.{Storage, Studies, Tasks, Results}
+  alias Comp6000.Contexts.{Storage, Studies, Tasks, Results, Users}
 
   def create(conn, params) do
     case Studies.create_study(params) do
@@ -31,32 +31,33 @@ defmodule Comp6000Web.Study.StudyController do
     json(conn, %{deleted_study: study.id})
   end
 
-  def get_study_by_code(conn, %{"participant_code" => participant_code} = _params) do
+  def get(conn, %{"participant_code" => participant_code} = _params) do
     study = Studies.get_study_by(participant_code: participant_code)
-
-    if study != nil do
-      study = Studies.get_all_for_study(study)
-      json(conn, %{study: study})
-    else
-      json(conn, %{study: nil})
-    end
+    return_study(conn, study)
   end
 
-  def get_study_by_id(conn, %{"id" => id} = _params) do
-    study = Studies.get_study_by(id: id)
-
-    if study != nil do
-      study = Studies.get_all_for_study(study)
-      json(conn, %{study: study})
-    else
-      json(conn, %{study: nil})
-    end
-  end
-
-  def get_all(conn, %{"study_id" => study_id} = _params) do
+  def get(conn, %{"study_id" => study_id} = _params) do
     study = Studies.get_study_by(id: study_id)
-    study = Studies.get_all_for_study(study)
+    return_study(conn, study)
+  end
 
-    json(conn, %{study: study})
+  def get(conn, %{"username" => username} = _params) do
+    studies = Studies.get_studies_for_user(Users.get_user_by(username: username))
+
+    if studies != nil do
+      studies = Enum.map(studies, fn study -> Studies.get_all_for_study(study) end)
+      json(conn, %{study: studies})
+    else
+      json(conn, %{study: nil})
+    end
+  end
+
+  defp return_study(conn, study) do
+    if study != nil do
+      study = Studies.get_all_for_study(study)
+      json(conn, %{study: study})
+    else
+      json(conn, %{study: nil})
+    end
   end
 end

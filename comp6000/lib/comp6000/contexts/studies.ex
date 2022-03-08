@@ -9,7 +9,11 @@ defmodule Comp6000.Contexts.Studies do
   end
 
   def get_study_by(params) do
-    Repo.get_by(Study, params)
+    case params[:id] do
+      nil -> Repo.get_by(Study, params)
+      id when is_integer(id) -> Repo.get_by(Study, params)
+      _else -> nil
+    end
   end
 
   def create_study(params \\ %{}) do
@@ -63,6 +67,6 @@ defmodule Comp6000.Contexts.Studies do
   end
 
   def get_all_for_study(%Study{} = study) do
-    Repo.preload(study, tasks: [:results, :answer], user: [])
+    Repo.preload(study, results: [], tasks: [:answer], user: [])
   end
 end

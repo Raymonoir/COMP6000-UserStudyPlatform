@@ -30,7 +30,7 @@ defmodule Comp6000.Contexts.StorageTest do
     {:ok, result} =
       %Result{}
       |> Result.changeset(%{
-        task_id: task.id,
+        study_id: study.id,
         unique_participant_id: "567f56d67s67as76d7s8",
         content: "3"
       })
@@ -59,37 +59,13 @@ defmodule Comp6000.Contexts.StorageTest do
     end
   end
 
-  describe "create_task_directory/1" do
-    test "creates a directory using a task", %{study: study, task: task} do
-      :ok = Storage.create_study_directory(study)
-      assert File.exists?("#{@storage_path}/#{study.id}")
-
-      :ok = Storage.create_task_directory(task)
-      assert File.exists?("#{@storage_path}/#{study.id}/#{task.id}")
-    end
-  end
-
-  describe "delete_task_directory/1" do
-    test "deletes a directory using a task", %{study: study, task: task} do
-      :ok = File.mkdir("#{@storage_path}/#{study.id}")
-      :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
-
-      assert File.exists?("#{@storage_path}/#{study.id}/#{task.id}")
-
-      :ok = Storage.delete_task_directory(task)
-
-      refute File.exists?("#{@storage_path}/#{study.id}/#{task.id}")
-    end
-  end
-
   describe "create_participant_directory/1" do
     test "creates directory using a result", %{study: study, task: task, result: result} do
       :ok = File.mkdir("#{@storage_path}/#{study.id}")
-      :ok = File.mkdir("#{@storage_path}/#{study.id}/#{task.id}")
 
       assert result = Storage.create_participant_directory(result)
 
-      path = "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}"
+      path = "#{@storage_path}/#{study.id}/#{result.unique_participant_id}"
 
       assert File.exists?(path)
     end
@@ -102,19 +78,19 @@ defmodule Comp6000.Contexts.StorageTest do
       assert result == Storage.create_participant_files(result)
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
              )
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
              )
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
              ) == @file_start
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
              ) == @file_start
     end
   end
@@ -128,7 +104,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
 
       :ok = File.write(path, @file_start)
 
@@ -157,7 +133,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
 
       :ok = File.write(path, @file_start)
 
@@ -188,7 +164,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path_no_ext =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}"
 
       unzipped_content = "#{@file_start}A few chunks"
       :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
@@ -213,7 +189,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path_no_ext =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}"
 
       unzipped_content = "#{@file_start}A few chunks"
       :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
@@ -240,7 +216,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
@@ -257,7 +233,7 @@ defmodule Comp6000.Contexts.StorageTest do
       create_all_dirs(study, task, result)
 
       path =
-        "#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
@@ -269,7 +245,6 @@ defmodule Comp6000.Contexts.StorageTest do
 
   def create_all_dirs(study, task, result) do
     File.mkdir!("#{@storage_path}/#{study.id}")
-    File.mkdir!("#{@storage_path}/#{study.id}/#{task.id}")
-    File.mkdir!("#{@storage_path}/#{study.id}/#{task.id}/#{result.unique_participant_id}")
+    File.mkdir!("#{@storage_path}/#{study.id}/#{result.unique_participant_id}")
   end
 end

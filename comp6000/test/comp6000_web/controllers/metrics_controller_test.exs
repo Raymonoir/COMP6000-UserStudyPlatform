@@ -1,6 +1,6 @@
-defmodule Comp6000Web.Study.ResultControllerTest do
+defmodule Comp6000Web.MetricsControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Users, Studies, Tasks, Results}
+  alias Comp6000.Contexts.{Users, Studies, Tasks, Metrics}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
   @extension Application.get_env(:comp6000, :extension)
@@ -36,126 +36,9 @@ defmodule Comp6000Web.Study.ResultControllerTest do
     %{conn: conn, study: study, bg_task: bg_task, task: task}
   end
 
-  @invalid_result_json %{
+  @invalid_metric_json %{
     data: "invalid"
   }
-
-  # describe "POST /api/study/:study_id/background/:uuid/submit" do
-  #   test "valid parameters submits background result", %{
-  #     conn: conn,
-  #     study: study,
-  #     bg_task: bg_task
-  #   } do
-  #     # This would normally be taken from the session
-  #     uuid = UUID.uuid4()
-
-  #     conn =
-  #       post(
-  #         conn,
-  #         "/api/study/#{study.id}/background/#{uuid}/submit",
-  #         %{content: "content"}
-  #       )
-
-  #     result = Results.get_result_by(task_id: bg_task.id)
-  #     assert result
-  #     assert result.content == "content"
-  #     assert result.unique_participant_id == uuid
-
-  #     result = json_response(conn, 200)
-
-  #     assert %{
-  #              "background_result_created" => %{
-  #                "content" => "content",
-  #                "id" => _id,
-  #                "unique_participant_id" => _uuid
-  #              }
-  #            } = result
-  #   end
-
-  #   test "invalid parameters does not submit background result", %{
-  #     conn: conn,
-  #     study: study,
-  #     bg_task: bg_task
-  #   } do
-  #     uuid = UUID.uuid4()
-
-  #     conn =
-  #       post(
-  #         conn,
-  #         "/api/study/#{study.id}/background/#{uuid}/submit",
-  #         @invalid_result_json
-  #       )
-
-  #     result = Results.get_result_by(task_id: bg_task.id)
-  #     refute result
-
-  #     result = json_response(conn, 200)
-
-  #     assert %{
-  #       "invalid_background_parameters" =>
-  #         %{
-  #           "data" => "invalid",
-  #           "study_id" => study.id,
-  #           "uuid" => uuid
-  #         } == result
-  #     }
-  #   end
-  # end
-
-  # describe "POST /study/api/:study_id/task/:task_id/:uuid/result/submit" do
-  #   test "valid parameters submit result", %{conn: conn, study: study, task: task} do
-  #     uuid = UUID.uuid4()
-
-  #     conn =
-  #       post(
-  #         conn,
-  #         "/api/study/#{study.id}/task/#{task.id}/#{uuid}/result/submit",
-  #         %{content: "content"}
-  #       )
-
-  #     result = Results.get_result_by(task_id: task.id)
-  #     assert result
-  #     assert result.content == "content"
-  #     assert result.unique_participant_id == uuid
-
-  #     json_result = json_response(conn, 200)
-
-  #     assert %{
-  #       "result_created" =>
-  #         %{
-  #           "content" => "content",
-  #           "id" => result.id,
-  #           "unique_participant_id" => uuid
-  #         } == json_result
-  #     }
-  #   end
-
-  #   test "invalid parameters does not submit result", %{conn: conn, study: study, task: task} do
-  #     uuid = UUID.uuid4()
-
-  #     conn =
-  #       post(
-  #         conn,
-  #         "/api/study/#{study.id}/task/#{task.id}/#{uuid}/result/submit",
-  #         @invalid_result_json
-  #       )
-
-  #     result = json_response(conn, 200)
-
-  #     assert %{
-  #       "invalid_result_parameters" =>
-  #         %{
-  #           "data" => "invalid",
-  #           "study_id" => study.id,
-  #           "task_id" => task.id,
-  #           "uuid" => uuid
-  #         } == result
-  #     }
-
-  #     result = Results.get_result_by(task_id: task.id)
-  #     refute result
-  #   end
-  # end
 
   describe "POST /api/data/append" do
     test "valid parameters appends replay data", %{conn: conn, study: study, task: task} do
@@ -238,10 +121,9 @@ defmodule Comp6000Web.Study.ResultControllerTest do
       uuid = UUID.uuid4()
       content = "Some Content!"
 
-      Results.create_result(%{
+      Metrics.create_metrics(%{
         study_id: study.id,
-        content: "placeholder",
-        unique_participant_id: uuid
+        participant_uuid: uuid
       })
 
       path = "#{@storage_path}/#{study.id}/#{uuid}/#{@replay_filename}"
@@ -276,10 +158,9 @@ defmodule Comp6000Web.Study.ResultControllerTest do
       uuid = UUID.uuid4()
       content = "Some Content!"
 
-      Results.create_result(%{
+      Metrics.create_metrics(%{
         study_id: study.id,
-        content: "placeholder",
-        unique_participant_id: uuid
+        participant_uuid: uuid
       })
 
       path = "#{@storage_path}/#{study.id}/#{uuid}/#{@compile_filename}"
@@ -310,33 +191,4 @@ defmodule Comp6000Web.Study.ResultControllerTest do
                :zlib.gzip("#{@file_start}#{content}#{@file_end}")
     end
   end
-
-  # describe "GET /api/study/:study_id/task/:task_id/get-results" do
-  #   test "valid parameters returns results", %{conn: conn, study: study, task: task} do
-  #     conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/get-results")
-
-  #     assert json_response(conn, 200) == %{"results" => []}
-  #
-  #     {:ok, result1} =
-  #       Results.create_result(%{
-  #         unique_participant_id: "sudbsdbjh",
-  #         content: "Content!",
-  #         task_id: task.id
-  #       })
-
-  #     {:ok, result2} =
-  #       Results.create_result(%{
-  #         unique_participant_id: "45678iuhgf",
-  #         content: "Content2!",
-  #         task_id: task.id
-  #       })
-
-  #     conn = get(conn, "/api/study/#{study.id}/task/#{task.id}/get-results")
-
-  #     %{"results" => [returned_result1, returned_result2]} = json_response(conn, 200)
-
-  #     assert returned_result1["id"] == result1.id
-  #     assert returned_result2["id"] == result2.id
-  #   end
-  # end
 end

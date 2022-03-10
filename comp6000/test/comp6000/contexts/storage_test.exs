@@ -1,6 +1,6 @@
 defmodule Comp6000.Contexts.StorageTest do
   use Comp6000.DataCase, async: true
-  alias Comp6000.Schemas.{Study, Task, Result}
+  alias Comp6000.Schemas.{Study, Task, Metrics}
   alias Comp6000.Contexts.{Storage, Users}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
@@ -27,16 +27,15 @@ defmodule Comp6000.Contexts.StorageTest do
       |> Task.changeset(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
       |> Repo.insert()
 
-    {:ok, result} =
-      %Result{}
-      |> Result.changeset(%{
+    {:ok, metrics} =
+      %Metrics{}
+      |> Metrics.changeset(%{
         study_id: study.id,
-        unique_participant_id: "567f56d67s67as76d7s8",
-        content: "3"
+        participant_uuid: "567f56d67s67as76d7s8"
       })
       |> Repo.insert()
 
-    %{study: study, task: task, result: result}
+    %{study: study, task: task, metrics: metrics}
   end
 
   describe "create_study_directory/1" do
@@ -60,37 +59,37 @@ defmodule Comp6000.Contexts.StorageTest do
   end
 
   describe "create_participant_directory/1" do
-    test "creates directory using a result", %{study: study, task: task, result: result} do
+    test "creates directory using a metrics", %{study: study, task: task, metrics: metrics} do
       :ok = File.mkdir("#{@storage_path}/#{study.id}")
 
-      assert result = Storage.create_participant_directory(result)
+      assert metrics = Storage.create_participant_directory(metrics)
 
-      path = "#{@storage_path}/#{study.id}/#{result.unique_participant_id}"
+      path = "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}"
 
       assert File.exists?(path)
     end
   end
 
   describe "create_participant_files/1" do
-    test "creates files at correct location", %{study: study, task: task, result: result} do
-      create_all_dirs(study, task, result)
+    test "creates files at correct location", %{study: study, task: task, metrics: metrics} do
+      create_all_dirs(study, task, metrics)
 
-      assert result == Storage.create_participant_files(result)
+      assert metrics == Storage.create_participant_files(metrics)
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@extension}"
              )
 
       assert File.exists?(
-               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@extension}"
              )
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@extension}"
              ) == @file_start
 
       assert File.read!(
-               "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+               "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@extension}"
              ) == @file_start
     end
   end
@@ -99,12 +98,12 @@ defmodule Comp6000.Contexts.StorageTest do
     test "appends data to replay_data file", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
       path =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@extension}"
+        "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@extension}"
 
       :ok = File.write(path, @file_start)
 
@@ -112,14 +111,14 @@ defmodule Comp6000.Contexts.StorageTest do
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
-      :ok = Storage.append_data(result, chunk1, :replay)
+      :ok = Storage.append_data(metrics, chunk1, :replay)
       {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
-      :ok = Storage.append_data(result, chunk2, :replay)
+      :ok = Storage.append_data(metrics, chunk2, :replay)
 
       {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
-      :ok = Storage.append_data(result, chunk3, :replay)
+      :ok = Storage.append_data(metrics, chunk3, :replay)
 
       "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
         File.read!(path)
@@ -128,12 +127,12 @@ defmodule Comp6000.Contexts.StorageTest do
     test "appends data to compile_data file", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
       path =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@extension}"
+        "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@extension}"
 
       :ok = File.write(path, @file_start)
 
@@ -141,14 +140,14 @@ defmodule Comp6000.Contexts.StorageTest do
       chunk2 = "chunk2data"
       chunk3 = "chunk3data"
 
-      :ok = Storage.append_data(result, chunk1, :compile)
+      :ok = Storage.append_data(metrics, chunk1, :compile)
       {:ok, "#{@file_start}chunk1data"} = File.read(path)
 
-      :ok = Storage.append_data(result, chunk2, :compile)
+      :ok = Storage.append_data(metrics, chunk2, :compile)
 
       {:ok, "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data"} = File.read(path)
 
-      :ok = Storage.append_data(result, chunk3, :compile)
+      :ok = Storage.append_data(metrics, chunk3, :compile)
 
       "#{@file_start}chunk1data#{@chunk_delimiter}chunk2data#{@chunk_delimiter}chunk3data" =
         File.read!(path)
@@ -159,17 +158,16 @@ defmodule Comp6000.Contexts.StorageTest do
     test "gzips content and renames replay_data file with .gzip file extension", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
-      path_no_ext =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}"
+      path_no_ext = "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}"
 
       unzipped_content = "#{@file_start}A few chunks"
       :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
 
-      :ok = Storage.complete_data(result, :replay)
+      :ok = Storage.complete_data(metrics, :replay)
 
       assert File.exists?("#{path_no_ext}.#{@completed_extension}")
 
@@ -177,24 +175,24 @@ defmodule Comp6000.Contexts.StorageTest do
 
       {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
 
-      result = :zlib.gunzip(gzipped_content)
-      assert result == "#{unzipped_content}#{@file_end}"
+      content = :zlib.gunzip(gzipped_content)
+      assert content == "#{unzipped_content}#{@file_end}"
     end
 
     test "gzips content and renames compile_data file with .gzip file extension", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
       path_no_ext =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}"
+        "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}"
 
       unzipped_content = "#{@file_start}A few chunks"
       :ok = File.write("#{path_no_ext}.#{@extension}", unzipped_content)
 
-      :ok = Storage.complete_data(result, :compile)
+      :ok = Storage.complete_data(metrics, :compile)
 
       assert File.exists?("#{path_no_ext}.#{@completed_extension}")
 
@@ -202,8 +200,8 @@ defmodule Comp6000.Contexts.StorageTest do
 
       {:ok, gzipped_content} = File.read("#{path_no_ext}.#{@completed_extension}")
 
-      result = :zlib.gunzip(gzipped_content)
-      assert result == "#{unzipped_content}#{@file_end}"
+      content = :zlib.gunzip(gzipped_content)
+      assert content == "#{unzipped_content}#{@file_end}"
     end
   end
 
@@ -211,40 +209,40 @@ defmodule Comp6000.Contexts.StorageTest do
     test "returns content stored in completed replay_data file", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
       path =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@replay_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
       :ok = File.write(path, gzipped_content)
 
-      assert unzipped_content == Storage.get_completed_data(result, :replay)
+      assert unzipped_content == Storage.get_completed_data(metrics, :replay)
     end
 
     test "returns content stored in completed compile_data file", %{
       study: study,
       task: task,
-      result: result
+      metrics: metrics
     } do
-      create_all_dirs(study, task, result)
+      create_all_dirs(study, task, metrics)
 
       path =
-        "#{@storage_path}/#{study.id}/#{result.unique_participant_id}/#{@compile_filename}.#{@completed_extension}"
+        "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@completed_extension}"
 
       unzipped_content = "A few chunks"
       gzipped_content = :zlib.gzip(unzipped_content)
       :ok = File.write(path, gzipped_content)
 
-      assert unzipped_content == Storage.get_completed_data(result, :compile)
+      assert unzipped_content == Storage.get_completed_data(metrics, :compile)
     end
   end
 
-  def create_all_dirs(study, task, result) do
+  def create_all_dirs(study, task, metrics) do
     File.mkdir!("#{@storage_path}/#{study.id}")
-    File.mkdir!("#{@storage_path}/#{study.id}/#{result.unique_participant_id}")
+    File.mkdir!("#{@storage_path}/#{study.id}/#{metrics.participant_uuid}")
   end
 end

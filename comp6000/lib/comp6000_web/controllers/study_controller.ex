@@ -1,7 +1,7 @@
 defmodule Comp6000Web.Study.StudyController do
   use Comp6000Web, :controller
   import Plug.Conn
-  alias Comp6000.Contexts.{Storage, Studies, Tasks, Results, Users}
+  alias Comp6000.Contexts.{Storage, Studies, Tasks, Users}
 
   def create(conn, params) do
     case Studies.create_study(params) do

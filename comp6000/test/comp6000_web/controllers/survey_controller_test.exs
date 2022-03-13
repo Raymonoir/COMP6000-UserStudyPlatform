@@ -33,7 +33,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
   describe "POST /api/survey/pre/create" do
     test "valid parameters creates a pre study survey", context do
-      conn = post(context[:conn], "/api/survey/pre/create", context[:valid_q_params])
+      post(context[:conn], "/api/survey/pre/create", context[:valid_q_params])
 
       question =
         SurveyQuestions.get_survey_question_by(study_id: context[:valid_q_params].study_id)
@@ -45,7 +45,7 @@ defmodule Comp6000Web.SurveyControllerTest do
     end
 
     test "invalid parameters does not create a pre study survey", context do
-      conn = post(context[:conn], "/api/survey/pre/create", context[:invalid_q_params])
+      post(context[:conn], "/api/survey/pre/create", context[:invalid_q_params])
 
       question =
         SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
@@ -63,9 +63,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
       conn = post(context[:conn], "/api/survey/pre/get", %{study_id: question.study_id})
 
-      json_result = json_response(conn, 200)
-
-      assert json_result = %{
+      assert json_response(conn, 200) == %{
                "survey_question" => %{
                  "id" => question.id,
                  "preposition" => "pre",
@@ -81,8 +79,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
       assert json_result == %{"survey_question" => nil}
 
-      question =
-        SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
+      refute SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
     end
   end
 
@@ -93,7 +90,7 @@ defmodule Comp6000Web.SurveyControllerTest do
           Map.put(context[:valid_q_params], :preposition, "pre")
         )
 
-      conn = post(context[:conn], "/api/survey/pre/submit", context[:valid_a_params])
+      post(context[:conn], "/api/survey/pre/submit", context[:valid_a_params])
 
       answer = SurveyAnswers.get_survey_answer_by(survey_question_id: question.id)
 
@@ -101,12 +98,12 @@ defmodule Comp6000Web.SurveyControllerTest do
     end
 
     test "invalid parameters does not submit an answer to pre study survey", context do
-      {:ok, question} =
+      {:ok, _question} =
         SurveyQuestions.create_survey_question(
           Map.put(context[:valid_q_params], :preposition, "pre")
         )
 
-      conn = post(context[:conn], "/api/survey/pre/submit", context[:invalid_a_params])
+      post(context[:conn], "/api/survey/pre/submit", context[:invalid_a_params])
 
       answer = SurveyAnswers.get_survey_answer_by(answers: context[:invalid_a_params].answers)
 
@@ -116,7 +113,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
   describe "POST /api/survey/post/create" do
     test "valid parameters creates a post study survey", context do
-      conn = post(context[:conn], "/api/survey/post/create", context[:valid_q_params])
+      post(context[:conn], "/api/survey/post/create", context[:valid_q_params])
 
       question =
         SurveyQuestions.get_survey_question_by(study_id: context[:valid_q_params].study_id)
@@ -128,7 +125,7 @@ defmodule Comp6000Web.SurveyControllerTest do
     end
 
     test "invalid parameters does not create a post study survey", context do
-      conn = post(context[:conn], "/api/survey/post/create", context[:invalid_q_params])
+      post(context[:conn], "/api/survey/post/create", context[:invalid_q_params])
 
       question =
         SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
@@ -146,9 +143,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
       conn = post(context[:conn], "/api/survey/post/get", %{study_id: question.study_id})
 
-      json_result = json_response(conn, 200)
-
-      assert json_result = %{
+      assert json_response(conn, 200) == %{
                "survey_question" => %{
                  "id" => question.id,
                  "preposition" => "post",
@@ -164,8 +159,7 @@ defmodule Comp6000Web.SurveyControllerTest do
 
       assert json_result == %{"survey_question" => nil}
 
-      question =
-        SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
+      refute SurveyQuestions.get_survey_question_by(study_id: context[:invalid_q_params].study_id)
     end
   end
 
@@ -176,7 +170,7 @@ defmodule Comp6000Web.SurveyControllerTest do
           Map.put(context[:valid_q_params], :preposition, "post")
         )
 
-      conn = post(context[:conn], "/api/survey/post/submit", context[:valid_a_params])
+      post(context[:conn], "/api/survey/post/submit", context[:valid_a_params])
 
       answer = SurveyAnswers.get_survey_answer_by(survey_question_id: question.id)
 
@@ -184,12 +178,12 @@ defmodule Comp6000Web.SurveyControllerTest do
     end
 
     test "invalid parameters does not submit an answer to post study survey", context do
-      {:ok, question} =
+      {:ok, _question} =
         SurveyQuestions.create_survey_question(
           Map.put(context[:valid_q_params], :preposition, "post")
         )
 
-      conn = post(context[:conn], "/api/survey/post/submit", context[:invalid_a_params])
+      post(context[:conn], "/api/survey/post/submit", context[:invalid_a_params])
 
       answer = SurveyAnswers.get_survey_answer_by(answers: context[:invalid_a_params].answers)
 

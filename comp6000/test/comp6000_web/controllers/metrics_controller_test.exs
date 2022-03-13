@@ -36,12 +36,8 @@ defmodule Comp6000Web.MetricsControllerTest do
     %{conn: conn, study: study, bg_task: bg_task, task: task}
   end
 
-  @invalid_metric_json %{
-    data: "invalid"
-  }
-
   describe "POST /api/data/append" do
-    test "valid parameters appends replay data", %{conn: conn, study: study, task: task} do
+    test "valid parameters appends replay data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
 
       conn =
@@ -78,7 +74,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       assert "#{@file_start}content#{@chunk_delimiter}content" == File.read!(path)
     end
 
-    test "valid parameters appends compile data", %{conn: conn, study: study, task: task} do
+    test "valid parameters appends compile data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
 
       conn =
@@ -117,7 +113,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   end
 
   describe "POST /api/data/complete" do
-    test "valid parameters completes replay_data", %{conn: conn, study: study, task: task} do
+    test "valid parameters completes replay_data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
       content = "Some Content!"
 
@@ -154,7 +150,7 @@ defmodule Comp6000Web.MetricsControllerTest do
                :zlib.gzip("#{@file_start}#{content}#{@file_end}")
     end
 
-    test "valid parameters completes compile_data", %{conn: conn, study: study, task: task} do
+    test "valid parameters completes compile_data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
       content = "Some Content!"
 

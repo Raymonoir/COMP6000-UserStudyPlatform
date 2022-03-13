@@ -59,7 +59,7 @@ defmodule Comp6000.Contexts.StorageTest do
   end
 
   describe "create_participant_directory/1" do
-    test "creates directory using a metrics", %{study: study, task: task, metrics: metrics} do
+    test "creates directory using a metrics", %{study: study, metrics: metrics} do
       :ok = File.mkdir("#{@storage_path}/#{study.id}")
 
       assert metrics = Storage.create_participant_directory(metrics)
@@ -71,8 +71,8 @@ defmodule Comp6000.Contexts.StorageTest do
   end
 
   describe "create_participant_files/1" do
-    test "creates files at correct location", %{study: study, task: task, metrics: metrics} do
-      create_all_dirs(study, task, metrics)
+    test "creates files at correct location", %{study: study, metrics: metrics} do
+      create_all_dirs(study, metrics)
 
       assert metrics == Storage.create_participant_files(metrics)
 
@@ -97,10 +97,9 @@ defmodule Comp6000.Contexts.StorageTest do
   describe "append_data/3" do
     test "appends data to replay_data file", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@extension}"
@@ -126,10 +125,9 @@ defmodule Comp6000.Contexts.StorageTest do
 
     test "appends data to compile_data file", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@extension}"
@@ -157,10 +155,9 @@ defmodule Comp6000.Contexts.StorageTest do
   describe "complete_data/2" do
     test "gzips content and renames replay_data file with .gzip file extension", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path_no_ext = "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}"
 
@@ -181,10 +178,9 @@ defmodule Comp6000.Contexts.StorageTest do
 
     test "gzips content and renames compile_data file with .gzip file extension", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path_no_ext =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}"
@@ -208,10 +204,9 @@ defmodule Comp6000.Contexts.StorageTest do
   describe "get_completed_data/2" do
     test "returns content stored in completed replay_data file", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@completed_extension}"
@@ -225,10 +220,9 @@ defmodule Comp6000.Contexts.StorageTest do
 
     test "returns content stored in completed compile_data file", %{
       study: study,
-      task: task,
       metrics: metrics
     } do
-      create_all_dirs(study, task, metrics)
+      create_all_dirs(study, metrics)
 
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@completed_extension}"
@@ -241,7 +235,7 @@ defmodule Comp6000.Contexts.StorageTest do
     end
   end
 
-  def create_all_dirs(study, task, metrics) do
+  def create_all_dirs(study, metrics) do
     File.mkdir!("#{@storage_path}/#{study.id}")
     File.mkdir!("#{@storage_path}/#{study.id}/#{metrics.participant_uuid}")
   end

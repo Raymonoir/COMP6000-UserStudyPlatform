@@ -1,4 +1,27 @@
-{
+[
+    {
     "logs": [],
     "userCodeError": "seen.contains is not a function"
-}
+    },
+    {
+    "logs": [],
+    "userCodeError": "seen.contains is not a function"
+    },
+    {
+    "logs": [],
+    "userCodeError": "seen.contains is not a function"
+    },
+    {
+    "logs": [],
+    "userCodeError": "seen.contains is not a function"
+    },
+    {
+    "logs": [],
+    "userCodeError": "seen.contains is not a function"
+    },
+    {
+    "logs": [],
+    "userCodeError": "seen.contains is not a function"
+    }
+]
+

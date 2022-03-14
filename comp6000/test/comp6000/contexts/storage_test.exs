@@ -211,11 +211,11 @@ defmodule Comp6000.Contexts.StorageTest do
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@replay_filename}.#{@completed_extension}"
 
-      unzipped_content = "A few chunks"
+      unzipped_content = Jason.encode!(%{json: "data"})
       gzipped_content = :zlib.gzip(unzipped_content)
       :ok = File.write(path, gzipped_content)
 
-      assert unzipped_content == Storage.get_completed_data(metrics, :replay)
+      assert Jason.decode!(unzipped_content) == Storage.get_completed_data(metrics, :replay)
     end
 
     test "returns content stored in completed compile_data file", %{
@@ -227,11 +227,11 @@ defmodule Comp6000.Contexts.StorageTest do
       path =
         "#{@storage_path}/#{study.id}/#{metrics.participant_uuid}/#{@compile_filename}.#{@completed_extension}"
 
-      unzipped_content = "A few chunks"
+      unzipped_content = Jason.encode!(%{json: "data"})
       gzipped_content = :zlib.gzip(unzipped_content)
       :ok = File.write(path, gzipped_content)
 
-      assert unzipped_content == Storage.get_completed_data(metrics, :compile)
+      assert Jason.decode!(unzipped_content) == Storage.get_completed_data(metrics, :compile)
     end
   end
 

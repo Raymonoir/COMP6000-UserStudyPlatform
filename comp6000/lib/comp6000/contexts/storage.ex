@@ -119,7 +119,7 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?(path) do
       {:ok, content} = File.read(path)
-      :zlib.gunzip(content)
+      Jason.decode!(:zlib.gunzip(content))
     else
       :file_no_exist
     end

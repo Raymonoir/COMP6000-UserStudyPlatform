@@ -55,7 +55,7 @@ defmodule Comp6000.Contexts.Storage do
           {:error, reason}
       end
     else
-      :error
+      :file_no_exist
     end
   end
 
@@ -67,7 +67,7 @@ defmodule Comp6000.Contexts.Storage do
         "#{get_participant_files_path(metrics, :replay)}.#{@extension}",
         @file_start
       )
-      
+
     :ok =
       File.write(
         "#{get_participant_files_path(metrics, :compile)}.#{@extension}",
@@ -108,7 +108,7 @@ defmodule Comp6000.Contexts.Storage do
 
       :ok = File.rename("#{path_no_ext}.#{@extension}", "#{path_no_ext}.#{@completed_extension}")
     else
-      :error
+      :file_no_exist
     end
   end
 
@@ -121,7 +121,7 @@ defmodule Comp6000.Contexts.Storage do
       {:ok, content} = File.read(path)
       :zlib.gunzip(content)
     else
-      :error
+      :file_no_exist
     end
   end
 

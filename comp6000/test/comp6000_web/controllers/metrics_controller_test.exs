@@ -115,7 +115,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   describe "POST /api/data/complete" do
     test "valid parameters completes replay_data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
-      content = "Some Content!"
+      content = Jason.encode!(%{start: 1_645_537_625_744, end: 1_645_589_625_780, events: []})
 
       Metrics.create_metrics(%{
         study_id: study.id,
@@ -152,7 +152,7 @@ defmodule Comp6000Web.MetricsControllerTest do
 
     test "valid parameters completes compile_data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
-      content = "Some Content!"
+      content = Jason.encode!(%{json: "content"})
 
       Metrics.create_metrics(%{
         study_id: study.id,

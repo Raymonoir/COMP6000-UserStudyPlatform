@@ -1,6 +1,7 @@
 defmodule Comp6000Web.Metrics.MetricsController do
   use Comp6000Web, :controller
-  alias Comp6000.Contexts.{Tasks, Metrics, Storage, Studies}
+  alias Comp6000.Contexts.{Metrics, Storage, Studies}
+  alias Comp6000.ReplayMetrics.Calculations
 
   def append_data(
         conn,
@@ -49,14 +50,18 @@ defmodule Comp6000Web.Metrics.MetricsController do
       ) do
     filetype =
       case data_type do
-        "compile_data" -> :compile
-        "replay_data" -> :replay
+        "compile_data" ->
+          :compile
+
+        "replay_data" ->
+          :replay
       end
 
     metrics = Metrics.get_metrics_by(study_id: study_id, participant_uuid: uuid)
 
-    json(conn, %{
-      String.to_atom("#{data_type}_completed") => Storage.complete_data(metrics, filetype)
-    })
+    id = Storage.complete_data(metrics, filetype)
+    Calculations.calculate_metrics(metrics, filetype)
+
+    json(conn, %{String.to_atom("#{data_type}_completed") => id})
   end
 end

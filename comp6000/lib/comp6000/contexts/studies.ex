@@ -3,6 +3,7 @@ defmodule Comp6000.Contexts.Studies do
   alias Comp6000.Repo
   alias Comp6000.Schemas.{Study, User}
   alias Comp6000.Contexts.Storage
+  alias Comp6000.ReplayMetrics.Calculations
 
   def get_all_studies() do
     Repo.all(Study)
@@ -60,7 +61,14 @@ defmodule Comp6000.Contexts.Studies do
 
   def increment_participant_count(%Study{} = study) do
     if study.participant_count + 1 == study.participant_max do
-      update_study(study, %{participant_count: study.participant_count + 1, participant_code: nil})
+      {:ok, study} =
+        update_study(study, %{
+          participant_count: study.participant_count + 1,
+          participant_code: nil
+        })
+
+      Calculations.complete_study(study)
+      {:ok, study}
     else
       update_study(study, %{participant_count: study.participant_count + 1})
     end

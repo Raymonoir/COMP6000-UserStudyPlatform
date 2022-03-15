@@ -1,10 +1,6 @@
 defmodule Comp6000.ReplayMetrics.Calculations do
-  import Comp6000.Repo
-  alias Comp6000.Contexts.Storage
-  @storage_path Application.get_env(:comp6000, :storage_directory_path)
-  @file_extension Application.get_env(:comp6000, :storage_file_extension)
-  @completed_extension Application.get_env(:comp6000, :completed_file_extension)
-  @chunk_delimiter Application.get_env(:comp6000, :chunk_delimiter)
+  # import Comp6000.Repo
+  alias Comp6000.Contexts.{Storage, Metrics}
 
   def testing_data(datatype) do
     case datatype do
@@ -16,18 +12,64 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     end
   end
 
-  # def calculate_all(%Comp6000.Schemas.Study{} = study) do
-  #   participants = study.participant_list
+  def complete_study(study) do
+    study_participants = study.participant_list
 
-  #   Enum.reduce(participants, %{}, fn participant_uuid, acc ->
-  #     []
-  #   end)
-  # end
+    metrics_list =
+      Enum.reduce(study_participants, [], fn participant_uuid, metrics_list ->
+        metrics = Metrics.get_metrics_by(participant_uuid: participant_uuid, study_id: study.id)
+        metrics_list ++ [metrics]
+      end)
 
-  # def get_participant_data(participant_uuid, datatype) do
-  #   {:ok, metrics} = Metrics.get_metric_by(participant_uuid)
-  #   Jason.decode!(Storage.get_completed_data(metrics, datatype))
-  # end
+    total_map =
+      Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->
+        Enum.each(metric, fn {k, v} ->
+          Map.put(metric_acc, k, Map.get(metric_acc, k, 0) + v)
+          {k, v}
+        end)
+      end)
+
+    average_map =
+      Enum.each(total_map, fn {k, v} ->
+        {k, v / length(metrics_list)}
+      end)
+
+    Metrics.create_metrics(%{
+      content: Jason.encode!(average_map),
+      participant_uuid: Integer.to_string(study.id),
+      study_id: study.id
+    })
+  end
+
+  def calculate_metrics(metrics, filetype) do
+    case filetype do
+      :compile -> calculate_all_compile_metrics(metrics)
+      :replay -> calculate_all_replay_metrics(metrics)
+    end
+  end
+
+  def calculate_all_compile_metrics(metrics) do
+    data = Storage.get_completed_data(metrics, :compile)
+
+    %{}
+    |> Map.put(:most_common_error, get_most_common_error(data, "UserCodeError"))
+    |> Map.put(:times_compiled, get_times_run(data))
+  end
+
+  def calculate_all_replay_metrics(metrics) do
+    data = Storage.get_completed_data(metrics, :replay)
+
+    %{}
+    |> Map.put(:total_time, get_total_time(data))
+    |> Map.put(:insert_character_count, get_character_count(data, "insert"))
+    |> Map.put(:remove_character_count, get_character_count(data, "remove"))
+    |> Map.put(:idle_time, get_idle_time(data))
+    |> Map.put(:pasted_character_count, get_characters_pasted(data))
+    |> Map.put(:word_count, get_word_count(data))
+    |> Map.put(:words_per_minute, get_words_per_minute(data))
+    |> Map.put(:line_count, get_line_count(data))
+    |> Jason.encode!()
+  end
 
   def get_total_time(data_map_list) do
     first = List.first(data_map_list)
@@ -35,7 +77,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
 
     first_datetime = convert_timestamp(first["start"])
     last_datetime = convert_timestamp(last["end"])
-    elapsed = DateTime.diff(last_datetime, first_datetime, :second)
+    DateTime.diff(last_datetime, first_datetime, :second)
   end
 
   # Action type = insert / remove
@@ -76,7 +118,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     end) / 1000
   end
 
-  def get_words_pasted(data_map_list) do
+  def get_characters_pasted(data_map_list) do
     Enum.reduce(data_map_list, 0, fn data_map, acc ->
       acc +
         Enum.reduce(data_map["events"], 0, fn event, chunk_acc ->
@@ -89,7 +131,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
                ["", "    ", "}"],
                ["", "        ", "    "]
              ] and length(lines) > 1 do
-            chunk_acc + length(lines)
+            chunk_acc + String.length(Enum.join(lines))
           else
             chunk_acc
           end
@@ -126,6 +168,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     end) - 1
   end
 
+  # error_type: "UserCodeError"
   def get_most_common_error(data_map_list, error_type) do
     error_map =
       Enum.reduce(data_map_list, %{}, fn data, acc_map ->
@@ -152,7 +195,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
   # end
 
   def get_times_run(data_map_list) do
-    Enum.reduce(data_map_list, 0, fn data, acc ->
+    Enum.reduce(data_map_list, 0, fn _data, acc ->
       acc + 1
     end)
   end

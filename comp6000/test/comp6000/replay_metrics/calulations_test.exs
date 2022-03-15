@@ -136,7 +136,7 @@ defmodule Comp6000.ReplayMetrics.CalculationsTest do
     end
   end
 
-  describe "get_words_pasted/1" do
+  describe "get_characters_pasted/1" do
     test "gets the number of words pasted" do
       assert [
                %{
@@ -180,7 +180,7 @@ defmodule Comp6000.ReplayMetrics.CalculationsTest do
                  ]
                }
              ]
-             |> Calculations.get_words_pasted() == 7
+             |> Calculations.get_characters_pasted() == 26
     end
   end
 

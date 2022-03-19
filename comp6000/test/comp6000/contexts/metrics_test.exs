@@ -77,7 +77,7 @@ defmodule Comp6000.Contexts.MetricsTest do
     assert metrics ==
              Metrics.get_metrics_by(content: valid_metrics_params[:content])
 
-    {:ok, _result} = Metrics.delete_result(metrics)
+    {:ok, _metrics} = Metrics.delete_metrics(metrics)
     refute metrics == Metrics.get_metrics_by(content: valid_metrics_params[:content])
     refute metrics == Metrics.get_metrics_by(study_id: valid_metrics_params[:study_id])
   end

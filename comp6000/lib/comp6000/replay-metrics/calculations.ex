@@ -23,15 +23,14 @@ defmodule Comp6000.ReplayMetrics.Calculations do
 
     total_map =
       Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->
-        Enum.each(metric, fn {k, v} ->
-          Map.put(metric_acc, k, Map.get(metric_acc, k, 0) + v)
-          {k, v}
+        Enum.reduce(Jason.decode!(metric.content), metric_acc, fn {k, v}, acc ->
+          Map.put(acc, k, v + Map.get(acc, k, 0))
         end)
       end)
 
     average_map =
-      Enum.each(total_map, fn {k, v} ->
-        {k, v / length(metrics_list)}
+      Enum.reduce(total_map, %{}, fn {k, v}, acc ->
+        Map.put(acc, k, v / length(study_participants))
       end)
 
     Metrics.create_metrics(%{
@@ -68,7 +67,6 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     |> Map.put(:word_count, get_word_count(data))
     |> Map.put(:words_per_minute, get_words_per_minute(data))
     |> Map.put(:line_count, get_line_count(data))
-    |> Jason.encode!()
   end
 
   def get_total_time(data_map_list) do
@@ -165,7 +163,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
             end
           end
         end)
-    end) - 1
+    end)
   end
 
   # error_type: "UserCodeError"
@@ -181,11 +179,11 @@ defmodule Comp6000.ReplayMetrics.Calculations do
         end
       end)
 
-    Enum.reduce(Map.keys(error_map), {"", 0}, fn key, {acc_key, acc_val} ->
+    Enum.reduce(Map.keys(error_map), ["", 0], fn key, [acc_key, acc_val] ->
       if Map.get(error_map, key) > acc_val do
-        {key, Map.get(error_map, key)}
+        [key, Map.get(error_map, key)]
       else
-        {acc_key, acc_val}
+        [acc_key, acc_val]
       end
     end)
   end

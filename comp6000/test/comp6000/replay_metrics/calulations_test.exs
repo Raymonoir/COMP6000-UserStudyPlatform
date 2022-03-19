@@ -228,7 +228,7 @@ defmodule Comp6000.ReplayMetrics.CalculationsTest do
                  ]
                }
              ]
-             |> Calculations.get_word_count() == 7
+             |> Calculations.get_word_count() == 8
     end
   end
 
@@ -246,7 +246,7 @@ defmodule Comp6000.ReplayMetrics.CalculationsTest do
                }
              ]
              |> Calculations.get_most_common_error("userCodeError") ==
-               {"seen.contains is not a function", 2}
+               ["seen.contains is not a function", 2]
     end
   end
 
@@ -322,7 +322,7 @@ defmodule Comp6000.ReplayMetrics.CalculationsTest do
                  ]
                }
              ]
-             |> Calculations.get_words_per_minute() == 0.5
+             |> Calculations.get_words_per_minute() == 0.5714285714285714
     end
   end
 

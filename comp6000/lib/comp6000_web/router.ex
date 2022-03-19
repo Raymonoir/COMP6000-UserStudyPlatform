@@ -38,7 +38,6 @@ defmodule Comp6000Web.Router do
       post("/edit", StudyController, :edit)
       post("/delete", StudyController, :delete)
       post("/get", StudyController, :get)
-      # DO THIS - Average all of the metrics of all participants in study and store
       post("/complete", StudyController, :complete)
     end
 
@@ -63,7 +62,7 @@ defmodule Comp6000Web.Router do
     end
 
     scope "/metrics", Metrics do
-      post("/particpant", MetricsController, :get_metrics_for_participant)
+      post("/participant", MetricsController, :get_metrics_for_participant)
       post("/study", MetricsController, :get_metrics_for_study)
     end
 

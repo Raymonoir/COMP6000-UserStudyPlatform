@@ -55,12 +55,23 @@
 
 /* START QuestionnaireCreator styling */
 
-.remove_question {
-    float: right;
+.question-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px
 }
 
-.new_question {
-    max-width: 50%;
+.question-options {
+    margin-left: 20px;
+}
+
+.question-text {
+    flex-grow: 1;
+}
+
+.new-question {
+    max-width: 750px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -70,9 +81,8 @@
 }
 
 .buttons {
-    margin-top: 1%;
-    margin-left: 10%;
-    margin-right: 10%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 /* END QuestionnaireCreator styling */

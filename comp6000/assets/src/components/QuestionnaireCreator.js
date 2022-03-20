@@ -2,7 +2,11 @@ class QuestionnaireCreator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            questions: []
+            questions: [{
+                question: '',
+                type: 'text',
+                options: ['']
+            }]
         }
 
         this.addQuestion = this.addQuestion.bind(this);
@@ -80,52 +84,61 @@ class QuestionnaireCreator extends React.Component {
                 {
                     this.state.questions.map((q, i) => {
                         return (
-                            <div className="new_question"
+                            <div className="new-question"
                                 key={i}
                             >
                                 <h3>Question {i + 1}</h3>
-                                <input
-                                    type="text"
-                                    value={this.state.questions[i].question}
-                                    onChange={(e) => { this.onQuestionChange(i, e); }}
-                                />
-                                <button
-                                    className="button tertiary remove_question"
-                                    onClick={() => { this.removeQuestion(i) }}>
-                                    Remove
-                                </button>
-                                <select
-                                    value={this.state.questions[i].type}
-                                    onChange={(e) => { this.onQuestionTypeChange(i, e); }}
-                                >
-                                    <option value="text">text</option>
-                                    <option value="dropdown">dropdown</option>
-                                    <option value="checkbox">checkbox</option>
-                                </select>
-                                {this.state.questions[i].type != 'text' &&
+                                <div className="question-details">
+                                    <input
+                                        className="question-text"
+                                        type="text"
+                                        value={this.state.questions[i].question}
+                                        onChange={(e) => { this.onQuestionChange(i, e); }}
+                                    />
+                                    <select
+                                        value={this.state.questions[i].type}
+                                        onChange={(e) => { this.onQuestionTypeChange(i, e); }}
+                                    >
+                                        <option value="text">text</option>
+                                        <option value="dropdown">dropdown</option>
+                                        <option value="checkbox">checkbox</option>
+                                    </select>
                                     <button
-                                        className="button primary"
-                                        onClick={() => { this.addOption(i); }}>
-                                        Add Option
+                                        className="button tertiary remove_question"
+                                        onClick={() => { this.removeQuestion(i) }}>
+                                        Remove Question
                                     </button>
-                                }
-                                {this.state.questions[i].type != 'text' &&
-                                    this.state.questions[i].options.map((o, oi) => {
-                                        return (
-                                            <div key={oi}>
-                                                <input
-                                                    type="text"
-                                                    value={o}
-                                                    onChange={(e) => { this.onOptionChange(i, oi, e) }} />
-                                                <button
-                                                    className="button tertiary"
-                                                    onClick={() => { this.removeOption(i, oi); }}>
-                                                    Remove Option
-                                                </button>
-                                            </div>
-                                        );
-                                    })
-                                }
+                                </div>
+                                <div className="question-options">
+                                    {this.state.questions[i].type != 'text' &&
+                                        <div>
+                                            <h3>Question {i + i} {this.state.questions[i].type} options</h3>
+                                            <button
+                                                className="button primary"
+                                                onClick={() => { this.addOption(i); }}>
+                                                Add Option
+                                            </button>
+                                        </div>
+                                    }
+                                    {this.state.questions[i].type != 'text' &&
+                                        this.state.questions[i].options.map((o, oi) => {
+                                            return (
+                                                <div className="question-details" key={oi}>
+                                                    <input
+                                                        className="question-text"
+                                                        type="text"
+                                                        value={o}
+                                                        onChange={(e) => { this.onOptionChange(i, oi, e) }} />
+                                                    <button
+                                                        className="button tertiary"
+                                                        onClick={() => { this.removeOption(i, oi); }}>
+                                                        Remove Option
+                                                    </button>
+                                                </div>
+                                            );
+                                        })
+                                    }
+                                </div>
                             </div>
                         )
                     })

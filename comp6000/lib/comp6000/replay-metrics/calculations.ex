@@ -1,16 +1,5 @@
 defmodule Comp6000.ReplayMetrics.Calculations do
-  # import Comp6000.Repo
   alias Comp6000.Contexts.{Storage, Metrics}
-
-  def testing_data(datatype) do
-    case datatype do
-      :compile ->
-        Jason.decode!(File.read!("test/support/code-examples/loop-arr-error-compile.txt"))
-
-      :replay ->
-        Jason.decode!(File.read!("test/support/code-examples/multi-chunk-replay.txt"))
-    end
-  end
 
   def complete_study(study) do
     study_participants = study.participant_list

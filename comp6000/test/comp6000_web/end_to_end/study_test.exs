@@ -1,6 +1,5 @@
 defmodule Comp6000Web.EndToEnd.StudyTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.Metrics
 
   test "When a study is completed, average metrics are calculated from participants", %{
     conn: conn
@@ -21,7 +20,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
         task_count: 0
       })
 
-    %{"created_study" => id} = json_response(conn, 200)
+    %{"created_study" => _id} = json_response(conn, 200)
 
     conn = post(conn, "/api/study/get", %{username: "Ray123"})
 

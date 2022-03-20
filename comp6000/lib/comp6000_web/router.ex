@@ -31,6 +31,7 @@ defmodule Comp6000Web.Router do
       post("/create", UserController, :create)
       post("/edit", UserController, :edit)
       post("/delete", UserController, :delete)
+      get("/get", UserController, :get)
     end
 
     scope "/study", Study do

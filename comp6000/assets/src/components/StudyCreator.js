@@ -90,16 +90,35 @@ class StudyCreator extends React.Component {
 
     render() {
         const intro = (
-            <div>
+            <div className="centered fit-content">
                 <h1>Create a new study</h1>
-                <p>Explanation of how to create a study...</p>
-                <input type="text" onChange={this.onTitleChange} value={this.state.title} />
-                <button
-                    className="button primary"
-                    onClick={this.nextStage}
-                >
-                    Get Started
-                </button>
+                <p>A study is made up of three parts:</p>
+                <div>
+                    <h3>Background Questionnaire</h3>
+                    <p>These questions will be the first thing shown to a participant when they start the study.</p>
+                    <p>This is a good place to gather background information about a participant to help with analysing their answers later.</p>
+                </div>
+                <div>
+                    <h3>Tasks</h3>
+                    <p>These are the actual tasks a participant will be asked to complete.</p>
+                    <p>Each task will have a short description and one or more tests to run against a participant's answers.</p>
+                    <p>A test allows you to specify a function to run, the arguments to provide and the return value you expect.</p>
+                </div>
+                <div>
+                    <h3>Post Questionnaire</h3>
+                    <p>This questionnaire will be shown to the participant after they finish the study and submit their answers.</p>
+                </div>
+                <hr />
+                <p>Enter a title for your study to get started:</p>
+                <div className="spaced-out-row">
+                    <input type="text" onChange={this.onTitleChange} value={this.state.title} />
+                    <button
+                        className="button primary"
+                        onClick={this.nextStage}
+                    >
+                        Get Started
+                    </button>
+                </div>
             </div>
         );
 

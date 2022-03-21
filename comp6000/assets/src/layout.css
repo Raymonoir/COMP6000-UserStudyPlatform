@@ -50,6 +50,10 @@
     display: flex;
 }
 
+.fit-content {
+    width: fit-content;
+}
+
 .spaced-out-row {
     display: flex;
     align-items: center;

@@ -49,3 +49,23 @@
 .flex {
     display: flex;
 }
+
+.fit-content {
+    width: fit-content;
+}
+
+.spaced-out-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+}
+
+.bottom-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}

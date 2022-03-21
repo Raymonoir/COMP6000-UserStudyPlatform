@@ -52,3 +52,66 @@
 }
 
 /* END Editor component styling */
+
+/* START QuestionnaireCreator styling */
+
+.questionnaire-creator-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.question-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px
+}
+
+.question-options {
+    margin-left: 20px;
+}
+
+.question-text {
+    flex-grow: 1;
+}
+
+.new-question {
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.buttons {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* END QuestionnaireCreator styling */
+
+/* START TaskCreator styling */
+
+.task-creator-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.new-task {
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.new-task-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.new-task-text {
+    flex-grow: 1;
+}
+
+.new-task-test {
+    margin-left: 20px
+}
+
+/* END TaskCreator styling */

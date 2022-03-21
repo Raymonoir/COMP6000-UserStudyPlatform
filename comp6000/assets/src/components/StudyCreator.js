@@ -6,10 +6,12 @@ class StudyCreator extends React.Component {
         super(props);
         this.state = {
             stage: 0,
-            title: ''
+            title: '',
+            titleTooShort: false
         };
 
         this.nextStage = this.nextStage.bind(this);
+        this.saveTitle = this.saveTitle.bind(this);
         this.onTitleChange = this.onTitleChange.bind(this);
         this.saveQuestions = this.saveQuestions.bind(this);
         this.saveTasks = this.saveTasks.bind(this);
@@ -20,6 +22,14 @@ class StudyCreator extends React.Component {
         this.setState({ stage: this.state.stage + 1 });
         if (this.state.stage + 1 >= 4) {
             this.saveStudy();
+        }
+    }
+
+    saveTitle() {
+        if (this.state.title.length >= 4) {
+            this.nextStage();
+        } else {
+            this.setState({ titleTooShort: true });
         }
     }
 
@@ -110,11 +120,16 @@ class StudyCreator extends React.Component {
                 </div>
                 <hr />
                 <p>Enter a title for your study to get started:</p>
+                {this.state.titleTooShort &&
+                    <p>Title must be at least 4 characters</p>
+                }
                 <div className="spaced-out-row">
-                    <input type="text" onChange={this.onTitleChange} value={this.state.title} />
+                    <span className={this.state.titleTooShort ? "invalid-input" : "valid-input"}>
+                        <input type="text" onChange={this.onTitleChange} value={this.state.title} />
+                    </span>
                     <button
                         className="button primary"
-                        onClick={this.nextStage}
+                        onClick={this.saveTitle}
                     >
                         Get Started
                     </button>

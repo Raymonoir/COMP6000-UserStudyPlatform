@@ -97,41 +97,46 @@ class StudyManager extends React.Component {
                 // No need to waste time running the test again
                 resolve(task.complete);
             } else {
-                this.setState({
-                    loading: true,
-                    lastRanCode: {
-                        code: this.state.code,
-                        function: task.answer.tests[0].run,
-                        arguments: task.answer.tests[0].args
-                    },
-                    onExecutionComplete: (result) => {
-                        console.log('callback', result);
-                        if (result.output == task.answer.tests[0].output) {
-                            task.complete = true;
-                        } else {
-                            task.complete = false;
-                        }
-                        let updatedStudy = this.state.study;
-                        updatedStudy.tasks[taskNum] = task;
-                        let stateUpdate = {
-                            study: updatedStudy,
-                            showConsole: showResult,
-                            loading: false
-                        }
-
-                        // Don't keep the test we ran stored to allow retesting again
-                        if (allowRetest) {
-                            stateUpdate.lastRanCode = {
-                                code: '',
-                                function: '',
-                                arguments: []
+                const lastRanCode = this.state.lastRanCode;
+                if (lastRanCode.code == this.state.code && lastRanCode.function == task.answer.tests[0].run && lastRanCode.arguments == task.answer.tests[0].args) {
+                    resolve(task.complete);
+                } else {
+                    this.setState({
+                        loading: true,
+                        lastRanCode: {
+                            code: this.state.code,
+                            function: task.answer.tests[0].run,
+                            arguments: task.answer.tests[0].args
+                        },
+                        onExecutionComplete: (result) => {
+                            console.log('callback', result);
+                            if (result.output == task.answer.tests[0].output) {
+                                task.complete = true;
+                            } else {
+                                task.complete = false;
                             }
-                        }
+                            let updatedStudy = this.state.study;
+                            updatedStudy.tasks[taskNum] = task;
+                            let stateUpdate = {
+                                study: updatedStudy,
+                                showConsole: showResult,
+                                loading: false
+                            }
 
-                        this.setState(stateUpdate);
-                        resolve(task.complete);
-                    }
-                });
+                            // Don't keep the test we ran stored to allow retesting again
+                            if (allowRetest) {
+                                stateUpdate.lastRanCode = {
+                                    code: '',
+                                    function: '',
+                                    arguments: []
+                                }
+                            }
+
+                            this.setState(stateUpdate);
+                            resolve(task.complete);
+                        }
+                    });
+                }
             }
         });
     }

@@ -55,7 +55,7 @@ defmodule Comp6000.Contexts.Storage do
           {:error, reason}
       end
     else
-      :error
+      :file_no_exist
     end
   end
 
@@ -108,7 +108,7 @@ defmodule Comp6000.Contexts.Storage do
 
       :ok = File.rename("#{path_no_ext}.#{@extension}", "#{path_no_ext}.#{@completed_extension}")
     else
-      :error
+      :file_no_exist
     end
   end
 
@@ -119,9 +119,9 @@ defmodule Comp6000.Contexts.Storage do
 
     if File.exists?(path) do
       {:ok, content} = File.read(path)
-      :zlib.gunzip(content)
+      Jason.decode!(:zlib.gunzip(content))
     else
-      :error
+      :file_no_exist
     end
   end
 

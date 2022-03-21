@@ -30,7 +30,13 @@ defmodule Comp6000.Contexts.Metrics do
     end
   end
 
-  def delete_result(%Metrics{} = metrics) do
+  def update_metrics(%Metrics{} = metrics, params) do
+    metrics
+    |> Metrics.changeset(params)
+    |> Repo.update()
+  end
+
+  def delete_metrics(%Metrics{} = metrics) do
     Repo.delete(metrics)
   end
 

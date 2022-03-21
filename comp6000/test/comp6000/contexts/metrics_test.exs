@@ -1,6 +1,6 @@
 defmodule Comp6000.Contexts.MetricsTest do
   use Comp6000.DataCase, async: true
-  alias Comp6000.Contexts.{Studies, Users, Tasks, Metrics}
+  alias Comp6000.Contexts.{Studies, Users, Metrics}
   alias Comp6000.Schemas.{Study}
 
   setup do
@@ -9,9 +9,6 @@ defmodule Comp6000.Contexts.MetricsTest do
 
     {:ok, study} =
       Studies.create_study(%{username: user.username, title: "A Study Title", task_count: 0})
-
-    {:ok, task} =
-      Tasks.create_task(%{content: "What is 2*2?", task_number: 1, study_id: study.id})
 
     valid_metrics_params = %{
       study_id: study.id,
@@ -80,7 +77,7 @@ defmodule Comp6000.Contexts.MetricsTest do
     assert metrics ==
              Metrics.get_metrics_by(content: valid_metrics_params[:content])
 
-    {:ok, _result} = Metrics.delete_result(metrics)
+    {:ok, _metrics} = Metrics.delete_metrics(metrics)
     refute metrics == Metrics.get_metrics_by(content: valid_metrics_params[:content])
     refute metrics == Metrics.get_metrics_by(study_id: valid_metrics_params[:study_id])
   end

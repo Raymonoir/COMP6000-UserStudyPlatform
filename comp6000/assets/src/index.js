@@ -6,6 +6,7 @@ import Editor from './components/Editor';
 import RequiresLogin from './components/RequiresLogin';
 import StudyManager from './components/StudyManager';
 import reportWebVitals from './reportWebVitals';
+import StudyCreator from './components/StudyCreator';
 
 ReactDOM.render(
     <BrowserRouter basename="/app">
@@ -25,7 +26,12 @@ ReactDOM.render(
                 <B />
             </Route>
             <Route path="/editor">
-                <Editor/>
+                <Editor />
+            </Route>
+            <Route path="/createStudy">
+                <RequiresLogin>
+                    <StudyCreator />
+                </RequiresLogin>
             </Route>
             <Route path="/study/:key" component={StudyManager} />
         </Route>

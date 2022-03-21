@@ -31,7 +31,7 @@ defmodule Comp6000Web.Router do
       post("/create", UserController, :create)
       post("/edit", UserController, :edit)
       post("/delete", UserController, :delete)
-      # get("/get-studies", UserController, :get_studies)
+      get("/get", UserController, :get)
     end
 
     scope "/study", Study do
@@ -39,6 +39,7 @@ defmodule Comp6000Web.Router do
       post("/edit", StudyController, :edit)
       post("/delete", StudyController, :delete)
       post("/get", StudyController, :get)
+      post("/complete", StudyController, :complete)
     end
 
     scope "/task", Task do
@@ -55,10 +56,15 @@ defmodule Comp6000Web.Router do
       post("/delete", AnswerController, :delete)
     end
 
-    scope "/data", Result do
-      post("/append", ResultController, :append_data)
-      post("/complete", ResultController, :complete_data)
-      post("/get", ResultController, :get)
+    scope "/data", Metrics do
+      post("/append", MetricsController, :append_data)
+      post("/complete", MetricsController, :complete_data)
+      post("/get", MetricsController, :get)
+    end
+
+    scope "/metrics", Metrics do
+      post("/participant", MetricsController, :get_metrics_for_participant)
+      post("/study", MetricsController, :get_metrics_for_study)
     end
 
     scope "/survey", Survey do
@@ -73,19 +79,7 @@ defmodule Comp6000Web.Router do
 
     scope "/participant", Participant do
       get("/get-uuid", ParticipantController, :get_participant_uuid)
-      get("/:participant_uuid/list-results", ParticipantController, :get_participant_results)
     end
-
-    # TODO
-    scope "/metrics", Metrics do
-      get("/:task_id", MetricsController, :get_metrics_for_task)
-      get("/:task_id/:participant_uuid", MetricsController, :get_metrics_for_result)
-      get("/:particpant_uuid", MetricsController, :get_metrics_for_participant)
-    end
-
-    # post("/:study_id/background/:uuid/submit", ResultController, :background_submit)
-    # post("/:study_id/task/:task_id/:uuid/result/submit", ResultController, :result_submit)
-    # get("/:study_id/task/:task_id/get-results", ResultController, :get_results)
 
     get("/*path", PageController, :error)
     post("/*path", PageController, :error)

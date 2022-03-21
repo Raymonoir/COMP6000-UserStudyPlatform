@@ -2,8 +2,6 @@ defmodule Comp6000Web.TaskControllerTest do
   use Comp6000Web.ConnCase, async: true
   alias Comp6000.Contexts.{Users, Studies, Tasks}
 
-  @storage_path Application.get_env(:comp6000, :storage_path)
-
   setup %{conn: conn} do
     {:ok, user} =
       Users.create_user(%{username: "Ray123", email: "Ray@email.com", password: "password12345"})

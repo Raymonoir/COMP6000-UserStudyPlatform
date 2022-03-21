@@ -1,6 +1,6 @@
 defmodule Comp6000Web.StudyControllerTest do
   use Comp6000Web.ConnCase, async: true
-  alias Comp6000.Contexts.{Studies, Users, Tasks, Results, Answers}
+  alias Comp6000.Contexts.{Studies, Users, Tasks, Metrics, Answers}
 
   @storage_path Application.get_env(:comp6000, :storage_path)
 
@@ -18,7 +18,8 @@ defmodule Comp6000Web.StudyControllerTest do
 
   @valid_study %{
     title: "My Study",
-    username: "Ray123"
+    username: "Ray123",
+    participant_code: "123abc"
   }
 
   @invalid_study %{
@@ -51,28 +52,6 @@ defmodule Comp6000Web.StudyControllerTest do
       assert %{"error" => "user does not exist"} = result
     end
   end
-
-  # describe "POST /api/study/get" do
-  #   test "valid id returns correct study", %{conn: conn} do
-  #     {:ok, study} = Studies.create_study(@valid_study)
-
-  #     conn = post(conn, "/api/study/get", %{study_id: study.id})
-
-  #     json_result = json_response(conn, 200)
-
-  #     id = study.id
-
-  #     assert %{
-  #              "study" => %{
-  #                "task_count" => 0,
-  #                "tasks" => [],
-  #                "title" => "My Study",
-  #                "username" => "Ray123",
-  #                "id" => ^id
-  #              }
-  #            } = json_result
-  #   end
-  # end
 
   describe "POST /api/study/edit" do
     test "valid parameters edits study", %{conn: conn} do
@@ -144,7 +123,7 @@ defmodule Comp6000Web.StudyControllerTest do
       assert %{"study" => nil} = json_result
     end
 
-    test "valid parameters returns all information for a study", %{conn: conn} do
+    test "valid id returns all information for a study", %{conn: conn} do
       {:ok, study} = Studies.create_study(@valid_study)
 
       {:ok, task1} = Tasks.create_task(%{study_id: study.id, content: "What is life?"})
@@ -163,10 +142,9 @@ defmodule Comp6000Web.StudyControllerTest do
         })
 
       {:ok, _result} =
-        Results.create_result(%{
+        Metrics.create_metrics(%{
           study_id: study.id,
-          content: "Life is life",
-          unique_participant_id: "7876rer"
+          participant_uuid: "7876rer"
         })
 
       conn = post(conn, "/api/study/get", %{study_id: study.id})
@@ -219,6 +197,20 @@ defmodule Comp6000Web.StudyControllerTest do
       json_result = json_response(conn, 200)
 
       assert %{"study" => nil} = json_result
+    end
+  end
+
+  describe "POST /api/study/complete" do
+    test "completes study by removing participant code", %{conn: conn} do
+      {:ok, study} = Studies.create_study(@valid_study)
+
+      post(conn, "/api/study/complete", %{
+        study_id: study.id
+      })
+
+      study = Studies.get_study_by(id: study.id)
+
+      assert study.participant_code == nil
     end
   end
 end

@@ -29,6 +29,10 @@ defmodule Comp6000Web.User.UserController do
     json(conn, %{loggedIn: logged_in})
   end
 
+  def get(conn, _params) do
+    json(conn, %{user: get_session(conn, :username)})
+  end
+
   def logout(conn, _params) do
     json(configure_session(conn, drop: true), %{login: false})
   end

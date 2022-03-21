@@ -1,7 +1,20 @@
 defmodule Comp6000Web.Study.StudyController do
   use Comp6000Web, :controller
   import Plug.Conn
-  alias Comp6000.Contexts.{Storage, Studies, Tasks, Results, Users}
+  alias Comp6000.Contexts.{Studies, Users}
+  alias Comp6000.ReplayMetrics.Calculations
+
+  def complete(conn, %{"study_id" => study_id} = _params) do
+    study = Studies.get_study_by(id: study_id)
+
+    Studies.update_study(study, %{
+      participant_code: nil
+    })
+
+    Calculations.complete_study(study)
+
+    json(conn, %{completed_study: study.id})
+  end
 
   def create(conn, params) do
     case Studies.create_study(params) do

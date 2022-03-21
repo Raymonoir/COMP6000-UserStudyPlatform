@@ -28,6 +28,20 @@ defmodule Comp6000Web.UserControllerTest do
     password: "tooShort"
   }
 
+  describe "GET /api/users/get" do
+    test "get route returns username of current logged in user", %{conn: conn} do
+      conn = get(conn, "/api/users/get")
+
+      assert json_response(conn, 200) == %{"user" => nil}
+
+      conn = post(conn, "/api/users/login", %{username: "Ray123", password: "RaysPassword"})
+
+      conn = get(conn, "/api/users/get")
+
+      assert json_response(conn, 200) == %{"user" => "Ray123"}
+    end
+  end
+
   describe "POST /api/users/login" do
     test "login route returns correct json and logs user in if correct username and correct password provided",
          %{

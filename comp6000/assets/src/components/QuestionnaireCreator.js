@@ -143,9 +143,9 @@ class QuestionnaireCreator extends React.Component {
                         )
                     })
                 }
-                <div className="buttons">
+                <div className="bottom-buttons">
                     <button className="button secondary" onClick={this.addQuestion}>Add Question</button>
-                    <button className="button primary complete" onClick={this.complete}>Complete</button>
+                    <button className="button primary" onClick={this.complete}>Complete</button>
                 </div>
             </div>
         )

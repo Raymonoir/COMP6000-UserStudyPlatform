@@ -316,8 +316,10 @@ class TaskCreator extends React.Component {
                         );
                     })
                 }
-                <button className="button secondary" onClick={this.addTask}>Add Task</button>
-                <button className="button primary" onClick={this.complete}>Complete</button>
+                <div className="bottom-buttons">
+                    <button className="button secondary" onClick={this.addTask}>Add Task</button>
+                    <button className="button primary" onClick={this.complete}>Complete</button>
+                </div>
             </div>
         )
     }

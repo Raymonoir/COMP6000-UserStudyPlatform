@@ -90,6 +90,11 @@
 
 /* START TaskCreator styling */
 
+.task-creator-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .new-task {
     max-width: 750px;
     margin: 0 auto;

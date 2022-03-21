@@ -222,7 +222,8 @@ class TaskCreator extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="task-creator-container">
+                <h2>Study Tasks</h2>
                 {
                     this.state.tasks.map((task, taskNum) => {
                         return (

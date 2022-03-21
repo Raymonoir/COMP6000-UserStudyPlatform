@@ -154,9 +154,12 @@ class StudyCreator extends React.Component {
                 );
             } else {
                 return (
-                    <div>
-                        <h2>Study: {this.state.completedDetails.title}</h2>
+                    <div className="centered fit-content">
+                        <h2>Study Created</h2>
                         <h3>Join code: {this.state.completedDetails.participant_code}</h3>
+                        <h3>Join link: <a href={window.location.origin + '/app/study/' + this.state.completedDetails.participant_code}>{window.location.origin + '/app/study/' + this.state.completedDetails.participant_code}</a></h3>
+                        <p>Your new study called "{this.state.completedDetails.title}" has been created and is now live.</p>
+                        <p>Invite some participants by sharing the join code or join link shown above with them.</p>
                     </div>
                 );
             }

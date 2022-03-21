@@ -14,7 +14,7 @@ defmodule Comp6000Web.Survey.SurveyController do
   end
 
   def get_pre(conn, %{"study_id" => study_id} = _params) do
-    question = SurveyQuestions.get_survey_question_by(study_id: study_id)
+    question = SurveyQuestions.get_survey_question_by(study_id: study_id, preposition: "pre")
     json(conn, %{survey_question: question})
   end
 
@@ -45,7 +45,7 @@ defmodule Comp6000Web.Survey.SurveyController do
   end
 
   def get_post(conn, %{"study_id" => study_id} = _params) do
-    question = SurveyQuestions.get_survey_question_by(study_id: study_id)
+    question = SurveyQuestions.get_survey_question_by(study_id: study_id, preposition: "post")
     json(conn, %{survey_question: question})
   end
 

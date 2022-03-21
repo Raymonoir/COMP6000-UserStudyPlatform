@@ -11,83 +11,6 @@ class StudyManager extends React.Component {
         super(props)
         this.state = {
             stage: 0,
-            /* study: {
-                "overview": "Welcome to our study about blah blah....",
-                "backgroundQuestionnaire": [
-                    {
-                        "question": "TESTING Select something from this dropdown",
-                        "type": "dropdown",
-                        "options": [
-                            "option A",
-                            "option B"
-                        ]
-                    },
-                    {
-                        "question": "Type in some answer",
-                        "type": "text"
-                    },
-                    {
-                        "question": "Select any number of these checkboxes",
-                        "type": "checkbox",
-                        "options": [
-                            "option A",
-                            "option B"
-                        ]
-                    }
-                ],
-                "tasks": [
-                    {
-                        "description": "Write a function 'add' which takes two numbers and adds them together",
-                        "function": "add",
-                        "tests": [
-                            {
-                                "inputs": [1, 2],
-                                "output": 3
-                            },
-                            {
-                                "inputs": [5, 5],
-                                "output": 10
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Write a function 'mul' which takes two numbers and multiplies them together",
-                        "function": "mul",
-                        "tests": [
-                            {
-                                "inputs": [2, 6],
-                                "output": 12
-                            },
-                            {
-                                "inputs": [10, 1],
-                                "output": 10
-                            }
-                        ]
-                    }
-                ],
-                "postStudyQuestionnaire": [
-                    {
-                        "question": "Select something from this dropdown",
-                        "type": "dropdown",
-                        "options": [
-                            "option A",
-                            "option B"
-                        ]
-                    },
-                    {
-                        "question": "How did it go??",
-                        "type": "text"
-                    },
-                    {
-                        "question": "Select any number of these checkboxes",
-                        "type": "checkbox",
-                        "options": [
-                            "option A",
-                            "option B"
-                        ]
-                    }
-                ],
-            }, */
             study: {
                 overview: "",
                 backgroundQuestionnaire: [],
@@ -108,31 +31,42 @@ class StudyManager extends React.Component {
                 this.state.userUUID = data.current_participant;
             });
 
-        backend.get('/api/study/get-by/participant-code/' + this.props.match.params.key)
-            .then(data => {
-                console.log(data.study);
+        backend.post('/api/study/get', {
+            participant_code: this.props.match.params.key
+        })
+            .then(sData => {
+                console.log(sData);
                 let updatedStudy = this.state.study;
-                updatedStudy.id = data.study.id;
-                let programmingTasks = [];
-
-                // Grab a background survey from the tasks if there is one
-                data.study.tasks.forEach(t => {
-                    if (t.optional_info == 'background') {
-                        updatedStudy.backgroundQuestionnaire = JSON.parse(t.content).questions;
-                    } else {
-                        programmingTasks.push(t);
-                    }
-                })
-
-
-                updatedStudy.tasks = programmingTasks;
-                for (let i = 0; i < updatedStudy.tasks.length; i++) {
-                    updatedStudy.tasks[i].answer.content = JSON.parse(updatedStudy.tasks[i].answer.content);
-                }
-                console.log(updatedStudy);
+                updatedStudy.tasks = sData.study.tasks.map(task => {
+                    task.answer = JSON.parse(task.answer.content);
+                    return task;
+                });
                 this.setState({ study: updatedStudy });
-                console.log(updatedStudy);
-            })
+                console.log('got tasks', updatedStudy);
+
+                backend.post('/api/survey/pre/get', {
+                    study_id: sData.study.id
+                })
+                    .then(preQuestionnaire => {
+                        let updatedStudy = this.state.study;
+                        updatedStudy.backgroundQuestionnaire = preQuestionnaire.survey_question.questions.map(q => {
+                            return JSON.parse(q);
+                        });
+                        this.setState({ study: updatedStudy });
+                        console.log(updatedStudy);
+                    });
+
+                backend.post('/api/survey/post/get', {
+                    study_id: sData.study.id
+                })
+                    .then(postQuestionnaire => {
+                        let updatedStudy = this.state.study;
+                        updatedStudy.postStudyQuestionnaire = postQuestionnaire.survey_question.questions.map(q => {
+                            return JSON.parse(q);
+                        });
+                        this.setState({ study: updatedStudy });
+                    });
+            });
 
         this.submitQuestionnaire = this.submitQuestionnaire.bind(this);
         this.onCodeChange = this.onCodeChange.bind(this);
@@ -167,12 +101,12 @@ class StudyManager extends React.Component {
                     loading: true,
                     lastRanCode: {
                         code: this.state.code,
-                        function: task.answer.content.tests[0].function,
-                        arguments: task.answer.content.tests[0].inputs
+                        function: task.answer.tests[0].run,
+                        arguments: task.answer.tests[0].args
                     },
                     onExecutionComplete: (result) => {
                         console.log('callback', result);
-                        if (result.output == task.answer.content.tests[0].output) {
+                        if (result.output == task.answer.tests[0].output) {
                             task.complete = true;
                         } else {
                             task.complete = false;
@@ -294,13 +228,13 @@ class StudyManager extends React.Component {
                 />
                 <div className="full-width editor-container">
                     <Editor className="editor-on-page" onCodeChange={this.onCodeChange} />
-                <CodeRunner
+                    <CodeRunner
                         className={(this.state.showConsole ? "" : "hidden ") + "editor-code-output"}
-                    code={this.state.lastRanCode.code}
-                    run={this.state.lastRanCode.function}
-                    args={this.state.lastRanCode.arguments}
-                    onExecutionComplete={this.state.onExecutionComplete}
-                />
+                        code={this.state.lastRanCode.code}
+                        run={this.state.lastRanCode.function}
+                        args={this.state.lastRanCode.arguments}
+                        onExecutionComplete={this.state.onExecutionComplete}
+                    />
                 </div>
                 <button
                     className="button primary"

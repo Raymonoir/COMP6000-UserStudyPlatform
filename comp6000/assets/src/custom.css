@@ -86,3 +86,26 @@
 }
 
 /* END QuestionnaireCreator styling */
+
+/* START TaskCreator styling */
+
+.new-task {
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.new-task-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.new-task-text {
+    flex-grow: 1;
+}
+
+.new-task-test {
+    margin-left: 20px
+}
+
+/* END TaskCreator styling */

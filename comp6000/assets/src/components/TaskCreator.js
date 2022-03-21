@@ -226,37 +226,40 @@ class TaskCreator extends React.Component {
                 {
                     this.state.tasks.map((task, taskNum) => {
                         return (
-                            <div key={taskNum}>
+                            <div className="new-task" key={taskNum}>
                                 <h3>Task {taskNum + 1}</h3>
-                                <input
-                                    type="text"
-                                    value={task.detail}
-                                    onChange={(e) => { this.onDetailChange(taskNum, e); }}
-                                />
+                                <div className="new-task-detail">
+                                    <input
+                                        className="new-task-text"
+                                        type="text"
+                                        value={task.detail}
+                                        onChange={(e) => { this.onDetailChange(taskNum, e); }}
+                                    />
+                                    <button className="button tertiary" onClick={() => { this.removeTask(taskNum) }}>Remove Task</button>
+                                </div>
                                 <div>
                                     {
                                         task.tests.map((test, testNum) => {
                                             return (
-                                                <div key={testNum}>
+                                                <div className="new-task-test" key={testNum}>
+                                                    <h3>Test {testNum + 1}</h3>
                                                     <label>
-                                                        <p>The function to run</p>
+                                                        <h3>Function name</h3>
                                                         <input
                                                             type="text"
                                                             value={test.run}
                                                             onChange={(e) => { this.onTestRunUpdate(taskNum, testNum, e); }}
                                                         />
                                                     </label>
-                                                    <p>The arguments to provide</p>
-                                                    <button
-                                                        className="button secondary"
-                                                        onClick={() => { this.addTestArgument(taskNum, testNum); }}>
-                                                        Add Argument
-                                                    </button>
+                                                    <h3>Arguments</h3>
+                                                    {test.args.length === 0 &&
+                                                        <p>No arguments</p>
+                                                    }
                                                     {
                                                         test.args.map((arg, argNum) => {
                                                             return (
-                                                                <div key={argNum}>
-                                                                    <span className={"inline-block" + (arg.isValid ? "" : " invalid-input")}>
+                                                                <div className="spaced-out-row" key={argNum}>
+                                                                    <span className={"spaced-out-row" + (arg.isValid ? " valid-input" : " invalid-input")}>
                                                                         <select
                                                                             value={arg.type}
                                                                             onChange={(e) => { this.onTestArgumentUpdate(taskNum, testNum, argNum, e.target.value, arg.value); }}>
@@ -278,8 +281,13 @@ class TaskCreator extends React.Component {
                                                             );
                                                         })
                                                     }
-                                                    <p>Expected return value</p>
-                                                    <span className={"inline-block" + (test.output.isValid ? "" : " invalid-input")}>
+                                                    <button
+                                                        className="button secondary"
+                                                        onClick={() => { this.addTestArgument(taskNum, testNum); }}>
+                                                        Add Argument
+                                                    </button>
+                                                    <h3>Expected return value</h3>
+                                                    <span className={"spaced-out-row" + (test.output.isValid ? " valid-input" : " invalid-input")}>
                                                         <select
                                                             value={test.output.type}
                                                             onChange={(e) => { this.onTestOutputUpdate(taskNum, testNum, e.target.value, test.output.value); }}>
@@ -292,13 +300,18 @@ class TaskCreator extends React.Component {
                                                             value={test.output.value}
                                                             onChange={(e) => { this.onTestOutputUpdate(taskNum, testNum, test.output.type, e.target.value); }} />
                                                     </span>
+                                                    {task.tests.length > 1 && testNum != task.tests.length - 1 &&
+                                                        <hr />
+                                                    }
                                                 </div>
                                             );
                                         })
                                     }
                                     <button className="button secondary" onClick={() => { this.addTest(taskNum) }}>Add Test</button>
                                 </div>
-                                <button className="button tertiary" onClick={() => { this.removeTask(taskNum) }}>Remove Task</button>
+                                {this.state.tasks.length > 1 && taskNum != this.state.tasks.length - 1 &&
+                                    <hr />
+                                }
                             </div>
                         );
                     })

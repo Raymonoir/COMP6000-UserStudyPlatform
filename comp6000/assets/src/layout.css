@@ -49,3 +49,10 @@
 .flex {
     display: flex;
 }
+
+.spaced-out-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+}

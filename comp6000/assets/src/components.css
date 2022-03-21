@@ -70,6 +70,10 @@ input, textarea, select, .input-style {
     padding: 5px;
 }
 
+.valid-input {
+    padding: 7px;
+}
+
 h1 {
     font-size: 48px;
     margin-top: 20px;

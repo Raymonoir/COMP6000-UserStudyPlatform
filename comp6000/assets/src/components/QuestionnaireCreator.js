@@ -80,7 +80,8 @@ class QuestionnaireCreator extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="questionnaire-creator-container">
+                <h2>{this.props.type.substring(0, 1).toUpperCase() + this.props.type.substring(1)} Questionnaire</h2>
                 {
                     this.state.questions.map((q, i) => {
                         return (
@@ -112,7 +113,7 @@ class QuestionnaireCreator extends React.Component {
                                 <div className="question-options">
                                     {this.state.questions[i].type != 'text' &&
                                         <div>
-                                            <h3>Question {i + i} {this.state.questions[i].type} options</h3>
+                                            <h3>Question {i + 1} {this.state.questions[i].type} options</h3>
                                             <button
                                                 className="button primary"
                                                 onClick={() => { this.addOption(i); }}>

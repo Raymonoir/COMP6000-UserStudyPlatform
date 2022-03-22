@@ -19,7 +19,8 @@ defmodule Comp6000Web.Survey.SurveyController do
   end
 
   def submit_pre(conn, %{"study_id" => study_id} = params) do
-    question_id = SurveyQuestions.get_survey_question_by(study_id: study_id).id
+    question_id =
+      SurveyQuestions.get_survey_question_by(study_id: study_id, preposition: "pre").id
 
     case SurveyAnswers.create_survey_answer(Map.put(params, "survey_question_id", question_id)) do
       {:ok, survey_answer} ->
@@ -50,7 +51,8 @@ defmodule Comp6000Web.Survey.SurveyController do
   end
 
   def submit_post(conn, %{"study_id" => study_id} = params) do
-    question_id = SurveyQuestions.get_survey_question_by(study_id: study_id).id
+    question_id =
+      SurveyQuestions.get_survey_question_by(study_id: study_id, preposition: "post").id
 
     case SurveyAnswers.create_survey_answer(Map.put(params, "survey_question_id", question_id)) do
       {:ok, survey_answer} ->

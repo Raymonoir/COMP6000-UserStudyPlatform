@@ -13,7 +13,7 @@ class Questionnaire extends React.Component {
 
     onAnswerChange(i, v) {
         let updatedAnswers = this.state.answers;
-        updatedAnswers[i] = v;
+        updatedAnswers[i - 1] = v;
         this.setState({ answers: updatedAnswers });
     }
 

@@ -28,7 +28,7 @@ class StudyManager extends React.Component {
         console.log(this.props.match.params.key);
         backend.get('/api/participant/get-uuid')
             .then(data => {
-                this.state.userUUID = data.current_participant;
+                this.setState({ userUUID: data.current_participant });
             });
 
         backend.post('/api/study/get', {
@@ -37,6 +37,7 @@ class StudyManager extends React.Component {
             .then(sData => {
                 console.log(sData);
                 let updatedStudy = this.state.study;
+                updatedStudy.id = sData.study.id;
                 updatedStudy.tasks = sData.study.tasks.map(task => {
                     task.answer = JSON.parse(task.answer.content);
                     return task;
@@ -77,8 +78,16 @@ class StudyManager extends React.Component {
 
     submitQuestionnaire(type, answers) {
         console.log(type, answers);
-        backend.post('/api/study/' + this.state.study.id + '/background/' + this.state.userUUID + '/submit', {
-            content: JSON.stringify(answers)
+        backend.post('/api/survey/' + type + '/submit', {
+            study_id: this.state.study.id,
+            participant_uuid: this.state.userUUID,
+            answers: answers.map(answer => {
+                if (typeof answer == 'string') {
+                    return answer;
+                } else {
+                    return JSON.stringify(answer);
+                }
+            })
         });
         this.setState({ stage: this.state.stage + 1 });
     }
@@ -256,7 +265,7 @@ class StudyManager extends React.Component {
                 return (<Questionnaire
                     questions={this.state.study.backgroundQuestionnaire}
                     onSubmit={this.submitQuestionnaire}
-                    type="background"
+                    type="pre"
                 />);
             } else {
                 return editorView;

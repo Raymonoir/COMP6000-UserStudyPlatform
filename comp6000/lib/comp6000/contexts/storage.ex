@@ -8,7 +8,7 @@ defmodule Comp6000.Contexts.Storage do
   @file_start Application.get_env(:comp6000, :file_start)
   @file_end Application.get_env(:comp6000, :file_end)
   @compile_filename Application.get_env(:comp6000, :compile_filename)
-  @replay_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :replay_filename)
 
   def create_study_directory(%Study{} = study) do
     study_id = study.id

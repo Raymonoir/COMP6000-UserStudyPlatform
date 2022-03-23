@@ -33,4 +33,5 @@ npm-debug.log
 /assets/node_modules/
 
 /codeserver/node_modules/
+/local-storage
 

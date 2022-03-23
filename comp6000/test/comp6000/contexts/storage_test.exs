@@ -10,7 +10,7 @@ defmodule Comp6000.Contexts.StorageTest do
   @file_start Application.get_env(:comp6000, :file_start)
   @file_end Application.get_env(:comp6000, :file_end)
   @compile_filename Application.get_env(:comp6000, :compile_filename)
-  @replay_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :replay_filename)
 
   # Use changeset and Repo directly to miss the use of Storage within the contexts
   setup do

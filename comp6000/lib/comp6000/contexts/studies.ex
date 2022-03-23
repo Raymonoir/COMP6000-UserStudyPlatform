@@ -2,7 +2,7 @@ defmodule Comp6000.Contexts.Studies do
   import Ecto.Query
   alias Comp6000.Repo
   alias Comp6000.Schemas.{Study, User}
-  alias Comp6000.Contexts.Storage
+  alias Comp6000.Contexts.{Storage, Metrics}
   alias Comp6000.ReplayMetrics.Calculations
 
   def get_all_studies() do
@@ -67,7 +67,14 @@ defmodule Comp6000.Contexts.Studies do
           participant_code: nil
         })
 
-      Calculations.complete_study(study)
+      metrics_map = Calculations.get_average_study_metrics(study)
+
+      Metrics.create_metrics(%{
+        content: Jason.encode!(metrics_map),
+        participant_uuid: Integer.to_string(study.id),
+        study_id: study.id
+      })
+
       {:ok, study}
     else
       update_study(study, %{participant_count: study.participant_count + 1})

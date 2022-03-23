@@ -10,7 +10,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   @file_start Application.get_env(:comp6000, :file_start)
   @file_end Application.get_env(:comp6000, :file_end)
   @compile_filename Application.get_env(:comp6000, :compile_filename)
-  @replay_filename Application.get_env(:comp6000, :compile_filename)
+  @replay_filename Application.get_env(:comp6000, :replay_filename)
 
   setup %{conn: conn} do
     {:ok, user} =
@@ -119,6 +119,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       content = Jason.encode!(%{start: 1_645_537_625_744, end: 1_645_589_625_780, events: []})
 
       Metrics.create_metrics(%{
+        content: Jason.encode!(%{}),
         study_id: study.id,
         participant_uuid: uuid
       })
@@ -156,7 +157,8 @@ defmodule Comp6000Web.MetricsControllerTest do
 
       Metrics.create_metrics(%{
         study_id: study.id,
-        participant_uuid: uuid
+        participant_uuid: uuid,
+        content: Jason.encode!(%{})
       })
 
       path = "#{@storage_path}/#{study.id}/#{uuid}/#{@compile_filename}"
@@ -202,14 +204,17 @@ defmodule Comp6000Web.MetricsControllerTest do
 
       assert json_response(conn, 200) == %{
                "metrics_for_participant" => %{
-                 "idle_time" => 32.035,
-                 "insert_character_count" => 164,
-                 "line_count" => 3,
-                 "pasted_character_count" => 0,
-                 "remove_character_count" => 19,
-                 "total_time" => 88,
-                 "word_count" => 41,
-                 "words_per_minute" => 27.954545454545457
+                 "compile" => %{},
+                 "replay" => %{
+                   "idle_time" => 32.035,
+                   "insert_character_count" => 164,
+                   "line_count" => 3,
+                   "pasted_character_count" => 0,
+                   "remove_character_count" => 19,
+                   "total_time" => 88,
+                   "word_count" => 41,
+                   "words_per_minute" => 27.954545454545457
+                 }
                }
              }
     end
@@ -217,32 +222,42 @@ defmodule Comp6000Web.MetricsControllerTest do
 
   describe "POST /api/metrics/study" do
     test "valid parameters returns average metrics for study", %{conn: conn, study: study} do
-      content = Jason.encode!(testing_data(:replay))
+      replay_content = Jason.encode!(testing_data(:replay))
+
       uuid1 = UUID.uuid4()
-      complete_data(uuid1, study.id, content)
+      complete_data(uuid1, study.id, replay_content)
 
       uuid2 = UUID.uuid4()
-      complete_data(uuid2, study.id, content)
+      complete_data(uuid2, study.id, replay_content)
 
       uuid3 = UUID.uuid4()
-      complete_data(uuid3, study.id, content)
+      complete_data(uuid3, study.id, replay_content)
 
       {:ok, study} = Studies.update_study(study, %{participant_list: [uuid1, uuid2, uuid3]})
 
-      Calculations.complete_study(study)
+      metrics_map = Calculations.get_average_study_metrics(study)
+
+      Metrics.create_metrics(%{
+        content: Jason.encode!(metrics_map),
+        participant_uuid: Integer.to_string(study.id),
+        study_id: study.id
+      })
 
       conn = post(conn, "/api/metrics/study", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
                "metrics_for_study" => %{
-                 "idle_time" => 32.035,
-                 "insert_character_count" => 164.0,
-                 "line_count" => 3.0,
-                 "pasted_character_count" => 0.0,
-                 "remove_character_count" => 19.0,
-                 "total_time" => 88.0,
-                 "word_count" => 41.0,
-                 "words_per_minute" => 27.954545454545457
+                 "compile_map" => %{},
+                 "replay_map" => %{
+                   "idle_time" => 32.035,
+                   "insert_character_count" => 164.0,
+                   "line_count" => 3.0,
+                   "pasted_character_count" => 0.0,
+                   "remove_character_count" => 19.0,
+                   "total_time" => 88.0,
+                   "word_count" => 41.0,
+                   "words_per_minute" => 27.954545454545457
+                 }
                }
              }
     end
@@ -252,10 +267,11 @@ defmodule Comp6000Web.MetricsControllerTest do
     {:ok, metrics} =
       Metrics.create_metrics(%{
         study_id: study_id,
-        participant_uuid: uuid
+        participant_uuid: uuid,
+        content: Jason.encode!(%{})
       })
 
-    path = "#{@storage_path}/#{study_id}/#{uuid}/#{@compile_filename}"
+    path = "#{@storage_path}/#{study_id}/#{uuid}/#{@replay_filename}"
 
     File.write(
       "#{path}.#{@extension}",
@@ -263,8 +279,11 @@ defmodule Comp6000Web.MetricsControllerTest do
     )
 
     Storage.complete_data(metrics, :replay)
-    metrics_map = Calculations.calculate_metrics(metrics, :replay)
-    Metrics.update_metrics(metrics, %{content: Jason.encode!(metrics_map)})
+    replay_map = Calculations.calculate_metrics(metrics, :replay)
+
+    Metrics.update_metrics(metrics, %{
+      content: Jason.encode!(%{replay: replay_map, compile: %{}})
+    })
   end
 
   def testing_data(datatype) do

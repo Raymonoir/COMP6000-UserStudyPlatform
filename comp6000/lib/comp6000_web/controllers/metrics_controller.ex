@@ -40,7 +40,7 @@ defmodule Comp6000Web.Metrics.MetricsController do
 
     study = Studies.get_study_by(id: study_id)
 
-    metrics = Metrics.get_metrics_by(participant_uuid: uuid)
+    metrics = Metrics.get_metrics_by(participant_uuid: uuid, study_id: study.id)
 
     metrics =
       if metrics == nil do

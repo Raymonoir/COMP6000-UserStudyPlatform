@@ -74,6 +74,7 @@ class StudyManager extends React.Component {
         this.runTest = this.runTest.bind(this);
         this.completeCoding = this.completeCoding.bind(this);
         this.runAllTests = this.runAllTests.bind(this);
+        this.uploadReplayData = this.uploadReplayData.bind(this);
     }
 
     submitQuestionnaire(type, answers) {
@@ -214,6 +215,16 @@ class StudyManager extends React.Component {
         }
     }
 
+    uploadReplayData(history) {
+        console.log(history);
+        backend.post('/api/data/append', {
+            study_id: this.state.study.id,
+            participant_uuid: this.state.userUUID,
+            data_type: "replay_data",
+            content: history
+        });
+    }
+
     render() {
         const editorView = (
             <div>
@@ -241,7 +252,12 @@ class StudyManager extends React.Component {
                     disableTesting={this.state.loading}
                 />
                 <div className="full-width editor-container">
-                    <Editor className="editor-on-page" onCodeChange={this.onCodeChange} />
+                    <Editor
+                        className="editor-on-page"
+                        onCodeChange={this.onCodeChange}
+                        uploadFrequency="10000"
+                        uploadChunk={this.uploadReplayData}
+                    />
                     <CodeRunner
                         className={(this.state.showConsole ? "" : "hidden ") + "editor-code-output"}
                         code={this.state.lastRanCode.code}

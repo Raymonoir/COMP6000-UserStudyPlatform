@@ -3,6 +3,13 @@ defmodule Comp6000Web.Metrics.MetricsController do
   alias Comp6000.Contexts.{Metrics, Storage, Studies}
   alias Comp6000.ReplayMetrics.Calculations
 
+  def get_metrics_current(conn, %{"study_id" => study_id}) do
+    study = Studies.get_study_by(id: study_id)
+    metrics_map = Calculations.get_average_study_metrics(study)
+
+    json(conn, metrics_map)
+  end
+
   def get_metrics_for_participant(conn, %{"participant_uuid" => uuid}) do
     metrics = Metrics.get_metrics_by(participant_uuid: uuid)
 
@@ -40,7 +47,8 @@ defmodule Comp6000Web.Metrics.MetricsController do
         {:ok, metrics} =
           Metrics.create_metrics(%{
             participant_uuid: uuid,
-            study_id: study.id
+            study_id: study.id,
+            content: Jason.encode!(%{})
           })
 
         metrics
@@ -73,12 +81,15 @@ defmodule Comp6000Web.Metrics.MetricsController do
       end
 
     metrics = Metrics.get_metrics_by(study_id: study_id, participant_uuid: uuid)
-
     Storage.complete_data(metrics, filetype)
+
+    current_content = Jason.decode!(metrics.content)
 
     metrics_map = Calculations.calculate_metrics(metrics, filetype)
 
-    Metrics.update_metrics(metrics, %{content: Jason.encode!(metrics_map)})
+    Metrics.update_metrics(metrics, %{
+      content: Jason.encode!(Map.put(current_content, filetype, metrics_map))
+    })
 
     json(conn, %{String.to_atom("#{data_type}_completed") => uuid})
   end

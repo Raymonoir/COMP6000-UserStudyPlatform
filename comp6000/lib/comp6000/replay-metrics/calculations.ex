@@ -1,7 +1,7 @@
 defmodule Comp6000.ReplayMetrics.Calculations do
   alias Comp6000.Contexts.{Storage, Metrics}
 
-  def complete_study(study) do
+  def get_average_study_metrics(study) do
     study_participants = study.participant_list
 
     metrics_list =
@@ -10,23 +10,63 @@ defmodule Comp6000.ReplayMetrics.Calculations do
         metrics_list ++ [metrics]
       end)
 
-    total_map =
+    # Replay bits
+    total_replay_map =
       Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->
-        Enum.reduce(Jason.decode!(metric.content), metric_acc, fn {k, v}, acc ->
-          Map.put(acc, k, v + Map.get(acc, k, 0))
+        Enum.reduce(Jason.decode!(metric.content)["replay"], metric_acc, fn
+          {k, v}, acc ->
+            Map.put(acc, k, v + Map.get(acc, k, 0))
         end)
       end)
 
-    average_map =
-      Enum.reduce(total_map, %{}, fn {k, v}, acc ->
+    average_replay_map =
+      Enum.reduce(total_replay_map, %{}, fn {k, v}, acc ->
         Map.put(acc, k, v / length(study_participants))
       end)
 
-    Metrics.create_metrics(%{
-      content: Jason.encode!(average_map),
-      participant_uuid: Integer.to_string(study.id),
-      study_id: study.id
-    })
+    # Compile stuff
+    total_compile_map =
+      Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->
+        Enum.reduce(Jason.decode!(metric.content)["compile"], metric_acc, fn
+          {"most_common_error", [mce, count]}, acc ->
+            if mce != nil do
+              mce_map = Map.get(acc, "most_common_error", %{})
+
+              if Map.has_key?(Map.get(acc, "most_common_error", %{}), mce) do
+                Map.put(
+                  acc,
+                  "most_common_error",
+                  Map.put(mce_map, "most_common_error", Map.get(mce_map, "most_common_error"))
+                )
+              else
+                Map.put(acc, "most_common_error", Map.merge(mce_map, Map.put(%{}, mce, count)))
+              end
+            end
+
+          {k, v}, acc ->
+            Map.put(acc, k, v + Map.get(acc, k, 0))
+        end)
+      end)
+
+    average_compile_map =
+      Enum.reduce(total_compile_map, %{}, fn
+        {"most_common_error", mce_map}, acc_map ->
+          list =
+            Enum.reduce(acc_map, [], fn {k, v}, [acc_k, acc_v] ->
+              if v > acc_v do
+                [k, v]
+              else
+                [acc_k, acc_v]
+              end
+            end)
+
+          Map.put(acc_map, "most_common_error", list)
+
+        {k, v}, acc ->
+          Map.put(acc, k, v / length(study_participants))
+      end)
+
+    %{compile_map: average_compile_map, replay_map: average_replay_map}
   end
 
   def calculate_metrics(metrics, filetype) do
@@ -64,6 +104,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
 
     first_datetime = convert_timestamp(first["start"])
     last_datetime = convert_timestamp(last["end"])
+
     DateTime.diff(last_datetime, first_datetime, :second)
   end
 
@@ -168,13 +209,20 @@ defmodule Comp6000.ReplayMetrics.Calculations do
         end
       end)
 
-    Enum.reduce(Map.keys(error_map), ["", 0], fn key, [acc_key, acc_val] ->
-      if Map.get(error_map, key) > acc_val do
-        [key, Map.get(error_map, key)]
-      else
-        [acc_key, acc_val]
-      end
-    end)
+    [mce, count] =
+      Enum.reduce(Map.keys(error_map), ["", 0], fn key, [acc_key, acc_val] ->
+        if Map.get(error_map, key) > acc_val do
+          [key, Map.get(error_map, key)]
+        else
+          [acc_key, acc_val]
+        end
+      end)
+
+    if mce == nil do
+      ["no-error", 1]
+    else
+      [mce, count]
+    end
   end
 
   # def time_idle_proportion() do

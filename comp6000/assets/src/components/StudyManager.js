@@ -210,16 +210,32 @@ class StudyManager extends React.Component {
     }
 
     completeCoding(force) {
+        const completeReq = () => {
+            backend.post('/api/data/complete', {
+                study_id: this.state.study.id,
+                participant_uuid: this.state.userUUID,
+                data_type: 'compile_data'
+            });
+
+            backend.post('/api/data/complete', {
+                study_id: this.state.study.id,
+                participant_uuid: this.state.userUUID,
+                data_type: 'replay_data'
+            });
+        };
+
         if (!force) {
             this.runAllTests()
                 .then((passed) => {
                     if (!passed) {
                         this.setState({ showWarning: true });
                     } else {
+                        completeReq();
                         this.setState({ stage: this.state.stage + 1 });
                     }
                 })
         } else {
+            completeReq();
             this.setState({ stage: this.state.stage + 1 });
         }
     }

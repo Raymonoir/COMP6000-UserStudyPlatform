@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Editor from './components/Editor';
 import RequiresLogin from './components/RequiresLogin';
 import reportWebVitals from './reportWebVitals';
+import StudyCreator from './components/StudyCreator';
 
 ReactDOM.render(
     <BrowserRouter basename="/app">
@@ -24,7 +25,12 @@ ReactDOM.render(
                 <B />
             </Route>
             <Route path="/editor">
-                <Editor/>
+                <Editor />
+            </Route>
+            <Route path="/createStudy">
+                <RequiresLogin>
+                    <StudyCreator />
+                </RequiresLogin>
             </Route>
         </Route>
     </BrowserRouter >,

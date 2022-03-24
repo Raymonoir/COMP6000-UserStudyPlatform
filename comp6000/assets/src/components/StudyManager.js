@@ -217,12 +217,14 @@ class StudyManager extends React.Component {
 
     uploadReplayData(history) {
         console.log(history);
+        if (history.events.length) {
         backend.post('/api/data/append', {
             study_id: this.state.study.id,
             participant_uuid: this.state.userUUID,
             data_type: "replay_data",
-            content: history
+                content: JSON.stringify(history)
         });
+        }
     }
 
     render() {

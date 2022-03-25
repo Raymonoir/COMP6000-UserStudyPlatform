@@ -125,7 +125,7 @@ class StudyManager extends React.Component {
                             backend.post('/api/data/append', {
                                 study_id: this.state.study.id,
                                 participant_uuid: this.state.userUUID,
-                                data_type: 'replay_data',
+                                data_type: 'compile_data',
                                 content: JSON.stringify(result)
                             });
 
@@ -211,17 +211,28 @@ class StudyManager extends React.Component {
 
     completeCoding(force) {
         const completeReq = () => {
-            backend.post('/api/data/complete', {
-                study_id: this.state.study.id,
-                participant_uuid: this.state.userUUID,
-                data_type: 'compile_data'
-            });
+            // Hacky way of making sure any final replay data is uploaded before sending the complete request.
+            // When a chunk is uploaded the timestamp is stored in the state so request the data then keep
+            // checking until the time is updated in the state
+            const lastChunkUploaded = this.state.lastChunkUploaded;
+            this.setState({ flushReplay: +new Date() });
+            let i = setInterval(() => {
+                if ((!lastChunkUploaded && this.state.lastChunkUploaded) || (lastChunkUploaded < this.state.lastChunkUploaded)) {
+                    backend.post('/api/data/complete', {
+                        study_id: this.state.study.id,
+                        participant_uuid: this.state.userUUID,
+                        data_type: 'compile_data'
+                    });
 
-            backend.post('/api/data/complete', {
-                study_id: this.state.study.id,
-                participant_uuid: this.state.userUUID,
-                data_type: 'replay_data'
-            });
+                    backend.post('/api/data/complete', {
+                        study_id: this.state.study.id,
+                        participant_uuid: this.state.userUUID,
+                        data_type: 'replay_data'
+                    });
+                    clearInterval(i);
+                    this.setState({ stage: this.state.stage + 1 });
+                }
+            }, 200);
         };
 
         if (!force) {
@@ -231,24 +242,25 @@ class StudyManager extends React.Component {
                         this.setState({ showWarning: true });
                     } else {
                         completeReq();
-                        this.setState({ stage: this.state.stage + 1 });
                     }
                 })
         } else {
             completeReq();
-            this.setState({ stage: this.state.stage + 1 });
         }
     }
 
     uploadReplayData(history) {
-        console.log(history);
         if (history.events.length) {
             backend.post('/api/data/append', {
                 study_id: this.state.study.id,
                 participant_uuid: this.state.userUUID,
                 data_type: "replay_data",
                 content: JSON.stringify(history)
+            }).then(() => {
+                this.setState({ lastChunkUploaded: +new Date() });
             });
+        } else {
+            this.setState({ lastChunkUploaded: +new Date() });
         }
     }
 
@@ -282,8 +294,9 @@ class StudyManager extends React.Component {
                     <Editor
                         className="editor-on-page"
                         onCodeChange={this.onCodeChange}
-                        uploadFrequency="10000"
+                        uploadFrequency="60000"
                         uploadChunk={this.uploadReplayData}
+                        flushReplay={this.state.flushReplay}
                     />
                     <CodeRunner
                         className={(this.state.showConsole ? "" : "hidden ") + "editor-code-output"}

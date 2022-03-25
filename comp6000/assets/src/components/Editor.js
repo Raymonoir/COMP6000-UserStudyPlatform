@@ -39,6 +39,13 @@ class Editor extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        // Lazy trick to allow requesting the replay data to get any last changes before completing a study
+        if (prevProps.flushReplay != this.props.flushReplay && this.props.uploadChunk) {
+            this.props.uploadChunk(this.getHistory());
+        }
+    }
+
     render() {
         return (
             <AceEditor

@@ -39,28 +39,31 @@ class Editor extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        // Lazy trick to allow requesting the replay data to get any last changes before completing a study
+        if (prevProps.flushReplay != this.props.flushReplay && this.props.uploadChunk) {
+            this.props.uploadChunk(this.getHistory());
+        }
+    }
+
     render() {
         return (
-            <div>
-                <button className="button primary" onClick={this.runCode} data-cy="run">run</button>
-                <div className="editor-container">
-                    <AceEditor
-                        mode="javascript"
-                        className={"editor-on-page " + (window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow")}
-                        setOptions={{ useWorker: false }}
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        onLoad={this.aceOnLoad}
-                    />
-                    <CodeRunner
+            <AceEditor
+                mode="javascript"
+                className={"editor-on-page " + (window.matchMedia("(prefers-color-scheme: dark)").matches ? "ace-tomorrow-night ace_dark" : "ace-tomorrow")}
+                setOptions={{ useWorker: false }}
+                value={this.state.value}
+                onChange={this.onChange}
+                onLoad={this.aceOnLoad}
+            />
+        );
+        //<button className="button primary" onClick={this.runCode} data-cy="run">run</button>
+        /* <CodeRunner
                         className="editor-code-output"
                         code={this.state.lastRanCode}
                         run={this.state.function}
                         args={this.state.args}
-                    />
-                </div>
-            </div >
-        );
+                    /> */
     }
 
     aceOnLoad(instance) {
@@ -76,6 +79,11 @@ class Editor extends React.Component {
             history: updatedHistory,
             lastUpdateTime: currTime
         });
+
+        // Send the current code back to our parent
+        if (this.props.onCodeChange) {
+            this.props.onCodeChange(value);
+        }
     }
 
     getHistory(clear = true) {

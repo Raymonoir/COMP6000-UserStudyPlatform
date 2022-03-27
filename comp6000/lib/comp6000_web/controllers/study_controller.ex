@@ -1,7 +1,7 @@
 defmodule Comp6000Web.Study.StudyController do
   use Comp6000Web, :controller
   import Plug.Conn
-  alias Comp6000.Contexts.{Studies, Users}
+  alias Comp6000.Contexts.{Studies, Users, Metrics}
   alias Comp6000.ReplayMetrics.Calculations
 
   def complete(conn, %{"study_id" => study_id} = _params) do
@@ -11,7 +11,13 @@ defmodule Comp6000Web.Study.StudyController do
       participant_code: nil
     })
 
-    Calculations.complete_study(study)
+    metrics_map = Calculations.get_average_study_metrics(study)
+
+    Metrics.create_metrics(%{
+      content: Jason.encode!(metrics_map),
+      participant_uuid: Integer.to_string(study.id),
+      study_id: study.id
+    })
 
     json(conn, %{completed_study: study.id})
   end

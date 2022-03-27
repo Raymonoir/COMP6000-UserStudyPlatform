@@ -33,12 +33,17 @@
 
 /* END CodeRunner component styling */
 
-/* START Editor component styling */
+/* START StudyManager component styling */
+.study-task-list {
+    margin-bottom: 10px;
+}
+
 .editor-container {
     display: flex;
     width: 100%;
     flex-flow: row wrap;
     gap: 10px;
+    margin-top: 10px;
 }
 
 .editor-on-page {
@@ -51,7 +56,91 @@
     flex-grow: 1;
 }
 
-/* END Editor component styling */
+/* END StudyManager component styling */
+
+/* START TaskList component styling */
+
+.task-list-item {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    gap: 25px;
+}
+
+.task-list-item>.button {
+    margin-left: auto;
+}
+
+.task-list-item>.task-tick,
+.task-list-item>.task-cross,
+.task-list-item>.task-untested {
+    display: none;
+    width: 25px
+}
+
+.task-list-item.passed>.task-tick {
+    color: green;
+    font-size: 25px;
+    display: inline;
+}
+
+.task-list-item.failed>.task-cross {
+    color: red;
+    display: inline;
+}
+
+.task-list-item.untested>.task-untested {
+    color: var(--primary-text);
+    display: inline;
+}
+
+.task-list-item.completed>.task-description {
+    text-decoration: line-through;
+}
+
+/* END TaskList component styling */
+
+/* START Popup component styling */
+
+.popup {
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: fit-content;
+    min-width: 40%;
+    text-align: center;
+    pointer-events: all;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    pointer-events: all;
+}
+
+.popup-background {
+    z-index: 9;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+}
+
+/* END Popup component styling */
 
 /* START QuestionnaireCreator styling */
 

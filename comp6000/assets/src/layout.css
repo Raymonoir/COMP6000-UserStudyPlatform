@@ -50,6 +50,10 @@
     display: flex;
 }
 
+.hidden {
+    display: none;
+}
+
 .fit-content {
     width: fit-content;
 }

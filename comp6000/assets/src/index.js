@@ -7,6 +7,7 @@ import RequiresLogin from './components/RequiresLogin';
 import StudyManager from './components/StudyManager';
 import reportWebVitals from './reportWebVitals';
 import StudyCreator from './components/StudyCreator';
+import MetricsDashboard from './components/MetricsDashboard';
 
 ReactDOM.render(
     <BrowserRouter basename="/app">
@@ -34,6 +35,11 @@ ReactDOM.render(
                 </RequiresLogin>
             </Route>
             <Route path="/study/:key" component={StudyManager} />
+            <Route path="/studyMetrics">
+                <RequiresLogin>
+                    <MetricsDashboard />
+                </RequiresLogin>
+            </Route>
         </Route>
     </BrowserRouter >,
     document.getElementById('root')

@@ -204,3 +204,14 @@
 }
 
 /* END TaskCreator styling */
+
+/* START MetricsDashboard styling */
+.metrics-table td:nth-child(even) {
+    text-align: center;
+}
+
+.metrics-table td {
+    padding: 5px;
+}
+
+/* END MetricsDashboard styling */

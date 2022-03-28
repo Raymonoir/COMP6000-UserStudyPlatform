@@ -93,7 +93,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
       })
 
     assert json_response(conn, 200) == %{
-             "metrics_for_participant" => %{
+             "metrics" => %{
                "replay" => %{
                  "idle_time" => 96.105,
                  "insert_character_count" => 492,
@@ -121,7 +121,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
       })
 
     assert json_response(conn, 200) == %{
-             "metrics_for_study" => %{
+             "metrics" => %{
                "compile_map" => %{"most_common_error" => [], "times_compiled" => 1.0},
                "replay_map" => %{
                  "idle_time" => 96.105,

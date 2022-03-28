@@ -27,6 +27,7 @@ defmodule Comp6000Web.Router do
     scope "/users", User do
       get("/logout", UserController, :logout)
       get("/loggedin", UserController, :logged_in)
+      get("/current-user", UserController, :current_user)
       post("/login", UserController, :login)
       post("/create", UserController, :create)
       post("/edit", UserController, :edit)

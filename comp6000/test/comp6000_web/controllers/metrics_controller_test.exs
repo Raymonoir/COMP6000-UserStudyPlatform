@@ -217,7 +217,7 @@ defmodule Comp6000Web.MetricsControllerTest do
         })
 
       assert json_response(conn, 200) == %{
-               "metrics_for_participant" => %{
+               "metrics" => %{
                  "compile" => %{},
                  "replay" => %{
                    "idle_time" => 32.035,
@@ -244,7 +244,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       conn = post(conn, "/api/metrics/current", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
-               "metrics_for_participant" => %{
+               "metrics" => %{
                  "compile_map" => %{},
                  "replay_map" => %{
                    "idle_time" => 32.035,
@@ -265,7 +265,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       conn = post(conn, "/api/metrics/current", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
-               "metrics_for_participant" => %{
+               "metrics" => %{
                  "compile_map" => %{},
                  "replay_map" => %{
                    "idle_time" => 32.035,
@@ -286,7 +286,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       conn = post(conn, "/api/metrics/current", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
-               "metrics_for_participant" => %{
+               "metrics" => %{
                  "compile_map" => %{
                    "most_common_error" => [],
                    "times_compiled" => 0.3333333333333333
@@ -332,7 +332,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       conn = post(conn, "/api/metrics/study", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
-               "metrics_for_study" => %{
+               "metrics" => %{
                  "compile_map" => %{},
                  "replay_map" => %{
                    "idle_time" => 32.035,

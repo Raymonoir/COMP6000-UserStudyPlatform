@@ -7,20 +7,20 @@ defmodule Comp6000Web.Metrics.MetricsController do
     study = Studies.get_study_by(id: study_id)
     metrics_map = Calculations.get_average_study_metrics(study)
 
-    json(conn, %{metrics_for_participant: metrics_map})
+    json(conn, %{metrics: metrics_map})
   end
 
   def get_metrics_for_participant(conn, %{"participant_uuid" => uuid}) do
     metrics = Metrics.get_metrics_by(participant_uuid: uuid)
 
-    json(conn, %{metrics_for_participant: Jason.decode!(metrics.content)})
+    json(conn, %{metrics: Jason.decode!(metrics.content)})
   end
 
   def get_metrics_for_study(conn, %{"study_id" => study_id}) do
     metrics =
       Metrics.get_metrics_by(participant_uuid: Integer.to_string(study_id), study_id: study_id)
 
-    json(conn, %{metrics_for_study: Jason.decode!(metrics.content)})
+    json(conn, %{metrics: Jason.decode!(metrics.content)})
   end
 
   def append_data(

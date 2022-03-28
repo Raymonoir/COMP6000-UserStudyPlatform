@@ -73,11 +73,10 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     conn =
       post(conn, "/api/data/complete", %{
         participant_uuid: "alonguuid",
-        study_id: study["id"],
-        data_type: "replay_data"
+        study_id: study["id"]
       })
 
-    assert json_response(conn, 200) == %{"replay_data_completed" => "alonguuid"}
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
 
     conn =
       post(conn, "/api/data/complete", %{
@@ -86,7 +85,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
         data_type: "compile_data"
       })
 
-    assert json_response(conn, 200) == %{"compile_data_completed" => "alonguuid"}
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
 
     conn =
       post(conn, "/api/metrics/participant", %{

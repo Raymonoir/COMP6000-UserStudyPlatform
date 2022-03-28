@@ -102,8 +102,8 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     first = List.first(data_map_list)
     last = List.last(data_map_list)
 
-    first_datetime = convert_timestamp(first["start"])
-    last_datetime = convert_timestamp(last["end"])
+    first_datetime = convert_timestamp(Map.get(first, "start"))
+    last_datetime = convert_timestamp(Map.get(last, "end"))
 
     DateTime.diff(last_datetime, first_datetime, :second)
   end

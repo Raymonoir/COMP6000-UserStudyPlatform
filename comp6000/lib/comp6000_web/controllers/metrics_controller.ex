@@ -3,11 +3,11 @@ defmodule Comp6000Web.Metrics.MetricsController do
   alias Comp6000.Contexts.{Metrics, Storage, Studies}
   alias Comp6000.ReplayMetrics.Calculations
 
-  def get_metrics_current(conn, %{"study_id" => study_id}) do
+  def get_current_metrics(conn, %{"study_id" => study_id}) do
     study = Studies.get_study_by(id: study_id)
     metrics_map = Calculations.get_average_study_metrics(study)
 
-    json(conn, metrics_map)
+    json(conn, %{metrics_for_participant: metrics_map})
   end
 
   def get_metrics_for_participant(conn, %{"participant_uuid" => uuid}) do
@@ -67,30 +67,20 @@ defmodule Comp6000Web.Metrics.MetricsController do
         conn,
         %{
           "study_id" => study_id,
-          "participant_uuid" => uuid,
-          "data_type" => data_type
+          "participant_uuid" => uuid
         } = _params
       ) do
-    filetype =
-      case data_type do
-        "compile_data" ->
-          :compile
-
-        "replay_data" ->
-          :replay
-      end
-
     metrics = Metrics.get_metrics_by(study_id: study_id, participant_uuid: uuid)
-    Storage.complete_data(metrics, filetype)
+    Storage.complete_data(metrics, :compile)
+    Storage.complete_data(metrics, :replay)
 
-    current_content = Jason.decode!(metrics.content)
-
-    metrics_map = Calculations.calculate_metrics(metrics, filetype)
+    compile_metrics_map = Calculations.calculate_metrics(metrics, :compile)
+    replay_metrics_map = Calculations.calculate_metrics(metrics, :replay)
 
     Metrics.update_metrics(metrics, %{
-      content: Jason.encode!(Map.put(current_content, filetype, metrics_map))
+      content: Jason.encode!(%{compile: compile_metrics_map, replay: replay_metrics_map})
     })
 
-    json(conn, %{String.to_atom("#{data_type}_completed") => uuid})
+    json(conn, %{String.to_atom("data_completed") => uuid})
   end
 end

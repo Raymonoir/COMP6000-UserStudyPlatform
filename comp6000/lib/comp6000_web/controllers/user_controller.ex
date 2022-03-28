@@ -71,4 +71,14 @@ defmodule Comp6000Web.User.UserController do
       {:error, changeset} -> json(conn, %{error: Helpers.get_changeset_errors(changeset)})
     end
   end
+
+  def current_user(conn, _params) do
+    user = get_session(conn, :username)
+
+    if user do
+      json(conn, %{current_user: user})
+    else
+      json(conn, %{current_user: nil})
+    end
+  end
 end

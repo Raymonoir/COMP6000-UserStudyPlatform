@@ -142,7 +142,7 @@ defmodule Comp6000Web.MetricsControllerTest do
           }
         )
 
-      assert json_response(conn, 200) == %{"replay_data_completed" => uuid}
+      assert json_response(conn, 200) == %{"data_completed" => uuid}
 
       assert File.exists?("#{path}.#{@completed_extension}")
       refute File.exists?("#{path}.#{@extension}")
@@ -153,7 +153,9 @@ defmodule Comp6000Web.MetricsControllerTest do
 
     test "valid parameters completes compile_data", %{conn: conn, study: study} do
       uuid = UUID.uuid4()
-      content = Jason.encode!(%{json: "content"})
+
+      content =
+        Jason.encode!(%{"start" => 1_645_537_625_744, "end" => 1_645_589_625_780, events: []})
 
       Metrics.create_metrics(%{
         study_id: study.id,
@@ -171,6 +173,18 @@ defmodule Comp6000Web.MetricsControllerTest do
       conn =
         post(
           conn,
+          "/api/data/append",
+          %{
+            participant_uuid: uuid,
+            study_id: study.id,
+            data_type: "replay_data",
+            content: content
+          }
+        )
+
+      conn =
+        post(
+          conn,
           "/api/data/complete",
           %{
             participant_uuid: uuid,
@@ -180,7 +194,7 @@ defmodule Comp6000Web.MetricsControllerTest do
           }
         )
 
-      assert json_response(conn, 200) == %{"compile_data_completed" => uuid}
+      assert json_response(conn, 200) == %{"data_completed" => uuid}
 
       assert File.exists?("#{path}.#{@completed_extension}")
       refute File.exists?("#{path}.#{@extension}")
@@ -195,7 +209,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       uuid = UUID.uuid4()
       content = Jason.encode!(testing_data(:replay))
 
-      complete_data(uuid, study.id, content)
+      complete_replay_data(uuid, study.id, content)
 
       conn =
         post(conn, "/api/metrics/participant", %{
@@ -220,18 +234,90 @@ defmodule Comp6000Web.MetricsControllerTest do
     end
   end
 
+  describe "POST /api/metrics/current" do
+    test "returns average metrics whilst study is still open", %{conn: conn, study: study} do
+      replay_content = Jason.encode!(testing_data(:replay))
+
+      uuid1 = UUID.uuid4()
+      complete_replay_data(uuid1, study.id, replay_content)
+
+      conn = post(conn, "/api/metrics/current", %{study_id: study.id})
+
+      assert json_response(conn, 200) == %{
+               "metrics_for_participant" => %{
+                 "compile_map" => %{},
+                 "replay_map" => %{
+                   "idle_time" => 32.035,
+                   "insert_character_count" => 164.0,
+                   "line_count" => 3.0,
+                   "pasted_character_count" => 0.0,
+                   "remove_character_count" => 19.0,
+                   "total_time" => 88.0,
+                   "word_count" => 41.0,
+                   "words_per_minute" => 27.954545454545457
+                 }
+               }
+             }
+
+      uuid2 = UUID.uuid4()
+      complete_replay_data(uuid2, study.id, replay_content)
+
+      conn = post(conn, "/api/metrics/current", %{study_id: study.id})
+
+      assert json_response(conn, 200) == %{
+               "metrics_for_participant" => %{
+                 "compile_map" => %{},
+                 "replay_map" => %{
+                   "idle_time" => 32.035,
+                   "insert_character_count" => 164.0,
+                   "line_count" => 3.0,
+                   "pasted_character_count" => 0.0,
+                   "remove_character_count" => 19.0,
+                   "total_time" => 88.0,
+                   "word_count" => 41.0,
+                   "words_per_minute" => 27.954545454545457
+                 }
+               }
+             }
+
+      uuid3 = UUID.uuid4()
+      complete_compile_data(uuid3, study.id, replay_content)
+
+      conn = post(conn, "/api/metrics/current", %{study_id: study.id})
+
+      assert json_response(conn, 200) == %{
+               "metrics_for_participant" => %{
+                 "compile_map" => %{
+                   "most_common_error" => [],
+                   "times_compiled" => 0.3333333333333333
+                 },
+                 "replay_map" => %{
+                   "idle_time" => 21.356666666666666,
+                   "insert_character_count" => 109.33333333333333,
+                   "line_count" => 2.0,
+                   "pasted_character_count" => 0.0,
+                   "remove_character_count" => 12.666666666666666,
+                   "total_time" => 58.666666666666664,
+                   "word_count" => 27.333333333333332,
+                   "words_per_minute" => 18.636363636363637
+                 }
+               }
+             }
+    end
+  end
+
   describe "POST /api/metrics/study" do
     test "valid parameters returns average metrics for study", %{conn: conn, study: study} do
       replay_content = Jason.encode!(testing_data(:replay))
 
       uuid1 = UUID.uuid4()
-      complete_data(uuid1, study.id, replay_content)
+      complete_replay_data(uuid1, study.id, replay_content)
 
       uuid2 = UUID.uuid4()
-      complete_data(uuid2, study.id, replay_content)
+      complete_replay_data(uuid2, study.id, replay_content)
 
       uuid3 = UUID.uuid4()
-      complete_data(uuid3, study.id, replay_content)
+      complete_replay_data(uuid3, study.id, replay_content)
 
       {:ok, study} = Studies.update_study(study, %{participant_list: [uuid1, uuid2, uuid3]})
 
@@ -263,7 +349,7 @@ defmodule Comp6000Web.MetricsControllerTest do
     end
   end
 
-  def complete_data(uuid, study_id, content) do
+  def complete_replay_data(uuid, study_id, content) do
     {:ok, metrics} =
       Metrics.create_metrics(%{
         study_id: study_id,
@@ -283,6 +369,29 @@ defmodule Comp6000Web.MetricsControllerTest do
 
     Metrics.update_metrics(metrics, %{
       content: Jason.encode!(%{replay: replay_map, compile: %{}})
+    })
+  end
+
+  def complete_compile_data(uuid, study_id, content) do
+    {:ok, metrics} =
+      Metrics.create_metrics(%{
+        study_id: study_id,
+        participant_uuid: uuid,
+        content: Jason.encode!(%{})
+      })
+
+    path = "#{@storage_path}/#{study_id}/#{uuid}/#{@compile_filename}"
+
+    File.write(
+      "#{path}.#{@extension}",
+      "#{@file_start}#{content}"
+    )
+
+    Storage.complete_data(metrics, :compile)
+    compile_map = Calculations.calculate_metrics(metrics, :compile)
+
+    Metrics.update_metrics(metrics, %{
+      content: Jason.encode!(%{replay: %{}, compile: compile_map})
     })
   end
 

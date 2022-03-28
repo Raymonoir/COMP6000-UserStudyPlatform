@@ -237,6 +237,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   describe "POST /api/metrics/current" do
     test "returns average metrics whilst study is still open", %{conn: conn, study: study} do
       replay_content = Jason.encode!(testing_data(:replay))
+      compile_content = Jason.encode!(testing_data(:compile))
 
       uuid1 = UUID.uuid4()
       complete_replay_data(uuid1, study.id, replay_content)
@@ -281,14 +282,14 @@ defmodule Comp6000Web.MetricsControllerTest do
              }
 
       uuid3 = UUID.uuid4()
-      complete_compile_data(uuid3, study.id, replay_content)
+      complete_compile_data(uuid3, study.id, compile_content)
 
       conn = post(conn, "/api/metrics/current", %{study_id: study.id})
 
       assert json_response(conn, 200) == %{
                "metrics" => %{
                  "compile_map" => %{
-                   "most_common_error" => [],
+                   "most_common_error" => ["seen.contains is not a function", 1],
                    "times_compiled" => 0.3333333333333333
                  },
                  "replay_map" => %{
@@ -309,6 +310,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   describe "POST /api/metrics/study" do
     test "valid parameters returns average metrics for study", %{conn: conn, study: study} do
       replay_content = Jason.encode!(testing_data(:replay))
+      compile_content = Jason.encode!(testing_data(:compile))
 
       uuid1 = UUID.uuid4()
       complete_replay_data(uuid1, study.id, replay_content)
@@ -319,7 +321,11 @@ defmodule Comp6000Web.MetricsControllerTest do
       uuid3 = UUID.uuid4()
       complete_replay_data(uuid3, study.id, replay_content)
 
-      {:ok, study} = Studies.update_study(study, %{participant_list: [uuid1, uuid2, uuid3]})
+      uuid4 = UUID.uuid4()
+      complete_compile_data(uuid4, study.id, compile_content)
+
+      {:ok, study} =
+        Studies.update_study(study, %{participant_list: [uuid1, uuid2, uuid3, uuid4]})
 
       metrics_map = Calculations.get_average_study_metrics(study)
 
@@ -333,16 +339,19 @@ defmodule Comp6000Web.MetricsControllerTest do
 
       assert json_response(conn, 200) == %{
                "metrics" => %{
-                 "compile_map" => %{},
+                 "compile_map" => %{
+                   "most_common_error" => ["seen.contains is not a function", 1],
+                   "times_compiled" => 0.25
+                 },
                  "replay_map" => %{
-                   "idle_time" => 32.035,
-                   "insert_character_count" => 164.0,
-                   "line_count" => 3.0,
+                   "idle_time" => 24.026249999999997,
+                   "insert_character_count" => 123.0,
+                   "line_count" => 2.25,
                    "pasted_character_count" => 0.0,
-                   "remove_character_count" => 19.0,
-                   "total_time" => 88.0,
-                   "word_count" => 41.0,
-                   "words_per_minute" => 27.954545454545457
+                   "remove_character_count" => 14.25,
+                   "total_time" => 66.0,
+                   "word_count" => 30.75,
+                   "words_per_minute" => 20.965909090909093
                  }
                }
              }
@@ -398,7 +407,7 @@ defmodule Comp6000Web.MetricsControllerTest do
   def testing_data(datatype) do
     case datatype do
       :compile ->
-        Jason.decode!(File.read!("test/support/code-examples/for-loop-compile.txt"))
+        Jason.decode!(File.read!("test/support/code-examples/loop-arr-error-compile.txt"))
 
       :replay ->
         Jason.decode!(File.read!("test/support/code-examples/for-loop-replay.txt"))

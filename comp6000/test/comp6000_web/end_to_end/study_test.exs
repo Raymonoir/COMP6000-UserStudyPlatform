@@ -94,6 +94,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
 
     assert json_response(conn, 200) == %{
              "metrics" => %{
+               "compile" => %{"most_common_error" => ["", 0], "times_compiled" => 1},
                "replay" => %{
                  "idle_time" => 96.105,
                  "insert_character_count" => 492,
@@ -103,8 +104,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
                  "total_time" => 88,
                  "word_count" => 123,
                  "words_per_minute" => 83.86363636363637
-               },
-               "compile" => %{"most_common_error" => ["no-error", 1], "times_compiled" => 1}
+               }
              }
            }
 
@@ -122,7 +122,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
 
     assert json_response(conn, 200) == %{
              "metrics" => %{
-               "compile_map" => %{"most_common_error" => [], "times_compiled" => 1.0},
+               "compile_map" => %{"most_common_error" => ["", 0], "times_compiled" => 1.0},
                "replay_map" => %{
                  "idle_time" => 96.105,
                  "insert_character_count" => 492.0,

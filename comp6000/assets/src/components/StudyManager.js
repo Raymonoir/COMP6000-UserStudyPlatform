@@ -220,15 +220,9 @@ class StudyManager extends React.Component {
                 if ((!lastChunkUploaded && this.state.lastChunkUploaded) || (lastChunkUploaded < this.state.lastChunkUploaded)) {
                     backend.post('/api/data/complete', {
                         study_id: this.state.study.id,
-                        participant_uuid: this.state.userUUID,
-                        data_type: 'compile_data'
+                        participant_uuid: this.state.userUUID
                     });
 
-                    backend.post('/api/data/complete', {
-                        study_id: this.state.study.id,
-                        participant_uuid: this.state.userUUID,
-                        data_type: 'replay_data'
-                    });
                     clearInterval(i);
                     this.setState({ stage: this.state.stage + 1 });
                 }

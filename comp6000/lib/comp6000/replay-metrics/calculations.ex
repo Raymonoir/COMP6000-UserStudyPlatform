@@ -24,7 +24,6 @@ defmodule Comp6000.ReplayMetrics.Calculations do
         Map.put(acc, k, v / length(study_participants))
       end)
 
-    # Compile stuff
     total_compile_map =
       Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->
         Enum.reduce(Jason.decode!(metric.content)["compile"], metric_acc, fn
@@ -52,7 +51,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
       Enum.reduce(total_compile_map, %{}, fn
         {"most_common_error", mce_map}, acc_map ->
           list =
-            Enum.reduce(acc_map, [], fn {k, v}, [acc_k, acc_v] ->
+            Enum.reduce(mce_map, ["", 0], fn {k, v}, [acc_k, acc_v] ->
               if v > acc_v do
                 [k, v]
               else
@@ -62,8 +61,8 @@ defmodule Comp6000.ReplayMetrics.Calculations do
 
           Map.put(acc_map, "most_common_error", list)
 
-        {k, v}, acc ->
-          Map.put(acc, k, v / length(study_participants))
+        {k, v}, acc_map ->
+          Map.put(acc_map, k, v / length(study_participants))
       end)
 
     %{compile_map: average_compile_map, replay_map: average_replay_map}
@@ -80,7 +79,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     data = Storage.get_completed_data(metrics, :compile)
 
     %{}
-    |> Map.put(:most_common_error, get_most_common_error(data, "UserCodeError"))
+    |> Map.put(:most_common_error, get_most_common_error(data, "userCodeError"))
     |> Map.put(:times_compiled, get_times_run(data))
   end
 
@@ -167,16 +166,6 @@ defmodule Comp6000.ReplayMetrics.Calculations do
     end)
   end
 
-  # def proportion_lines_pasted do
-  #   get_line_count() / get_lines_pasted()
-  # end
-
-  # def get_inserted_charcters_proportion do
-  #   get_character_count("insertion") /
-  #     (get_character_count("insertion") +
-  #        get_character_count("deletion"))
-  # end
-
   def get_word_count(data_map_list) do
     Enum.reduce(data_map_list, 0, fn data_map, acc ->
       acc +
@@ -200,7 +189,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
   def get_most_common_error(data_map_list, error_type) do
     error_map =
       Enum.reduce(data_map_list, %{}, fn data, acc_map ->
-        error = data[error_type]
+        error = Map.get(data, error_type, nil)
 
         if Map.has_key?(acc_map, error) do
           Map.put(acc_map, error, Map.get(acc_map, error) + 1)
@@ -219,34 +208,17 @@ defmodule Comp6000.ReplayMetrics.Calculations do
       end)
 
     if mce == nil do
-      ["no-error", 1]
+      ["", 0]
     else
       [mce, count]
     end
   end
-
-  # def time_idle_proportion() do
-  #   get_idle_time() / get_total_time(json_list)
-  # end
 
   def get_times_run(data_map_list) do
     Enum.reduce(data_map_list, 0, fn _data, acc ->
       acc + 1
     end)
   end
-
-  # def proportion_passed() do
-  #   {pass_count, fail_count} =
-  #     Enum.reduce(content, fn data, {pass_count, fail_count} ->
-  #       if data["passed"] do
-  #         {pass_count + 1, fail_count}
-  #       else
-  #         {pass_count, fail_count + 1}
-  #       end
-  #     end)
-
-  #   pass_count / (pass_count + fail_count)
-  # end
 
   def get_words_per_minute(data_map_list) do
     time = get_total_time(data_map_list) / 60

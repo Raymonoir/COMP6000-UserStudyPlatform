@@ -15,7 +15,7 @@ defmodule Comp6000.Schemas.SurveyAnswer do
   def changeset(%SurveyAnswer{} = survey_answer, params) do
     survey_answer
     |> cast(params, [:survey_question_id, :participant_uuid, :answers])
-    |> validate_required([:participant_uuid, :answers])
+    |> validate_required([:participant_uuid, :answers, :survey_question_id])
     |> foreign_key_constraint(:study, name: :survey_answer_survey_question_id_fkey)
   end
 end

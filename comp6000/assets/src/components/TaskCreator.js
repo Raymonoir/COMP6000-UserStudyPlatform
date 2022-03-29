@@ -243,15 +243,16 @@ class TaskCreator extends React.Component {
                                         task.tests.map((test, testNum) => {
                                             return (
                                                 <div className="new-task-test" key={testNum}>
-                                                    <h3>Test {testNum + 1}</h3>
-                                                    <label>
-                                                        <h3>Function name</h3>
-                                                        <input
-                                                            type="text"
-                                                            value={test.run}
-                                                            onChange={(e) => { this.onTestRunUpdate(taskNum, testNum, e); }}
-                                                        />
-                                                    </label>
+                                                    <div className="spaced-out-row new-test-heading">
+                                                        <h3>Test {testNum + 1}</h3>
+                                                        <button className="button tertiary" onClick={() => { this.removeTest(taskNum, testNum); }}>Remove Test</button>
+                                                    </div>
+                                                    <h3>Function name</h3>
+                                                    <input
+                                                        type="text"
+                                                        value={test.run}
+                                                        onChange={(e) => { this.onTestRunUpdate(taskNum, testNum, e); }}
+                                                    />
                                                     <h3>Arguments</h3>
                                                     {test.args.length === 0 &&
                                                         <p>No arguments</p>

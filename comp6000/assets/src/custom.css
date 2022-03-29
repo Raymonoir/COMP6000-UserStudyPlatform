@@ -203,6 +203,10 @@
     margin-left: 20px
 }
 
+.new-test-heading {
+    margin-bottom: -15px;
+}
+
 /* END TaskCreator styling */
 
 /* START MetricsDashboard styling */

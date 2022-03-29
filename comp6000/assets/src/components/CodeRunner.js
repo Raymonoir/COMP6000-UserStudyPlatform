@@ -31,7 +31,7 @@ class CodeRunner extends React.Component {
     runCode() {
         const abort = new AbortController();
 
-        const request = fetch('http://localhost:3000/run', {
+        const request = fetch('http://' + window.location.hostname + ':3000/run', {
             signal: abort.signal,
             method: 'POST',
             mode: 'cors',

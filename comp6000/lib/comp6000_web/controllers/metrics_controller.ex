@@ -75,6 +75,7 @@ defmodule Comp6000Web.Metrics.MetricsController do
     Storage.complete_data(metrics, :replay)
 
     compile_metrics_map = Calculations.calculate_metrics(metrics, :compile)
+
     replay_metrics_map = Calculations.calculate_metrics(metrics, :replay)
 
     Metrics.update_metrics(metrics, %{

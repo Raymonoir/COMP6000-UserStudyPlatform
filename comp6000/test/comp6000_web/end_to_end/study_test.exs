@@ -71,6 +71,16 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{"compile_data_appeneded" => "alonguuid"}
 
     conn =
+      post(conn, "/api/data/append", %{
+        content: Jason.encode!(testing_data(:compile_no_err)),
+        data_type: "compile_data",
+        study_id: study["id"],
+        participant_uuid: "alonguuid"
+      })
+
+    assert json_response(conn, 200) == %{"compile_data_appeneded" => "alonguuid"}
+
+    conn =
       post(conn, "/api/data/complete", %{
         participant_uuid: "alonguuid",
         study_id: study["id"]
@@ -79,21 +89,25 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
 
     conn =
-      post(conn, "/api/metrics/participant", %{
-        participant_uuid: "alonguuid"
+      post(conn, "/api/metrics/current", %{
+        participant_uuid: "alonguuid",
+        study_id: study["id"]
       })
 
     assert json_response(conn, 200) == %{
              "metrics" => %{
-               "compile" => %{"most_common_error" => ["", 0], "times_compiled" => 1},
-               "replay" => %{
+               "compile_map" => %{
+                 "most_common_error" => ["seen.contains is not a function", 1],
+                 "times_compiled" => 2.0
+               },
+               "replay_map" => %{
                  "idle_time" => 96.105,
-                 "insert_character_count" => 492,
-                 "line_count" => 3,
-                 "pasted_character_count" => 0,
-                 "remove_character_count" => 57,
-                 "total_time" => 88,
-                 "word_count" => 123,
+                 "insert_character_count" => 492.0,
+                 "line_count" => 3.0,
+                 "pasted_character_count" => 0.0,
+                 "remove_character_count" => 57.0,
+                 "total_time" => 88.0,
+                 "word_count" => 123.0,
                  "words_per_minute" => 83.86363636363637
                }
              }
@@ -113,7 +127,10 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
 
     assert json_response(conn, 200) == %{
              "metrics" => %{
-               "compile_map" => %{"most_common_error" => ["", 0], "times_compiled" => 1.0},
+               "compile_map" => %{
+                 "most_common_error" => ["seen.contains is not a function", 1],
+                 "times_compiled" => 2.0
+               },
                "replay_map" => %{
                  "idle_time" => 96.105,
                  "insert_character_count" => 492.0,
@@ -126,11 +143,38 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
                }
              }
            }
+
+    conn =
+      post(conn, "/api/metrics/participant", %{
+        participant_uuid: "alonguuid"
+      })
+
+    assert json_response(conn, 200) == %{
+             "metrics" => %{
+               "compile" => %{
+                 "most_common_error" => ["seen.contains is not a function", 1],
+                 "times_compiled" => 2
+               },
+               "replay" => %{
+                 "idle_time" => 96.105,
+                 "insert_character_count" => 492,
+                 "line_count" => 3,
+                 "pasted_character_count" => 0,
+                 "remove_character_count" => 57,
+                 "total_time" => 88,
+                 "word_count" => 123,
+                 "words_per_minute" => 83.86363636363637
+               }
+             }
+           }
   end
 
   def testing_data(datatype) do
     case datatype do
       :compile ->
+        Jason.decode!(File.read!("test/support/code-examples/loop-arr-error-compile.txt"))
+
+      :compile_no_err ->
         Jason.decode!(File.read!("test/support/code-examples/fib-num-compile.txt"))
 
       :replay ->

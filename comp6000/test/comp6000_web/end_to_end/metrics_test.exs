@@ -188,6 +188,197 @@ defmodule Comp6000Web.EndToEnd.MetricsTest do
            } = json_response(conn, 200)
   end
 
+  test "sort metrics by option 2", %{conn: conn} do
+    conn =
+      post(conn, "/api/users/create", %{
+        username: "Ray123",
+        email: "Ray123@gmail.com",
+        password: "RaysPAssword"
+      })
+
+    assert json_response(conn, 200) == %{"created" => "Ray123"}
+
+    conn =
+      post(conn, "/api/study/create", %{
+        title: "My first study",
+        username: "Ray123",
+        task_count: 0
+      })
+
+    %{"created_study" => _id} = json_response(conn, 200)
+
+    conn = post(conn, "/api/study/get", %{username: "Ray123"})
+
+    %{
+      "study" => [
+        study
+      ]
+    } = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/data/append", %{
+        content: Jason.encode!(testing_data(:replay)),
+        data_type: "replay_data",
+        study_id: study["id"],
+        participant_uuid: "alonguuid"
+      })
+
+    assert json_response(conn, 200) == %{"replay_data_appeneded" => "alonguuid"}
+
+    conn =
+      post(conn, "/api/data/append", %{
+        content: Jason.encode!(testing_data(:replay)),
+        data_type: "replay_data",
+        study_id: study["id"],
+        participant_uuid: "alonguuid2"
+      })
+
+    assert json_response(conn, 200) == %{"replay_data_appeneded" => "alonguuid2"}
+
+    conn =
+      post(conn, "/api/data/append", %{
+        content: Jason.encode!(testing_data(:replay)),
+        data_type: "replay_data",
+        study_id: study["id"],
+        participant_uuid: "alonguuid3"
+      })
+
+    assert json_response(conn, 200) == %{"replay_data_appeneded" => "alonguuid3"}
+
+    conn =
+      post(conn, "/api/data/append", %{
+        content: Jason.encode!(testing_data(:replay)),
+        data_type: "replay_data",
+        study_id: study["id"],
+        participant_uuid: "alonguuid4"
+      })
+
+    assert json_response(conn, 200) == %{"replay_data_appeneded" => "alonguuid4"}
+
+    conn =
+      post(conn, "/api/data/complete", %{
+        participant_uuid: "alonguuid",
+        study_id: study["id"]
+      })
+
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
+
+    conn =
+      post(conn, "/api/data/complete", %{
+        participant_uuid: "alonguuid2",
+        study_id: study["id"]
+      })
+
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid2"}
+
+    conn =
+      post(conn, "/api/data/complete", %{
+        participant_uuid: "alonguuid3",
+        study_id: study["id"]
+      })
+
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid3"}
+
+    conn =
+      post(conn, "/api/data/complete", %{
+        participant_uuid: "alonguuid4",
+        study_id: study["id"]
+      })
+
+    assert json_response(conn, 200) == %{"data_completed" => "alonguuid4"}
+
+    conn =
+      post(conn, "/api/survey/post/create", %{
+        questions: [
+          Jason.encode!(%{
+            question: "dropdown question",
+            type: "dropdown",
+            options: ["option0", "option1"]
+          })
+        ],
+        study_id: study["id"]
+      })
+
+    assert %{"created_survey_questions" => id} = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/survey/post/submit", %{
+        participant_uuid: "alonguuid",
+        answers: ["0"],
+        study_id: study["id"]
+      })
+
+    assert %{"submitted_survey_answer" => _survey_a_id} = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/survey/post/submit", %{
+        participant_uuid: "alonguuid2",
+        answers: ["1"],
+        study_id: study["id"]
+      })
+
+    assert %{"submitted_survey_answer" => _survey_a_id} = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/survey/post/submit", %{
+        participant_uuid: "alonguuid3",
+        answers: ["0"],
+        study_id: study["id"]
+      })
+
+    assert %{"submitted_survey_answer" => _survey_a_id} = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/survey/post/submit", %{
+        participant_uuid: "alonguuid4",
+        answers: ["1"],
+        study_id: study["id"]
+      })
+
+    assert %{"submitted_survey_answer" => _survey_a_id} = json_response(conn, 200)
+
+    conn =
+      post(conn, "/api/metrics/metrics-for-answers", %{
+        "study_id" => study["id"],
+        "preposition" => "post",
+        "question_pos" => 0,
+        "type" => "full"
+      })
+
+    assert %{
+             "metrics" => [
+               [
+                 %{
+                   "content" =>
+                     "{\"compile\":{\"most_common_error\":[\"\",0],\"times_compiled\":0},\"replay\":{\"idle_time\":32.035,\"insert_character_count\":164,\"line_count\":3,\"pasted_character_count\":0,\"remove_character_count\":19,\"total_time\":88,\"word_count\":41,\"words_per_minute\":27.954545454545457}}",
+                   "id" => _9465,
+                   "participant_uuid" => "alonguuid3"
+                 },
+                 %{
+                   "content" =>
+                     "{\"compile\":{\"most_common_error\":[\"\",0],\"times_compiled\":0},\"replay\":{\"idle_time\":32.035,\"insert_character_count\":164,\"line_count\":3,\"pasted_character_count\":0,\"remove_character_count\":19,\"total_time\":88,\"word_count\":41,\"words_per_minute\":27.954545454545457}}",
+                   "id" => _9463,
+                   "participant_uuid" => "alonguuid"
+                 }
+               ],
+               [
+                 %{
+                   "content" =>
+                     "{\"compile\":{\"most_common_error\":[\"\",0],\"times_compiled\":0},\"replay\":{\"idle_time\":32.035,\"insert_character_count\":164,\"line_count\":3,\"pasted_character_count\":0,\"remove_character_count\":19,\"total_time\":88,\"word_count\":41,\"words_per_minute\":27.954545454545457}}",
+                   "id" => _9466,
+                   "participant_uuid" => "alonguuid4"
+                 },
+                 %{
+                   "content" =>
+                     "{\"compile\":{\"most_common_error\":[\"\",0],\"times_compiled\":0},\"replay\":{\"idle_time\":32.035,\"insert_character_count\":164,\"line_count\":3,\"pasted_character_count\":0,\"remove_character_count\":19,\"total_time\":88,\"word_count\":41,\"words_per_minute\":27.954545454545457}}",
+                   "id" => _9464,
+                   "participant_uuid" => "alonguuid2"
+                 }
+               ]
+             ]
+           } = json_response(conn, 200)
+  end
+
   def testing_data(datatype) do
     case datatype do
       :compile ->

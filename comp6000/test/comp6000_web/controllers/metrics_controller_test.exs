@@ -289,7 +289,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       assert json_response(conn, 200) == %{
                "metrics" => %{
                  "compile_map" => %{
-                   "most_common_error" => ["seen.contains is not a function", 1],
+                   "most_common_error" => ["B is not defined", 1],
                    "times_compiled" => 0.3333333333333333
                  },
                  "replay_map" => %{
@@ -340,7 +340,7 @@ defmodule Comp6000Web.MetricsControllerTest do
       assert json_response(conn, 200) == %{
                "metrics" => %{
                  "compile_map" => %{
-                   "most_common_error" => ["seen.contains is not a function", 1],
+                   "most_common_error" => ["B is not defined", 1],
                    "times_compiled" => 0.25
                  },
                  "replay_map" => %{

@@ -127,7 +127,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile_map" => %{
-                 "most_common_error" => ["seen.contains is not a function", 3],
+                 "most_common_error" => ["B is not defined", 3],
                  "times_compiled" => 5.0
                },
                "replay_map" => %{
@@ -158,7 +158,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile_map" => %{
-                 "most_common_error" => ["seen.contains is not a function", 3],
+                 "most_common_error" => ["B is not defined", 3],
                  "times_compiled" => 5.0
                },
                "replay_map" => %{
@@ -182,8 +182,8 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile" => %{
-                 "most_common_error" => ["seen.contains is not a function", 3],
-                 "times_compiled" => 5.0
+                 "most_common_error" => ["B is not defined", 3],
+                 "times_compiled" => 5
                },
                "replay" => %{
                  "idle_time" => 96.105,

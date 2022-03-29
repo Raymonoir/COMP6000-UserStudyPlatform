@@ -72,7 +72,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
 
     conn =
       post(conn, "/api/data/append", %{
-        content: Jason.encode!(testing_data(:compile)),
+        content: Jason.encode!(testing_data(:compile_no_err)),
         data_type: "compile_data",
         study_id: study["id"],
         participant_uuid: "alonguuid"
@@ -97,7 +97,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile_map" => %{
-                 "most_common_error" => ["seen.contains is not a function", 2],
+                 "most_common_error" => ["seen.contains is not a function", 1],
                  "times_compiled" => 2.0
                },
                "replay_map" => %{
@@ -128,7 +128,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile_map" => %{
-                 "most_common_error" => ["seen.contains is not a function", 2],
+                 "most_common_error" => ["seen.contains is not a function", 1],
                  "times_compiled" => 2.0
                },
                "replay_map" => %{
@@ -152,7 +152,7 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{
              "metrics" => %{
                "compile" => %{
-                 "most_common_error" => ["seen.contains is not a function", 2],
+                 "most_common_error" => ["seen.contains is not a function", 1],
                  "times_compiled" => 2
                },
                "replay" => %{
@@ -173,6 +173,9 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     case datatype do
       :compile ->
         Jason.decode!(File.read!("test/support/code-examples/loop-arr-error-compile.txt"))
+
+      :compile_no_err ->
+        Jason.decode!(File.read!("test/support/code-examples/fib-num-compile.txt"))
 
       :replay ->
         Jason.decode!(File.read!("test/support/code-examples/for-loop-replay.txt"))

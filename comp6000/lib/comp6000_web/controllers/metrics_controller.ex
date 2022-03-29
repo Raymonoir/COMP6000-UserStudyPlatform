@@ -84,41 +84,66 @@ defmodule Comp6000Web.Metrics.MetricsController do
     json(conn, %{String.to_atom("data_completed") => uuid})
   end
 
-  def metrics_by_answers(
+  def metrics_for_answers(
         conn,
         %{
           "study_id" => study_id,
           "preposition" => preposition,
-          "question_position" => q_pos,
-          "question_type" => q_type,
-          "answer" => answer
+          "question_pos" => q_pos,
+          "type" => type
         } = _params
       ) do
-    study = Studies.get_study_by(study_id: study_id)
-    participants_list = study.participants_list
+    study = Studies.get_study_by(id: study_id)
+    participants_list = study.participant_list
 
-    survey_q = SurveyQuestions.get_survey_question_by(study_id: study_id)
+    survey_q =
+      SurveyQuestions.get_survey_question_by(study_id: study_id, preposition: preposition)
 
-    case q_type do
-      "dropdown" ->
-        nil
+    survey_q_list = survey_q.questions
 
-      "checkbox" ->
-        Enum.reduce(participants_list, [], fn participant ->
-          survey_a =
-            SurveyAnswers.get_survey_answers_by(
-              participant_uuid: participant,
-              survey_question_id: survey_q.id
-            )
+    {question_map, _remainder} = List.pop_at(survey_q_list, q_pos)
 
-          answers_json = Jason.decode!(survey_a.content)
-          List.pop_at()
+    options_list = Jason.decode!(question_map)["options"]
 
-          # metrics = Metrics.get_metrics_by(study_id: study_id, participants: participants)
+    [head | tail] = participants_list
+
+    options_metrics_list =
+      Enum.reduce(options_list, [], fn option, acc ->
+        acc ++
+          [
+            Enum.reduce(participants_list, [], fn participant, part_acc ->
+              survey_a_list =
+                SurveyAnswers.get_survey_answer_by(
+                  participant_uuid: participant,
+                  survey_question_id: survey_q.id
+                ).answers
+
+              {participant_answer, _remain} = List.pop_at(survey_a_list, q_pos)
+
+              {val, _empty} = Integer.parse(participant_answer)
+              {chosen, _remain} = List.pop_at(options_list, val)
+
+              if chosen == option do
+                metrics =
+                  Metrics.get_metrics_by(study_id: study_id, participant_uuid: participant)
+
+                part_acc ++ [metrics]
+              else
+                part_acc
+              end
+            end)
+          ]
+      end)
+
+    if type == "full" do
+      json(conn, %{metrics: options_metrics_list})
+    else
+      average_list =
+        Enum.map(options_metrics_list, fn metrics_list ->
+          Calculations.get_average_metrics(metrics_list, participants_list)
         end)
 
-      _else ->
-        nil
+      json(conn, %{metrics: average_list})
     end
   end
 end

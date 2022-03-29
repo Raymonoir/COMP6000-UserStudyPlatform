@@ -79,15 +79,6 @@ defmodule Comp6000Web.EndToEnd.StudyTest do
     assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
 
     conn =
-      post(conn, "/api/data/complete", %{
-        participant_uuid: "alonguuid",
-        study_id: study["id"],
-        data_type: "compile_data"
-      })
-
-    assert json_response(conn, 200) == %{"data_completed" => "alonguuid"}
-
-    conn =
       post(conn, "/api/metrics/participant", %{
         participant_uuid: "alonguuid"
       })

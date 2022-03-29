@@ -10,6 +10,10 @@ defmodule Comp6000.ReplayMetrics.Calculations do
         metrics_list ++ [metrics]
       end)
 
+    get_average_metrics(metrics_list, study_participants)
+  end
+
+  def get_average_metrics(metrics_list, study_participants) do
     # Replay bits
     total_replay_map =
       Enum.reduce(metrics_list, %{}, fn metric, metric_acc ->

@@ -67,6 +67,7 @@ defmodule Comp6000Web.Router do
       post("/participant", MetricsController, :get_metrics_for_participant)
       post("/study", MetricsController, :get_metrics_for_study)
       post("/current", MetricsController, :get_current_metrics)
+      post("/metrics-for-answers", MetricsController, :metrics_for_answers)
     end
 
     scope "/survey", Survey do

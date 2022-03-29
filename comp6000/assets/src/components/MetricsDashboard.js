@@ -1,4 +1,4 @@
-import backend from "../helpers/backend";
+import Chart from 'react-c3-component';
 
 class MetricsDashboard extends React.Component {
     constructor(props) {
@@ -7,9 +7,14 @@ class MetricsDashboard extends React.Component {
             studies: [],
             selectedStudyId: "",
             selectedStudy: null,
+            selectedStudySurvey: null,
             metrics: {
                 compile_map: {},
                 replay_map: {}
+            },
+            chartFilter: {
+                metric: "",
+                question: ""
             }
         }
 
@@ -29,6 +34,7 @@ class MetricsDashboard extends React.Component {
         });
 
         this.changeSelectedStudy = this.changeSelectedStudy.bind(this);
+        this.chartFilterChange = this.chartFilterChange.bind(this);
     }
 
     changeSelectedStudy(e) {
@@ -36,7 +42,7 @@ class MetricsDashboard extends React.Component {
             return study.id == e.target.value;
         })[0]
         console.log("selected study: ", selectedStudy)
-        this.setState({ selectedStudyId: e.target.value, selectedStudy: selectedStudy });
+        this.setState({ selectedStudyId: e.target.value, selectedStudy: selectedStudy, chartData: null });
 
         backend.post('/api/metrics/current', {
             study_id: selectedStudy.id
@@ -52,6 +58,75 @@ class MetricsDashboard extends React.Component {
                 }
             });
             this.setState({ metrics: filteredMetrics });
+        });
+
+        let surveyReqs = []
+        surveyReqs.push(backend.post('/api/survey/pre/get', {
+            study_id: selectedStudy.id
+        }));
+        surveyReqs.push(backend.post('/api/survey/post/get', {
+            study_id: selectedStudy.id
+        }));
+        Promise.all(surveyReqs).then(surveys => {
+            this.setState({
+                selectedStudySurvey: {
+                    pre: surveys[0].survey_question.questions,
+                    post: surveys[1].survey_question.questions
+                }
+            });
+
+            const firstPreDropDown = surveys[0].survey_question.questions.find(question => {
+                return JSON.parse(question).type == "dropdown";
+            });
+            const firsPosttDropDown = surveys[1].survey_question.questions.find(question => {
+                return JSON.parse(question).type == "dropdown";
+            });
+            if (firstPreDropDown) {
+                const index = surveys[0].survey_question.questions.indexOf(firstPreDropDown);
+                this.chartFilterChange(JSON.stringify(['pre', index]));
+            } else if (firsPosttDropDown) {
+                const index = surveys[1].survey_question.questions.indexOf(firstPreDropDown);
+                this.chartFilterChange(JSON.stringify(['post', index]));
+            }
+        });
+    }
+
+    chartFilterChange(question) {
+        question = JSON.parse(question);
+        console.log(question);
+        this.setState({
+            chartFilter: question
+        });
+
+        backend.post('/api/metrics/metrics-for-answers', {
+            study_id: parseInt(this.state.selectedStudyId),
+            preposition: question[0],
+            question_pos: question[1],
+            type: 'avg'
+        }).then(metrics => {
+            console.log("chart metrics: ", metrics);
+            const columnNames = JSON.parse(this.state.selectedStudySurvey[question[0]][question[1]]).options;
+            console.log('column names: ', columnNames);
+            const groups = ['Idle Time', 'Inserted Characters', 'Line Count', 'Pasted Characters', 'Removed Characters', 'Total Time', 'Word Count', 'Words Per Minute'];
+            let columns = []
+            metrics.metrics.forEach((metric, i) => {
+                console.log(metric);
+                columns.push([
+                    columnNames[i],
+                    Math.round(metric.replay_map.idle_time * 10) / 10,
+                    Math.round(metric.replay_map.insert_character_count * 10) / 10,
+                    Math.round(metric.replay_map.line_count * 10) / 10,
+                    Math.round(metric.replay_map.pasted_character_count * 10) / 10,
+                    Math.round(metric.replay_map.remove_character_count * 10) / 10,
+                    Math.round(metric.replay_map.total_time * 10) / 10,
+                    Math.round(metric.replay_map.word_count * 10) / 10,
+                    Math.round(metric.replay_map.words_per_minute * 10) / 10
+                ]);
+            });
+            groups.unshift('x');
+            columns.unshift(groups);
+            console.log('columns: ', columns);
+            this.setState({ chartData: columns });
         });
     }
 
@@ -151,6 +226,54 @@ class MetricsDashboard extends React.Component {
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        }
+
+                        {Object.keys(this.state.metrics.replay_map).length !== 0 &&
+                            <div>
+                                <h3>Sort Metrics By Survey Answers</h3>
+                                <p>You can view how the metics differ based off how participants answered in the survey.</p>
+                                <p>Choose the question you want to use to group the results.</p>
+                                <p>Currently, the answers to dropdown questions can be used.</p>
+                                <select
+                                    value={this.state.chartFilter.question}
+                                    onChange={(e) => {
+                                        this.chartFilterChange(e.target.value);
+                                    }}
+                                >
+                                    {this.state.selectedStudySurvey !== null &&
+                                        this.state.selectedStudySurvey.pre.map((question, i) => {
+                                            const parsedQuestion = JSON.parse(question);
+                                            if (parsedQuestion.type == 'dropdown') {
+                                                return <option value={JSON.stringify(['pre', i])} key={['pre', i]}>{parsedQuestion.question}</option>
+                                            }
+                                        })
+                                    }
+                                    {this.state.selectedStudySurvey !== null &&
+                                        this.state.selectedStudySurvey.post.map((question, i) => {
+                                            const parsedQuestion = JSON.parse(question);
+                                            if (parsedQuestion.type == 'dropdown') {
+                                                return <option value={JSON.stringify(['post', i])} key={['post', i]}>{parsedQuestion.question}</option>
+                                            }
+                                        })
+                                    }
+                                </select>
+                                {this.state.chartData &&
+                                    <Chart
+                                        config={{
+                                            data: {
+                                                x: 'x',
+                                                columns: this.state.chartData,
+                                                type: 'bar'
+                                            },
+                                            axis: {
+                                                x: {
+                                                    type: 'category'
+                                                }
+                                            }
+                                        }}
+                                    />
+                                }
                             </div>
                         }
                     </div>

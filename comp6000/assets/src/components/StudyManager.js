@@ -82,8 +82,13 @@ class StudyManager extends React.Component {
         backend.post('/api/survey/' + type + '/submit', {
             study_id: this.state.study.id,
             participant_uuid: this.state.userUUID,
-            answers: answers.map(answer => {
-                if (typeof answer == 'string') {
+            answers: answers.map((answer, i) => {
+                console.log(this.state.study.backgroundQuestionnaire);
+                if (type == 'pre' && this.state.study.backgroundQuestionnaire[i].type == 'dropdown') {
+                    return this.state.study.backgroundQuestionnaire[i].options.indexOf(answer).toString();
+                } else if (type == 'post' && this.state.study.postStudyQuestionnaire[i].type == 'dropdown') {
+                    return this.state.study.postStudyQuestionnaire[i].options.indexOf(answer).toString();
+                } else if (typeof answer == 'string') {
                     return answer;
                 } else {
                     return JSON.stringify(answer);

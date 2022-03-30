@@ -217,3 +217,7 @@
 .c3-chart-arc.c3-target.c3-focused g path {
     opacity: 1;
 }
+
+.c3-axis-y text, .c3-axis-x text, .c3-legend-item text {
+    fill: var(--primary-text);
+}

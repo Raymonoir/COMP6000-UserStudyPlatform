@@ -221,7 +221,12 @@ class MetricsDashboard extends React.Component {
                                                 {this.state.metrics.compile_map.most_common_error.length === 0 &&
                                                     "No participants have had any errors"
                                                 }
-                                                {this.state.metrics.compile_map.most_common_error}
+                                                {this.state.metrics.compile_map.most_common_error[0] === '' &&
+                                                    "The majority of participants had no errors"
+                                                }
+                                                {this.state.metrics.compile_map.most_common_error[0].length !== 0 &&
+                                                    <span>"{this.state.metrics.compile_map.most_common_error[0]}" occured {this.state.metrics.compile_map.most_common_error[1]} times</span>
+                                                }
                                             </td>
                                         </tr>
                                     </tbody>

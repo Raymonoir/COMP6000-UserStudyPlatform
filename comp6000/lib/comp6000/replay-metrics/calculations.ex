@@ -39,7 +39,7 @@ defmodule Comp6000.ReplayMetrics.Calculations do
                 Map.put(
                   acc,
                   "most_common_error",
-                  Map.put(mce_map, "most_common_error", Map.get(mce_map, "most_common_error"))
+                  Map.put(mce_map, mce, Map.get(mce_map, mce, 0) + count)
                 )
               else
                 Map.put(acc, "most_common_error", Map.merge(mce_map, Map.put(%{}, mce, count)))

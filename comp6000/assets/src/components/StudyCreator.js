@@ -16,6 +16,10 @@ class StudyCreator extends React.Component {
         this.saveQuestions = this.saveQuestions.bind(this);
         this.saveTasks = this.saveTasks.bind(this);
         this.saveStudy = this.saveStudy.bind(this);
+
+        backend.get('/api/users/current-user').then(user => {
+            this.setState({ username: user.current_user });
+        });
     }
 
     nextStage() {
@@ -63,7 +67,7 @@ class StudyCreator extends React.Component {
         console.log('saving study');
         backend.post('/api/study/create', {
             title: this.state.title,
-            username: 'jacmol7'
+            username: this.state.username
         }).then(study => {
             console.log(study);
             backend.post('/api/survey/pre/create', {

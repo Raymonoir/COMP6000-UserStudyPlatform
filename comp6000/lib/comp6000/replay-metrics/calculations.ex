@@ -195,10 +195,14 @@ defmodule Comp6000.ReplayMetrics.Calculations do
       Enum.reduce(data_map_list, %{}, fn data, acc_map ->
         error = Map.get(data, error_type, nil)
 
-        if Map.has_key?(acc_map, error) do
-          Map.put(acc_map, error, Map.get(acc_map, error) + 1)
+        if error do
+          if Map.has_key?(acc_map, error) do
+            Map.put(acc_map, error, Map.get(acc_map, error) + 1)
+          else
+            Map.put(acc_map, error, 1)
+          end
         else
-          Map.put(acc_map, error, 1)
+          acc_map
         end
       end)
 

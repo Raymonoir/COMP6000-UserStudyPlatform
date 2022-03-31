@@ -1,4 +1,1 @@
-{
-"logs": [],
-"userCodeError": "seen.contains is not a function"
-}
+{"logs":[],"userCodeError":"B is not defined","timestamp":1648587943625}
